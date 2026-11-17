@@ -163,9 +163,14 @@ export default async function MinhaArea() {
         <span className="text-texto2">
           Chave Pix para prêmios: <strong className="text-gelo">{mascararChave(jogador.chave_pix)}</strong>
         </span>
-        <Link href="/cadastro?voltar=/minha-area" className="font-semibold">
-          Alterar meus dados
-        </Link>
+        <span className="flex gap-5">
+          <Link href="/minha-area/decks" className="font-semibold">
+            Meus decks
+          </Link>
+          <Link href="/cadastro?voltar=/minha-area" className="font-semibold">
+            Alterar meus dados
+          </Link>
+        </span>
       </section>
     </div>
   );

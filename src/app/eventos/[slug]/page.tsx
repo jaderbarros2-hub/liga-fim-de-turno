@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { AcaoEvento } from "@/components/AcaoEvento";
+import { DeckDoEvento } from "@/components/DeckDoEvento";
+import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
 import { buscarEvento, listarInscritos, listarResultados, meuPremio } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, NOMES_FORMATO, NOMES_STATUS, reais } from "@/lib/formato";
 
@@ -29,11 +31,13 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados, premio] = await Promise.all([
+  const [inscritos, resultados, premio, decks] = await Promise.all([
     listarInscritos(evento.id),
     listarResultados(evento.id),
     meuPremio(evento.id),
+    decksDaClassificacao(evento.id),
   ]);
+  const deckPorPosicao = new Map(decks.map((d) => [d.posicao, d]));
   const pauper = evento.liga.slug === "pauper";
 
   return (
@@ -64,6 +68,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             />
             <Linha rotulo="Inscrições até" valor={`${dataCurta(evento.inscricoes_ate)}, ${hora(evento.inscricoes_ate)}`} />
             <AcaoEvento evento={evento} totalInscritos={inscritos.length} />
+            <DeckDoEvento evento={evento} />
           </aside>
         </div>
       </section>
@@ -116,6 +121,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                       <tr>
                         <th className="p-3">#</th>
                         <th className="p-3">Jogador</th>
+                        {pauper && <th className="p-3">Arquétipo</th>}
                         <th className="p-3">Pontos</th>
                         <th className="p-3">V-D-E</th>
                       </tr>
@@ -125,6 +131,16 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         <tr key={r.posicao} className="border-t border-borda">
                           <td className="p-3 font-semibold text-ciano">{r.posicao}</td>
                           <td className="p-3">{r.nick_endstep}</td>
+                          {pauper && (
+                            <td className="p-3">
+                              {deckPorPosicao.get(r.posicao)?.arquetipo ?? <span className="text-cinza">—</span>}
+                              {r.posicao <= TOP_PUBLICO && deckPorPosicao.get(r.posicao)?.temLista && (
+                                <Link href={`/eventos/${evento.slug}/deck/${r.posicao}`} className="ml-2 text-xs font-semibold">
+                                  Ver deck
+                                </Link>
+                              )}
+                            </td>
+                          )}
                           <td className="p-3">{r.pontos}</td>
                           <td className="p-3">
                             {r.vitorias}-{r.derrotas}-{r.empates}

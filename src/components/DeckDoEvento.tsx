@@ -1,0 +1,80 @@
+import Link from "next/link";
+import { escolherDeckDoEvento } from "@/app/minha-area/decks/actions";
+import type { Evento } from "@/lib/dados";
+import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
+
+/** Bloco da página do evento: o inscrito escolhe o deck (Pauper) até o início. */
+export async function DeckDoEvento({ evento }: { evento: Evento }) {
+  if (evento.formato !== "pauper" || !supabaseConfigurado()) return null;
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: insc } = await supabase
+    .from("inscricoes")
+    .select("status, deck_id, deck_nome, deck_enviado_em")
+    .eq("evento_id", evento.id)
+    .eq("jogador_id", user.id)
+    .maybeSingle();
+  if (!insc || !["aguardando_pagamento", "confirmada"].includes(insc.status)) return null;
+
+  const aberto = new Date(evento.inicio).getTime() > Date.now();
+  if (!aberto) {
+    return (
+      <div className="rounded-xl border border-borda bg-grafite p-4 text-sm">
+        {insc.deck_nome ? (
+          <>
+            Deck registrado: <strong className="text-gelo">{insc.deck_nome}</strong>
+          </>
+        ) : (
+          <span className="text-alerta">Nenhum deck registrado para este evento.</span>
+        )}
+      </div>
+    );
+  }
+
+  const { data: decks } = await supabase
+    .from("decks")
+    .select("id, nome, legal")
+    .eq("jogador_id", user.id)
+    .order("atualizado_em", { ascending: false });
+  const legais = (decks ?? []).filter((d) => d.legal);
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-4 text-sm">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <strong className="text-gelo">Seu deck para este evento</strong>
+        <span className="text-xs text-cinza">pode trocar até o início</span>
+      </div>
+      {insc.deck_nome ? (
+        <p className="text-ciano">✓ {insc.deck_nome}</p>
+      ) : (
+        <p className="text-alerta">Escolha o deck que você vai jogar.</p>
+      )}
+      {legais.length ? (
+        <form action={escolherDeckDoEvento} className="flex flex-wrap gap-2">
+          <input type="hidden" name="slug" value={evento.slug} />
+          <select
+            name="deck_id"
+            defaultValue={insc.deck_id ?? legais[0].id}
+            className="min-h-10 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-2 text-gelo"
+          >
+            {legais.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.nome}
+              </option>
+            ))}
+          </select>
+          <button type="submit" className="min-h-10 rounded-lg border border-borda-forte px-4 font-semibold hover:border-ciano">
+            {insc.deck_nome ? "Trocar" : "Registrar"}
+          </button>
+        </form>
+      ) : null}
+      <Link href="/minha-area/decks/novo" className="font-semibold">
+        {legais.length ? "Importar outro deck" : "Importar meu deck do Endstep"}
+      </Link>
+    </div>
+  );
+}

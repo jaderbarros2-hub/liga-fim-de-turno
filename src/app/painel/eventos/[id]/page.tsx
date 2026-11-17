@@ -7,6 +7,8 @@ import { confirmarManual } from "./inscritos";
 type Inscrito = {
   id: string;
   status: string;
+  deck_nome: string | null;
+  arquetipo: { nome: string } | null;
   jogador: { nome: string | null; nick_endstep: string | null; discord_nome: string | null } | null;
 };
 
@@ -36,7 +38,7 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
 
   const { data: inscricoes } = await supabase
     .from("inscricoes")
-    .select("id, status, jogador:jogadores(nome, nick_endstep, discord_nome)")
+    .select("id, status, deck_nome, arquetipo:arquetipos(nome), jogador:jogadores(nome, nick_endstep, discord_nome)")
     .eq("evento_id", id)
     .order("criado_em");
   const confirmadas = (inscricoes ?? []).filter((i) => i.status === "confirmada");
@@ -68,6 +70,14 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
               <li key={i.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 border-b border-borda py-2">
                 <span className="min-w-40 flex-1 font-semibold">{i.jogador?.nick_endstep || i.jogador?.nome}</span>
                 <span className="text-cinza">{i.jogador?.discord_nome}</span>
+                {evento.formato === "pauper" &&
+                  (i.deck_nome ? (
+                    <Link href={`/painel/eventos/${evento.id}/deck/${i.id}`} className="text-sm">
+                      {i.arquetipo?.nome ?? i.deck_nome}
+                    </Link>
+                  ) : (
+                    <span className="text-sm text-cinza">sem deck</span>
+                  ))}
                 <span className={i.status === "confirmada" ? "text-ciano" : "text-alerta"}>
                   {NOMES_INSCRICAO[i.status] ?? i.status}
                 </span>

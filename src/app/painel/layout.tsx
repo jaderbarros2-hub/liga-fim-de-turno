@@ -7,6 +7,7 @@ export const dynamic = "force-dynamic";
 const MENU = [
   { href: "/painel", rotulo: "Visão geral" },
   { href: "/painel/eventos", rotulo: "Eventos" },
+  { href: "/painel/arquetipos", rotulo: "Arquétipos" },
 ];
 
 export default async function LayoutPainel({ children }: { children: React.ReactNode }) {
