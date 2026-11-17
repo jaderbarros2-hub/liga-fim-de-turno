@@ -142,7 +142,7 @@ export default async function MinhaArea() {
       </section>
 
       {premios.length > 0 && (
-        <section className="flex flex-col gap-3">
+        <section id="premios" className="flex scroll-mt-24 flex-col gap-3">
           <h2 className="titulo text-3xl">Meus prêmios</h2>
           <ul className="flex flex-col border-t border-borda">
             {premios.map((p) => (

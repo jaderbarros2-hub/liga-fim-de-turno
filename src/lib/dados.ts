@@ -95,6 +95,14 @@ export async function meuPremio(eventoId: string) {
   return data;
 }
 
+/** Formatos (ligas) ativos, na ordem do menu. */
+export async function listarFormatos(): Promise<{ slug: string; nome: string; descricao: string | null }[]> {
+  if (!supabaseConfigurado()) return [{ slug: "pauper", nome: "Liga Pauper", descricao: null }, { slug: "limited", nome: "Liga Limited", descricao: null }];
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.from("ligas").select("slug, nome, descricao").eq("ativo", true).order("ordem");
+  return data ?? [];
+}
+
 export async function buscarPagina(slug: string) {
   if (!supabaseConfigurado()) return null;
   const supabase = await criarClienteServidor();
