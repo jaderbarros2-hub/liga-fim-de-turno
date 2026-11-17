@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { reais } from "@/lib/formato";
-import { DISTRIBUICAO_PADRAO, type Inscrito, type LinhaResultado } from "@/lib/resultados";
+import { type Inscrito, type LinhaResultado } from "@/lib/resultados";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { marcarPremioPago } from "./actions";
 import { Importador } from "./Importador";
@@ -23,7 +23,7 @@ export default async function ResultadosEvento({ params }: { params: Promise<{ i
 
   const { data: evento } = await supabase
     .from("eventos")
-    .select("id, slug, titulo, status, valor_centavos, percentual_premio, distribuicao_premio")
+    .select("id, slug, titulo, formato, status, valor_centavos, percentual_premio, distribuicao_premio")
     .eq("id", id)
     .maybeSingle();
   if (!evento) notFound();
@@ -80,7 +80,8 @@ export default async function ResultadosEvento({ params }: { params: Promise<{ i
         eventoId={id}
         inscritos={inscritos}
         premioTotal={premioTotal}
-        distribuicaoInicial={(evento.distribuicao_premio ?? DISTRIBUICAO_PADRAO).join("/")}
+        formato={evento.formato}
+        distribuicaoInicial={(evento.distribuicao_premio ?? []).join("/")}
         linhasIniciais={linhasIniciais}
         bloqueado={algumPago}
       />

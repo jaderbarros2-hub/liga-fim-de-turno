@@ -18,8 +18,61 @@ export type LinhaResultado = {
 
 export type Inscrito = { jogadorId: string; nick: string };
 
-/** Distribuição padrão do prêmio por posição (percentuais do total). */
-export const DISTRIBUICAO_PADRAO = [50, 30, 10, 10];
+/**
+ * Regra da Liga Pauper (documentação): divisão por classificação conforme o tamanho do evento.
+ *   8 a 11 jogadores: 50/30/20 · 12 a 19: 40/25/17,5/17,5 · 20 ou mais: 30/20/12,5/12,5 e 6,25 do 5º ao 8º
+ */
+export function regraPauper(jogadores: number): number[] {
+  if (jogadores >= 20) return [30, 20, 12.5, 12.5, 6.25, 6.25, 6.25, 6.25];
+  if (jogadores >= 12) return [40, 25, 17.5, 17.5];
+  return [50, 30, 20];
+}
+
+/** Regra da Liga Limited (documentação): prêmio por campanha. 3-0 vale 3 cotas, 2-1 vale 1 cota. */
+export function cotasLimited(l: Pick<LinhaResultado, "vitorias">): number {
+  if (l.vitorias >= 3) return 3;
+  if (l.vitorias === 2) return 1;
+  return 0;
+}
+
+export const ehLimited = (formato: string) => formato !== "pauper";
+
+const pct = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+
+/** Texto curto da regra aplicada, para mostrar no Painel. */
+export function descreverRegra(formato: string, jogadores: number): string {
+  if (ehLimited(formato)) return "Limited, por campanha: 3-0 vale 3 cotas, 2-1 vale 1 cota";
+  return `Pauper, ${jogadores} jogadores: ${regraPauper(jogadores).map(pct).join("/")}%`;
+}
+
+/**
+ * Prêmio de cada linha da classificação (mesma ordem), em centavos.
+ * `personalizada` (percentuais por posição) substitui a regra da liga quando informada.
+ */
+export function premiosDoEvento(
+  formato: string,
+  totalCentavos: number,
+  linhas: LinhaResultado[],
+  personalizada?: number[] | null,
+): number[] {
+  const zeros = linhas.map(() => 0);
+  if (totalCentavos <= 0 || !linhas.length) return zeros;
+
+  if (!personalizada && ehLimited(formato)) {
+    const cotas = linhas.map(cotasLimited);
+    const soma = cotas.reduce((a, b) => a + b, 0);
+    if (!soma) return zeros;
+    const valores = cotas.map((c) => Math.floor((totalCentavos * c) / soma));
+    const sobra = totalCentavos - valores.reduce((a, b) => a + b, 0);
+    const primeiro = valores.findIndex((v) => v > 0);
+    if (primeiro >= 0) valores[primeiro] += sobra;
+    return valores;
+  }
+
+  const distribuicao = personalizada ?? regraPauper(linhas.length);
+  const valores = calcularPremios(totalCentavos, distribuicao, linhas.length);
+  return zeros.map((_, i) => valores[i] ?? 0);
+}
 
 const normalizar = (s: string) =>
   s
@@ -92,16 +145,18 @@ export function lerClassificacao(texto: string, inscritos: Inscrito[]): LinhaRes
     .map((l, i) => ({ ...l, posicao: i + 1 }));
 }
 
-/** Converte "50/30/10/10" ou "50, 30, 10, 10" em [50, 30, 10, 10]. */
-export function lerDistribuicao(texto: string): number[] | null {
+/** Converte "50/30/20" ou "40; 25; 17,5; 17,5" em números. Vazio = usar a regra da liga (null). */
+export function lerDistribuicao(texto: string): number[] | null | "invalida" {
+  if (!texto.trim()) return null;
   const partes = texto
-    .split(/[\/,;\s]+/)
+    .split(/[\/;\s]+/)
+    .map((p) => p.replace(",", "."))
     .map((p) => p.trim())
     .filter(Boolean)
     .map(Number);
-  if (!partes.length || partes.some((n) => !Number.isFinite(n) || n < 0)) return null;
+  if (!partes.length || partes.some((n) => !Number.isFinite(n) || n < 0)) return "invalida";
   const soma = partes.reduce((a, b) => a + b, 0);
-  if (Math.abs(soma - 100) > 0.01) return null;
+  if (Math.abs(soma - 100) > 0.01) return "invalida";
   return partes;
 }
 

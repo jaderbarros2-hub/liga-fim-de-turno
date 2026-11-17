@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useMemo, useState } from "react";
-import { calcularPremios, lerClassificacao, lerDistribuicao, type Inscrito, type LinhaResultado } from "@/lib/resultados";
+import { descreverRegra, lerClassificacao, lerDistribuicao, premiosDoEvento, type Inscrito, type LinhaResultado } from "@/lib/resultados";
 import { salvarResultados, type EstadoResultados } from "./actions";
 
 const reais = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -13,6 +13,7 @@ export function Importador({
   eventoId,
   inscritos,
   premioTotal,
+  formato,
   distribuicaoInicial,
   linhasIniciais,
   bloqueado,
@@ -20,6 +21,7 @@ export function Importador({
   eventoId: string;
   inscritos: Inscrito[];
   premioTotal: number;
+  formato: string;
   distribuicaoInicial: string;
   linhasIniciais: LinhaResultado[];
   bloqueado: boolean;
@@ -30,9 +32,10 @@ export function Importador({
   const [estado, acao, enviando] = useActionState<EstadoResultados, FormData>(salvarResultados, {});
 
   const dist = lerDistribuicao(distribuicao);
+  const distValida = dist !== "invalida";
   const valores = useMemo(
-    () => (dist ? calcularPremios(premioTotal, dist, linhas.length) : []),
-    [dist, premioTotal, linhas.length],
+    () => (dist === "invalida" ? linhas.map(() => 0) : premiosDoEvento(formato, premioTotal, linhas, dist)),
+    [dist, formato, premioTotal, linhas],
   );
 
   function ler() {
@@ -100,16 +103,22 @@ export function Importador({
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 className="titulo text-2xl">2 · Conferir e premiar</h2>
           <label className="flex items-center gap-2 text-sm">
-            <span className="text-cinza">Divisão do prêmio (%)</span>
+            <span className="text-cinza">Divisão personalizada (%)</span>
             <input
               value={distribuicao}
               onChange={(e) => setDistribuicao(e.target.value)}
               disabled={bloqueado}
-              className={`${campo} w-40`}
+              placeholder="vazio = regra da liga"
+              className={`${campo} w-44`}
             />
           </label>
         </div>
-        {!dist && <p className="text-sm text-erro">A divisão precisa somar 100%. Ex.: 50/30/10/10</p>}
+        <p className="text-sm text-texto2">
+          {dist === null
+            ? `Regra aplicada: ${descreverRegra(formato, linhas.length)}.`
+            : "Regra aplicada: divisão personalizada deste evento."}
+        </p>
+        {!distValida && <p className="text-sm text-erro">A divisão personalizada precisa somar 100%. Ex.: 50/30/20</p>}
         <p className="text-sm text-cinza">Prêmio total do evento: {reais(premioTotal)}</p>
         {bloqueado && (
           <p className="text-sm text-alerta">
@@ -135,7 +144,7 @@ export function Importador({
               </thead>
               <tbody>
                 {linhas.map((l, i) => {
-                  const premiado = i < valores.length && valores[i] > 0;
+                  const premiado = valores[i] > 0;
                   return (
                     <tr key={`${l.nick}-${i}`} className="border-t border-borda">
                       <td className="p-2 font-semibold text-ciano">{i + 1}</td>
@@ -189,7 +198,7 @@ export function Importador({
             <button
               type="button"
               onClick={() => enviar(true)}
-              disabled={enviando || !linhas.length || !dist}
+              disabled={enviando || !linhas.length || !distValida}
               className="inline-flex min-h-11 items-center rounded-lg bg-azul px-6 text-sm font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:opacity-50"
             >
               {enviando ? "Salvando…" : "Publicar resultados"}
@@ -197,7 +206,7 @@ export function Importador({
             <button
               type="button"
               onClick={() => enviar(false)}
-              disabled={enviando || !linhas.length || !dist}
+              disabled={enviando || !linhas.length || !distValida}
               className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-gelo hover:border-ciano disabled:opacity-50"
             >
               Salvar sem publicar

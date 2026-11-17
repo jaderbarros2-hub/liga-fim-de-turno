@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { calcularPremios, lerDistribuicao, type LinhaResultado } from "@/lib/resultados";
+import { lerDistribuicao, premiosDoEvento, type LinhaResultado } from "@/lib/resultados";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -30,7 +30,8 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
   const eventoId = String(form.get("evento_id") ?? "");
   const publicar = form.get("publicar") === "sim";
   const distribuicao = lerDistribuicao(String(form.get("distribuicao") ?? ""));
-  if (!distribuicao) return { erro: "A divisão do prêmio precisa somar 100%. Ex.: 50/30/10/10" };
+  if (distribuicao === "invalida")
+    return { erro: "A divisão personalizada precisa somar 100%. Ex.: 50/30/20. Deixe vazio para usar a regra da liga." };
 
   let linhas: LinhaResultado[];
   try {
@@ -43,7 +44,7 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
   const db = criarClienteAdmin();
   const { data: evento } = await db
     .from("eventos")
-    .select("id, slug, valor_centavos, percentual_premio")
+    .select("id, slug, formato, valor_centavos, percentual_premio")
     .eq("id", eventoId)
     .single();
   if (!evento) return { erro: "Evento não encontrado." };
@@ -63,10 +64,10 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
     .eq("status", "confirmada");
 
   const total = Math.floor(((evento.valor_centavos ?? 0) * (confirmados ?? 0) * evento.percentual_premio) / 100);
-  const valores = calcularPremios(total, distribuicao, linhas.length);
+  const valores = premiosDoEvento(evento.formato, total, linhas, distribuicao);
 
   // Posições premiadas precisam estar ligadas a um jogador cadastrado (para saber a chave Pix)
-  const semCadastro = linhas.filter((l, i) => i < valores.length && !l.jogadorId);
+  const semCadastro = linhas.filter((l, i) => valores[i] > 0 && !l.jogadorId);
   if (semCadastro.length)
     return {
       erro: `Associe um jogador cadastrado às posições premiadas: ${semCadastro.map((l) => `${l.posicao}º ${l.nick}`).join(", ")}.`,
