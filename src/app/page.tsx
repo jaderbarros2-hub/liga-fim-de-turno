@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
 import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
+import { BannerPatrocinado, FaixaParceiros } from "@/components/Parceiros";
 import { CARTAS_FAIXA, cartaInteira, creditoArte, sortearArtes, srcArte, type ArteBanco } from "@/lib/artes";
 import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, reais } from "@/lib/formato";
@@ -175,6 +176,10 @@ export default async function Inicio() {
         />
       </section>
 
+      <div className="mx-auto max-w-6xl px-6 pb-16">
+        <BannerPatrocinado posicao="home" pagina="/" />
+      </div>
+
       {/* Como funciona: uma faixa direta, sem cartões */}
       <section className="border-y border-borda bg-fundo2">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 lg:grid-cols-[1fr_2fr]">
@@ -216,6 +221,8 @@ export default async function Inicio() {
           </ul>
         </section>
       )}
+
+      <FaixaParceiros />
 
       {/* Comunidade: cartas espalhadas como textura, uma chamada no centro */}
       <section className="relative isolate overflow-hidden border-t border-borda">

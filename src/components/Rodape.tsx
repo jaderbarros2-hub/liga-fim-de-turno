@@ -7,6 +7,7 @@ const COLUNAS = [
       { href: "/sobre", rotulo: "Sobre" },
       { href: "/como-jogar", rotulo: "Como jogar" },
       { href: "/regras", rotulo: "Regras e políticas" },
+      { href: "/parceiros", rotulo: "Parceiros" },
     ],
   },
   {

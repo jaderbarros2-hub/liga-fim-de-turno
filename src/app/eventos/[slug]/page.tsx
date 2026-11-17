@@ -5,6 +5,7 @@ import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { AcaoEvento } from "@/components/AcaoEvento";
 import { DeckDoEvento } from "@/components/DeckDoEvento";
+import { BannerPatrocinado } from "@/components/Parceiros";
 import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
 import { buscarEvento, listarInscritos, listarResultados, meuPremio } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, NOMES_FORMATO, NOMES_STATUS, reais } from "@/lib/formato";
@@ -193,6 +194,9 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               </BotaoLink>
             </div>
           </aside>
+        </div>
+        <div className="pb-12">
+          <BannerPatrocinado posicao="evento" pagina={`/eventos/${evento.slug}`} />
         </div>
       </section>
     </>

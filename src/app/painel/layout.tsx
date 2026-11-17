@@ -8,6 +8,7 @@ const MENU = [
   { href: "/painel", rotulo: "Visão geral" },
   { href: "/painel/eventos", rotulo: "Eventos" },
   { href: "/painel/arquetipos", rotulo: "Arquétipos" },
+  { href: "/painel/parceiros", rotulo: "Parceiros" },
 ];
 
 export default async function LayoutPainel({ children }: { children: React.ReactNode }) {

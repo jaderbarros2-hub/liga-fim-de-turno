@@ -130,3 +130,18 @@ html {
     }
   }
 }
+
+/* Faixa de parceiros: rolagem contínua dos logos */
+@media (prefers-reduced-motion: no-preference) {
+  .faixa-rolando {
+    animation: faixa 40s linear infinite;
+  }
+  .faixa-rolando:hover {
+    animation-play-state: paused;
+  }
+  @keyframes faixa {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
