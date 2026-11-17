@@ -34,7 +34,7 @@ export async function Cabecalho() {
 
         <nav
           aria-label="Principal"
-          className="order-last -mx-6 flex w-full items-center gap-6 overflow-x-auto px-6 text-sm font-semibold uppercase md:order-none md:mx-0 md:mr-auto md:w-auto md:overflow-visible md:px-0"
+          className="order-last flex w-full items-center justify-between text-[13px] font-semibold uppercase sm:justify-start sm:gap-6 md:order-none md:mr-auto md:w-auto md:text-sm"
         >
           <Link href="/eventos" className={linkMenu}>
             Eventos

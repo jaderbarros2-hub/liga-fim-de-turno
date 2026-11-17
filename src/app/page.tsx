@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
+import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
 import { ARTES, ARTE_LIGA, CARTAS_FAIXA, cartaInteira, credito, ilustracao, type Arte } from "@/lib/artes";
 import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
@@ -13,94 +14,137 @@ const PASSOS = [
   { titulo: "Jogue no Endstep", texto: "Direto no navegador, sem precisar ter as cartas. O resultado sai aqui." },
 ];
 
-const ARTE_HERO = ARTES.counterspell;
-const LEQUE = [ARTES.spellstutter, ARTES.ninja, ARTES.augur];
+const POR_QUE = [
+  {
+    titulo: "Sem precisar ter as cartas",
+    texto: "Jogue no Endstep, de graça e no navegador. Teste qualquer deck sem gastar com cartas.",
+    icone: "M4 6h11v14H4zM9 4h11v14",
+  },
+  {
+    titulo: "80% da inscrição vira prêmio",
+    texto: "Pago por Pix em até 48 horas, com a divisão e a classificação publicadas.",
+    icone: "M12 3v18M17 7H9.5a2.5 2.5 0 000 5h5a2.5 2.5 0 010 5H7",
+  },
+  {
+    titulo: "Decks e resultados públicos",
+    texto: "Classificação, arquétipos e as listas do top 8 ficam no portal para todo mundo estudar.",
+    icone: "M4 20V10M10 20V4M16 20v-7M22 20H2",
+  },
+  {
+    titulo: "Temporada com ranking",
+    texto: "Pontos por resultado e por participação, finais trimestrais e Top 8 anual a partir de 2027.",
+    icone: "M7 4h10v4a5 5 0 01-10 0zM12 13v4M8 21h8M7 6H4a3 3 0 003 3M17 6h3a3 3 0 01-3 3",
+  },
+];
 
 export default async function Inicio() {
   const [proximos, encerrados] = await Promise.all([listarProximosEventos(6), listarEventosEncerrados(3)]);
   const destaque = proximos[0];
   const inscritos = destaque ? await listarInscritos(destaque.id) : [];
 
+  const destaques: Destaque[] = [
+    destaque
+      ? {
+          id: "evento",
+          imagem: ilustracao(ARTES.counterspell),
+          credito: credito(ARTES.counterspell),
+          etiqueta: (
+            <>
+              <EtiquetaLiga evento={destaque} />
+              <span>
+                {dataLonga(destaque.inicio)} · {hora(destaque.inicio)}
+              </span>
+            </>
+          ),
+          titulo: destaque.titulo,
+          texto: `Online no Endstep, sem precisar ter as cartas. Inscrição de ${reais(destaque.valor_centavos)}, com ${destaque.percentual_premio}% das inscrições em prêmios pagos por Pix.`,
+          acao: { href: `/eventos/${destaque.slug}`, rotulo: "Inscrever-se" },
+          rodape: `${inscritos.length} inscritos${destaque.vagas ? ` de ${destaque.vagas}` : ""} · até ${dataCurta(destaque.inscricoes_ate)}, ${hora(destaque.inscricoes_ate)}`,
+        }
+      : {
+          id: "liga",
+          imagem: ilustracao(ARTES.counterspell),
+          credito: credito(ARTES.counterspell),
+          titulo: (
+            <>
+              Pauper e Limited <span className="text-ciano">toda semana</span>
+            </>
+          ),
+          texto: "Etapas online no Endstep, inscrição pelo Pix e prêmio para as melhores campanhas. A próxima etapa é anunciada primeiro no Discord.",
+          acao: { href: "/contato", rotulo: "Entrar no Discord" },
+          acaoSecundaria: { href: "/como-jogar", rotulo: "Como funciona" },
+        },
+    {
+      id: "sem-cartas",
+      imagem: ilustracao(ARTES.ponder),
+      credito: credito(ARTES.ponder),
+      titulo: (
+        <>
+          Jogue sem precisar <span className="text-ciano">ter as cartas</span>
+        </>
+      ),
+      texto: "As etapas acontecem no Endstep, gratuito e direto no navegador. Monte a lista, entre no evento e jogue.",
+      acao: { href: "/como-jogar", rotulo: "Como jogar" },
+      acaoSecundaria: { href: "/eventos", rotulo: "Ver agenda" },
+    },
+    {
+      id: "premio",
+      imagem: ilustracao(ARTES.galvanicBlast),
+      credito: credito(ARTES.galvanicBlast),
+      posicaoImagem: "60% 40%",
+      titulo: (
+        <>
+          80% da inscrição <span className="text-ciano">vira prêmio</span>
+        </>
+      ),
+      texto: "Pago por Pix em até 48 horas. A divisão segue a regra de cada liga e a classificação fica pública no portal.",
+      acao: { href: "/regras", rotulo: "Ver as regras" },
+      acaoSecundaria: { href: "/resultados", rotulo: "Resultados anteriores" },
+    },
+    {
+      id: "temporada",
+      imagem: ilustracao(ARTES.battleScreech),
+      credito: credito(ARTES.battleScreech),
+      titulo: (
+        <>
+          Uma temporada <span className="text-ciano">inteira</span> para disputar
+        </>
+      ),
+      texto: "A partir de 2027: ranking por liga, pontos por participação, finais trimestrais e o Top 8 anual que define o jogador do ano.",
+      acao: { href: "/sobre", rotulo: "Conheça a liga" },
+    },
+  ];
+
   return (
     <>
-      {/* Hero: uma arte de carta em tela cheia, o próximo evento e uma ação */}
-      <section className="relative isolate overflow-hidden border-b border-borda">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={ilustracao(ARTE_HERO)}
-          alt=""
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-[70%_30%] opacity-70"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/20" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-preto to-transparent" />
+      <HeroRotativo destaques={destaques} />
 
-        <div className="mx-auto grid min-h-[560px] max-w-6xl items-center gap-10 px-6 py-16 lg:grid-cols-[1.15fr_1fr]">
-          <div className="surgir flex flex-col gap-6">
-            {destaque ? (
-              <>
-                <div className="flex items-center gap-3 text-sm font-semibold text-texto2">
-                  <EtiquetaLiga evento={destaque} />
-                  <span>
-                    {dataLonga(destaque.inicio)} · {hora(destaque.inicio)}
-                  </span>
-                </div>
-                <h1 className="titulo text-6xl sm:text-7xl">{destaque.titulo}</h1>
-                <p className="max-w-lg text-lg text-texto2">
-                  Online no Endstep, sem precisar ter as cartas. Inscrição de {reais(destaque.valor_centavos)}, com{" "}
-                  {destaque.percentual_premio}% das inscrições em prêmios pagos por Pix.
-                </p>
-                <div className="flex flex-wrap items-center gap-6">
-                  <BotaoLink href={`/eventos/${destaque.slug}`} className="min-h-12 text-base">
-                    Inscrever-se
-                  </BotaoLink>
-                  <span className="text-sm text-cinza">
-                    {inscritos.length} inscritos{destaque.vagas ? ` de ${destaque.vagas}` : ""} · até{" "}
-                    {dataCurta(destaque.inscricoes_ate)}, {hora(destaque.inscricoes_ate)}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <>
-                <h1 className="titulo text-6xl sm:text-7xl">
-                  Pauper e Limited
-                  <br />
-                  <span className="text-ciano">toda semana</span>
-                </h1>
-                <p className="max-w-lg text-lg text-texto2">
-                  Etapas online no Endstep, inscrição pelo Pix e prêmio para as melhores campanhas. A próxima etapa é
-                  anunciada primeiro no Discord.
-                </p>
-                <div className="flex flex-wrap items-center gap-6">
-                  <BotaoLink href="/contato" className="min-h-12 text-base">
-                    Entrar no Discord
-                  </BotaoLink>
-                  <Link href="/como-jogar" className="text-sm font-semibold">
-                    Como funciona →
-                  </Link>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Leque de cartas inteiras (com artista e copyright visíveis na própria carta) */}
-          <div className="relative hidden h-[420px] lg:block" aria-hidden="true">
-            {LEQUE.map((a, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={a.carta}
-                src={cartaInteira(a)}
-                alt=""
-                className="carta-solta absolute top-6 w-[230px]"
-                style={{
-                  left: `${60 + i * 120}px`,
-                  transform: `rotate(${(i - 1) * 9}deg) translateY(${i === 1 ? -18 : 6}px)`,
-                  zIndex: i === 1 ? 2 : 1,
-                }}
-              />
-            ))}
-          </div>
+      {/* Por que jogar: os diferenciais, para quem não espera o carrossel */}
+      <section className="border-b border-borda bg-fundo2">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
+          {POR_QUE.map((p) => (
+            <div key={p.titulo} className="flex gap-4">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="mt-0.5 shrink-0 text-ciano"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d={p.icone} />
+              </svg>
+              <div className="flex flex-col gap-1">
+                <h2 className="font-semibold">{p.titulo}</h2>
+                <p className="text-sm text-texto2">{p.texto}</p>
+              </div>
+            </div>
+          ))}
         </div>
-        <span className="absolute bottom-3 right-4 text-[11px] text-white/50">Fundo: {credito(ARTE_HERO)}</span>
       </section>
 
       {/* Próximos eventos */}

@@ -118,3 +118,15 @@ html {
   margin: 0 0 1rem 1.25rem;
   list-style: revert;
 }
+
+/* Hero: aproximação lenta da arte do destaque ativo */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-zoom {
+    animation: hero-zoom 9s ease-out both;
+  }
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1.06);
+    }
+  }
+}

@@ -3,6 +3,7 @@
  * Regras: não cortar nome do artista/copyright das cartas inteiras; ao usar só a
  * ilustração (art_crop), mostrar o crédito do artista na mesma tela.
  * Só artes de Magic: nada de versões de outras franquias (Marvel, Star Trek etc.).
+ * Ao trocar uma arte, confira no Scryfall se a impressão não é "Universes Beyond".
  */
 
 export type Arte = { carta: string; artista: string; caminho: string };
@@ -24,7 +25,7 @@ export const ARTES = {
   gurmag: { carta: "Gurmag Angler", artista: "YW Tang", caminho: "c/e/cedd44eb-f381-46e1-bcb0-88416b4ce33d.jpg?1783933821" },
   thorn: { carta: "Thorn of the Black Rose", artista: "David Gaillet", caminho: "b/4/b4b266e2-1cad-40df-bc0e-3e1464b299b3.jpg?1783915664" },
   packRat: { carta: "Pack Rat", artista: "Kev Walker", caminho: "1/7/170693f5-13db-4191-99b1-e527ffb5b88e.jpg?1783940361" },
-  ponder: { carta: "Ponder", artista: "Berto Martinez", caminho: "0/c/0cb673af-dae0-478c-a5d3-b697338f6c0e.jpg?1793281344" },
+  ponder: { carta: "Ponder", artista: "Dan Murayama Scott", caminho: "3/c/3c02b8ee-84cb-44cb-ba14-9e725a9d03ee.jpg?1783942390" },
   battleScreech: { carta: "Battle Screech", artista: "Anastasia Ovchinnikova", caminho: "9/0/90301f8c-f7af-4179-8faf-9901931bba8d.jpg?1783915727" },
   chainer: { carta: "Chainer's Edict", artista: "Mark Zug", caminho: "a/1/a1d194d7-dccf-4421-be8f-8efdcf9fbbeb.jpg?1793456741" },
   swiftspear: { carta: "Monastery Swiftspear", artista: "Gabor Szikszai", caminho: "d/6/d6bfa227-4309-40ed-952c-279595eab17e.jpg?1783920066" },
