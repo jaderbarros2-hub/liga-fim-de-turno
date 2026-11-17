@@ -1,0 +1,33 @@
+import { criarClienteServidor } from "@/lib/supabase/server";
+import { FormularioEvento } from "../FormularioEvento";
+
+export default async function NovoEvento() {
+  const supabase = await criarClienteServidor();
+  const { data: ligas } = await supabase.from("ligas").select("id, nome").order("id");
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="titulo text-5xl">Novo evento</h1>
+      <FormularioEvento
+        ligas={ligas ?? []}
+        valores={{
+          titulo: "",
+          liga_id: ligas?.[0]?.id ?? 1,
+          formato: "pauper",
+          colecao: "",
+          inicio: "",
+          inscricoes_ate: "",
+          modalidade: "online",
+          local: "",
+          valor: "15",
+          vagas: "",
+          minimo: "8",
+          percentual_premio: "80",
+          detalhes: "",
+          status: "rascunho",
+          link_endstep: "",
+        }}
+      />
+    </div>
+  );
+}
