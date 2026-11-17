@@ -20,7 +20,7 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
     .maybeSingle();
   if (!insc || !["aguardando_pagamento", "confirmada"].includes(insc.status)) return null;
 
-  const aberto = new Date(evento.inicio).getTime() > Date.now();
+  const aberto = new Date(evento.inicio).getTime() > Date.now() && ["aberto", "fechado"].includes(evento.status);
   if (!aberto) {
     return (
       <div className="rounded-xl border border-borda bg-grafite p-4 text-sm">

@@ -61,7 +61,7 @@ export function VisualDeck({
         </div>
       </div>
 
-      <div className="columns-1 gap-6 sm:columns-2 lg:columns-3">
+      <div className="grid items-start gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
         {ORDEM_GRUPOS.filter((g) => grupos.has(g)).map((g) => (
           <Bloco key={g} titulo={g} itens={ordenar(grupos.get(g)!)} cartas={cartas} />
         ))}
@@ -73,7 +73,7 @@ export function VisualDeck({
 
 function Bloco({ titulo, itens, cartas }: { titulo: string; itens: ItemLista[]; cartas: Map<string, Carta> }) {
   return (
-    <section className="mb-6 break-inside-avoid">
+    <section className="mb-6">
       <h3 className="mb-2 flex justify-between border-b border-borda pb-1 text-sm font-semibold text-cinza">
         <span>{titulo}</span>
         <span>{total(itens)}</span>
