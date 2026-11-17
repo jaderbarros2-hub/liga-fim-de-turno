@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { AcaoEvento } from "@/components/AcaoEvento";
-import { buscarEvento, listarInscritos, listarResultados, premioEstimado } from "@/lib/dados";
+import { buscarEvento, listarInscritos, listarPremiosPorPosicao, listarResultados, premioEstimado } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, NOMES_FORMATO, NOMES_STATUS, reais } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +29,11 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados] = await Promise.all([listarInscritos(evento.id), listarResultados(evento.id)]);
+  const [inscritos, resultados, premios] = await Promise.all([
+    listarInscritos(evento.id),
+    listarResultados(evento.id),
+    listarPremiosPorPosicao(evento.id),
+  ]);
   const pauper = evento.liga.slug === "pauper";
 
   return (
@@ -104,6 +108,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         <th className="p-3">Jogador</th>
                         <th className="p-3">Pontos</th>
                         <th className="p-3">V-E-D</th>
+                        <th className="p-3">Prêmio</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -115,6 +120,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                           <td className="p-3">
                             {r.vitorias}-{r.empates}-{r.derrotas}
                           </td>
+                          <td className="p-3 text-ciano">{premios[r.posicao] ? reais(premios[r.posicao]) : ""}</td>
                         </tr>
                       ))}
                     </tbody>

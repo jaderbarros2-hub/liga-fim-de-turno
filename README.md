@@ -35,4 +35,5 @@ npm run dev
       painel de eventos (criar, editar, link do Endstep)
 - [x] Bloco 2: inscrição e Pix (Mercado Pago), webhook, confirmação automática, cancelamento, confirmação manual no painel
 - [ ] Avisos por e-mail e Discord (depende do domínio)
-- [ ] Bloco 3: resultados colados do Endstep, cálculo de prêmios, pagamentos de prêmios, financeiro
+- [x] Bloco 3: classificação colada do Endstep (fonte trocável), cálculo e pagamento de prêmios, publicação
+- [ ] 2027: importação automática da classificação (API do Endstep ou leitura da página), financeiro, ranking

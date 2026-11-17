@@ -48,9 +48,10 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
       </Link>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="titulo text-5xl">{evento.titulo}</h1>
-        <Link href={`/eventos/${evento.slug}`} className="text-sm font-semibold">
-          Ver página pública
-        </Link>
+        <div className="flex flex-wrap gap-4 text-sm font-semibold">
+          <Link href={`/painel/eventos/${evento.id}/resultados`}>Resultados e prêmios</Link>
+          <Link href={`/eventos/${evento.slug}`}>Ver página pública</Link>
+        </div>
       </div>
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">

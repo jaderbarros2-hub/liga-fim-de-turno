@@ -78,6 +78,14 @@ export async function listarResultados(eventoId: string) {
   return data ?? [];
 }
 
+/** Prêmio por posição (só eventos com resultado publicado). */
+export async function listarPremiosPorPosicao(eventoId: string): Promise<Record<number, number>> {
+  if (!supabaseConfigurado()) return {};
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase.from("premios_publico").select("posicao, valor_centavos").eq("evento_id", eventoId);
+  return Object.fromEntries((data ?? []).filter((p) => p.posicao).map((p) => [p.posicao, p.valor_centavos]));
+}
+
 export async function buscarPagina(slug: string) {
   if (!supabaseConfigurado()) return null;
   const supabase = await criarClienteServidor();
