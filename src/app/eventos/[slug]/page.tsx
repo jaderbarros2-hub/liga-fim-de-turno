@@ -107,7 +107,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         <th className="p-3">#</th>
                         <th className="p-3">Jogador</th>
                         <th className="p-3">Pontos</th>
-                        <th className="p-3">V-E-D</th>
+                        <th className="p-3">V-D-E</th>
                         <th className="p-3">Prêmio</th>
                       </tr>
                     </thead>
@@ -118,7 +118,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                           <td className="p-3">{r.nick_endstep}</td>
                           <td className="p-3">{r.pontos}</td>
                           <td className="p-3">
-                            {r.vitorias}-{r.empates}-{r.derrotas}
+                            {r.vitorias}-{r.derrotas}-{r.empates}
                           </td>
                           <td className="p-3 text-ciano">{premios[r.posicao] ? reais(premios[r.posicao]) : ""}</td>
                         </tr>

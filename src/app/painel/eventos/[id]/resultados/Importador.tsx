@@ -111,6 +111,11 @@ export function Importador({
         </div>
         {!dist && <p className="text-sm text-erro">A divisão precisa somar 100%. Ex.: 50/30/10/10</p>}
         <p className="text-sm text-cinza">Prêmio total do evento: {reais(premioTotal)}</p>
+        {bloqueado && (
+          <p className="text-sm text-alerta">
+            Classificação travada: já há prêmio marcado como pago neste evento, para evitar pagamento em dobro.
+          </p>
+        )}
 
         {linhas.length === 0 ? (
           <p className="text-sm text-texto2">Nenhuma classificação lida ainda.</p>
