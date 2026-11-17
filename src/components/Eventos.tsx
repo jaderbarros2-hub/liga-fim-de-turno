@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { Etiqueta } from "@/components/Botao";
+import { ARTE_LIGA, credito, ilustracao } from "@/lib/artes";
 import type { Evento } from "@/lib/dados";
 import { dataCurta, hora, NOMES_FORMATO, reais } from "@/lib/formato";
-import { Etiqueta } from "@/components/Botao";
 
 export function EtiquetaLiga({ evento }: { evento: Evento }) {
   return (
@@ -11,38 +12,59 @@ export function EtiquetaLiga({ evento }: { evento: Evento }) {
   );
 }
 
+/** Cartão de evento com a arte da liga no topo e a etiqueta encostada na imagem. */
+export function CartaoEvento({ evento }: { evento: Evento }) {
+  const arte = ARTE_LIGA[evento.liga.slug] ?? ARTE_LIGA.pauper;
+  return (
+    <Link
+      href={`/eventos/${evento.slug}`}
+      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:ring-ciano"
+    >
+      <div className="relative aspect-[16/8] overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={ilustracao(arte)}
+          alt=""
+          loading="lazy"
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-grafite via-grafite/10 to-transparent" />
+        <span className="absolute bottom-3 left-4">
+          <EtiquetaLiga evento={evento} />
+        </span>
+        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={credito(arte)}>
+          {arte.artista}
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 px-4 pb-5 pt-3">
+        <span className="text-sm font-semibold text-ciano">
+          {dataCurta(evento.inicio)} · {hora(evento.inicio)}
+        </span>
+        <span className="titulo text-3xl">{evento.titulo}</span>
+        <span className="mt-auto flex items-center justify-between pt-3 text-sm text-texto2">
+          <span>Inscrição {reais(evento.valor_centavos)}</span>
+          <span className="font-semibold text-gelo group-hover:text-ciano">
+            {evento.status === "aberto" ? "Inscrever-se →" : "Ver evento →"}
+          </span>
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export function ListaEventos({ eventos, vazio }: { eventos: Evento[]; vazio?: string }) {
   if (eventos.length === 0) {
     return (
-      <p className="rounded-xl border border-borda bg-grafite p-6 text-texto2">
-        {vazio ?? "Nenhum evento agendado no momento. Acompanhe os avisos no Discord da liga."}
+      <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+        {vazio ?? "A próxima etapa ainda não foi aberta. Os avisos saem primeiro no Discord da liga."}
       </p>
     );
   }
   return (
-    <ol className="flex flex-col border-t border-borda">
-      {eventos.map((e, i) => (
-        <li
-          key={e.id}
-          className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-borda py-4"
-        >
-          <span className="titulo w-12 text-4xl text-azul">{String(i + 1).padStart(2, "0")}</span>
-          <span className="w-32 text-sm font-semibold text-cinza">
-            {dataCurta(e.inicio)} · {hora(e.inicio)}
-          </span>
-          <Link href={`/eventos/${e.slug}`} className="min-w-60 flex-1 text-lg font-semibold text-gelo no-underline hover:text-ciano">
-            {e.titulo}
-          </Link>
-          <EtiquetaLiga evento={e} />
-          <span className="text-sm text-texto2">{reais(e.valor_centavos)}</span>
-          <Link
-            href={`/eventos/${e.slug}`}
-            className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-4 text-sm font-semibold text-gelo no-underline hover:border-ciano"
-          >
-            {e.status === "aberto" ? "Inscrever" : "Ver evento"}
-          </Link>
-        </li>
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {eventos.map((e) => (
+        <CartaoEvento key={e.id} evento={e} />
       ))}
-    </ol>
+    </div>
   );
 }

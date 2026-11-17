@@ -21,9 +21,9 @@ export async function Cabecalho() {
         <Link href="/" className="no-underline" aria-label="Página inicial">
           <Logo />
         </Link>
-        <nav aria-label="Principal" className="flex flex-wrap gap-5 text-sm font-semibold uppercase">
+        <nav aria-label="Principal" className="order-last -mx-6 flex w-full gap-5 overflow-x-auto px-6 text-sm font-semibold uppercase md:order-none md:mx-0 md:w-auto md:px-0">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="text-gelo no-underline hover:text-ciano">
+            <Link key={l.href} href={l.href} className="shrink-0 py-1 text-gelo no-underline hover:text-ciano">
               {l.rotulo}
             </Link>
           ))}
@@ -40,10 +40,13 @@ export async function Cabecalho() {
             </BotaoLink>
           ) : (
             <BotaoLink href="/entrar" variante="contorno">
-              Entrar com Discord
+              <span className="sm:hidden">Entrar</span>
+              <span className="hidden sm:inline">Entrar com Discord</span>
             </BotaoLink>
           )}
-          <BotaoLink href="/eventos">Inscrever-se</BotaoLink>
+          <span className="hidden sm:block">
+            <BotaoLink href="/eventos">Inscrever-se</BotaoLink>
+          </span>
         </div>
       </div>
     </header>

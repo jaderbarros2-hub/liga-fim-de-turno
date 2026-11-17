@@ -5,7 +5,7 @@ type Variante = "primario" | "contorno" | "texto";
 
 const estilos: Record<Variante, string> = {
   primario:
-    "bg-azul text-white hover:bg-azul-escuro hover:text-white tracking-wide uppercase",
+    "corte bg-azul px-7 text-white hover:bg-azul-escuro hover:text-white tracking-wide uppercase",
   contorno: "border border-borda-forte text-gelo hover:border-ciano hover:text-gelo",
   texto: "text-ciano hover:text-[#8fdbff] px-0",
 };

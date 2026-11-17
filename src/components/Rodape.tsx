@@ -44,9 +44,13 @@ export function Rodape() {
           </div>
         ))}
       </div>
-      <div className="mx-auto max-w-6xl px-6 pb-8 text-xs text-cinza">
-        Liga Fim de Turno (nome provisório). Projeto independente, sem vínculo com a Wizards of the
-        Coast, a Hasbro ou o Endstep. Magic: The Gathering é marca da Wizards of the Coast.
+      <div className="mx-auto flex max-w-6xl flex-col gap-2 border-t border-borda px-6 py-6 text-xs leading-relaxed text-cinza">
+        <p>
+          A Liga Fim de Turno (nome provisório) é conteúdo de fã não oficial, permitido pela Fan Content Policy. Não é
+          aprovada nem endossada pela Wizards. Partes do material utilizado são propriedade da Wizards of the Coast.
+          ©Wizards of the Coast LLC. Sem vínculo com a Hasbro ou com o Endstep.
+        </p>
+        <p>Imagens de cartas via Scryfall; os créditos de cada ilustração aparecem junto à arte.</p>
       </div>
     </footer>
   );
