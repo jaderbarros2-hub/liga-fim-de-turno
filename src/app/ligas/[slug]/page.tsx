@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ListaEventos } from "@/components/Eventos";
 import { listarProximosEventos } from "@/lib/dados";
-import { ARTE_LIGA, credito, ilustracao } from "@/lib/artes";
+import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
 
 export const dynamic = "force-dynamic";
 
@@ -48,14 +48,15 @@ export default async function PaginaLiga({ params }: Props) {
   if (!liga) notFound();
   const eventos = await listarProximosEventos(20, slug);
 
-  const arte = ARTE_LIGA[slug] ?? ARTE_LIGA.pauper;
+  const [arte] = sortearArtes(slug === "pauper" ? "pauper" : "limited", 1, true);
 
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-borda">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={ilustracao(arte)}
+          src={srcArte(arte)}
+          style={{ objectPosition: arte.foco }}
           alt=""
           className="absolute inset-0 -z-20 h-full w-full object-cover opacity-55"
         />
@@ -65,7 +66,7 @@ export default async function PaginaLiga({ params }: Props) {
           <p className="max-w-2xl text-lg text-texto2">{liga.resumo}</p>
         </div>
         <span className="absolute bottom-3 right-4 text-[11px] text-white/50">
-          Fundo: {credito(arte)}
+          {creditoArte(arte)}
         </span>
       </section>
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-12">

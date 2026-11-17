@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
 import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
-import { ARTES, ARTE_LIGA, CARTAS_FAIXA, cartaInteira, credito, ilustracao, type Arte } from "@/lib/artes";
+import { CARTAS_FAIXA, cartaInteira, creditoArte, sortearArtes, srcArte, type ArteBanco } from "@/lib/artes";
 import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, reais } from "@/lib/formato";
 
@@ -42,12 +42,18 @@ export default async function Inicio() {
   const destaque = proximos[0];
   const inscritos = destaque ? await listarInscritos(destaque.id) : [];
 
+  // Artes sorteadas a cada visita (topo: só imagens grandes)
+  const [aEvento] = sortearArtes(destaque?.liga.slug === "pauper" ? "pauper" : "geral", 1, true);
+  const [a1, a2, a3] = sortearArtes("geral", 3, true).map((a, i, arr) => (a.arquivo === aEvento.arquivo ? arr[(i + 1) % arr.length] : a));
+  const [artePauper] = sortearArtes("pauper", 1);
+  const [arteLimited] = sortearArtes("limited", 1).map((a) => (a.arquivo === artePauper.arquivo ? sortearArtes("geral", 1)[0] : a));
+  const img = (a: ArteBanco) => ({ imagem: srcArte(a), credito: creditoArte(a), posicaoImagem: a.foco });
+
   const destaques: Destaque[] = [
     destaque
       ? {
           id: "evento",
-          imagem: ilustracao(ARTES.counterspell),
-          credito: credito(ARTES.counterspell),
+          ...img(aEvento),
           etiqueta: (
             <>
               <EtiquetaLiga evento={destaque} />
@@ -63,8 +69,7 @@ export default async function Inicio() {
         }
       : {
           id: "liga",
-          imagem: ilustracao(ARTES.counterspell),
-          credito: credito(ARTES.counterspell),
+          ...img(aEvento),
           titulo: (
             <>
               Pauper e Limited <span className="text-ciano">toda semana</span>
@@ -76,8 +81,7 @@ export default async function Inicio() {
         },
     {
       id: "sem-cartas",
-      imagem: ilustracao(ARTES.ponder),
-      credito: credito(ARTES.ponder),
+      ...img(a1),
       titulo: (
         <>
           Jogue sem precisar <span className="text-ciano">ter as cartas</span>
@@ -89,9 +93,7 @@ export default async function Inicio() {
     },
     {
       id: "premio",
-      imagem: ilustracao(ARTES.galvanicBlast),
-      credito: credito(ARTES.galvanicBlast),
-      posicaoImagem: "60% 40%",
+      ...img(a2),
       titulo: (
         <>
           80% da inscrição <span className="text-ciano">vira prêmio</span>
@@ -103,8 +105,7 @@ export default async function Inicio() {
     },
     {
       id: "temporada",
-      imagem: ilustracao(ARTES.battleScreech),
-      credito: credito(ARTES.battleScreech),
+      ...img(a3),
       titulo: (
         <>
           Uma temporada <span className="text-ciano">inteira</span> para disputar
@@ -164,13 +165,13 @@ export default async function Inicio() {
           slug="pauper"
           nome="Liga Pauper"
           texto="Só cartas comuns, decks acessíveis e jogo competitivo toda semana. Rodadas suíças e prêmio por classificação."
-          arte={ARTE_LIGA.pauper}
+          arte={artePauper}
         />
         <Liga
           slug="limited"
           nome="Liga Limited"
           texto="Draft, selado e cubo em pods de até 8 jogadores, com prêmio por campanha."
-          arte={ARTE_LIGA.limited}
+          arte={arteLimited}
         />
       </section>
 
@@ -250,7 +251,7 @@ export default async function Inicio() {
   );
 }
 
-function Liga({ slug, nome, texto, arte }: { slug: string; nome: string; texto: string; arte: Arte }) {
+function Liga({ slug, nome, texto, arte }: { slug: string; nome: string; texto: string; arte: ArteBanco }) {
   return (
     <Link
       href={`/ligas/${slug}`}
@@ -258,13 +259,14 @@ function Liga({ slug, nome, texto, arte }: { slug: string; nome: string; texto: 
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={ilustracao(arte)}
+        src={srcArte(arte)}
         alt=""
         loading="lazy"
+        style={{ objectPosition: arte.foco }}
         className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/70 to-preto/10" />
-      <span className="absolute right-4 top-3 text-[11px] text-white/60">{credito(arte)}</span>
+      <span className="absolute right-4 top-3 text-[11px] text-white/60">{creditoArte(arte)}</span>
       <h2 className="titulo text-5xl">{nome}</h2>
       <p className="mt-2 max-w-md text-texto2">{texto}</p>
       <span className="mt-4 text-sm font-semibold text-ciano">Ver etapas e regras →</span>

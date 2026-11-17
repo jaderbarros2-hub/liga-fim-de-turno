@@ -1,0 +1,201 @@
+[
+ {
+  "arquivo": "plasma-bolt",
+  "carta": "Plasma Bolt",
+  "artista": "Viko Menezes",
+  "colecao": "Edge of Eternities",
+  "grupo": "pauper",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "45% 50%"
+ },
+ {
+  "arquivo": "banishing-light",
+  "carta": "Banishing Light",
+  "artista": "Rovina Cai",
+  "colecao": "Edge of Eternities",
+  "grupo": "pauper",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "45% 40%"
+ },
+ {
+  "arquivo": "echoing-return",
+  "carta": "Echoing Return",
+  "artista": "Matt Stewart",
+  "colecao": "Modern Horizons 2",
+  "grupo": "pauper",
+  "largura": 1920,
+  "altura": 1485,
+  "foco": "50% 35%"
+ },
+ {
+  "arquivo": "battle-screech",
+  "carta": "Battle Screech",
+  "artista": "Anastasia Ovchinnikova",
+  "colecao": "Modern Horizons",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 900,
+  "foco": "60% 40%"
+ },
+ {
+  "arquivo": "brainstorm",
+  "carta": "Brainstorm",
+  "artista": "Chris Rahn",
+  "colecao": "Masters 25",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 867,
+  "foco": "50% 35%"
+ },
+ {
+  "arquivo": "chatterstorm",
+  "carta": "Chatterstorm",
+  "artista": "Milivoj Ćeran",
+  "colecao": "Modern Horizons 2",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 872,
+  "foco": "50% 40%"
+ },
+ {
+  "arquivo": "defile",
+  "carta": "Defile",
+  "artista": "Joe Slucher",
+  "colecao": "Modern Horizons",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 600,
+  "foco": "45% 40%"
+ },
+ {
+  "arquivo": "martyrs-soul",
+  "carta": "Martyr's Soul",
+  "artista": "Mila Pesic",
+  "colecao": "Modern Horizons",
+  "grupo": "pauper",
+  "largura": 1100,
+  "altura": 808,
+  "foco": "55% 40%"
+ },
+ {
+  "arquivo": "mulldrifter",
+  "carta": "Mulldrifter",
+  "artista": "Jeff Miracola",
+  "colecao": "Double Masters 2022",
+  "grupo": "pauper",
+  "largura": 1147,
+  "altura": 1400,
+  "foco": "50% 25%"
+ },
+ {
+  "arquivo": "rancor",
+  "carta": "Rancor",
+  "artista": "Kev Walker",
+  "grupo": "pauper",
+  "largura": 1024,
+  "altura": 768,
+  "foco": "50% 40%"
+ },
+ {
+  "arquivo": "snow-covered-mountain",
+  "carta": "Snow-Covered Mountain",
+  "artista": "Titus Lunter",
+  "colecao": "Modern Horizons",
+  "grupo": "pauper",
+  "largura": 881,
+  "altura": 1200,
+  "foco": "50% 30%"
+ },
+ {
+  "arquivo": "eoe-swanland",
+  "carta": null,
+  "artista": "Raymond Swanland",
+  "colecao": "Edge of Eternities",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "55% 40%"
+ },
+ {
+  "arquivo": "nauctis-mar",
+  "carta": null,
+  "artista": "Andrew Mar",
+  "colecao": "Nauctis: The Sunken Realm",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "55% 45%"
+ },
+ {
+  "arquivo": "nauctis-ortega",
+  "carta": null,
+  "artista": "Marina Ortega Lorente",
+  "colecao": "Nauctis: The Sunken Realm",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "60% 40%"
+ },
+ {
+  "arquivo": "lorwyn-fiore",
+  "carta": null,
+  "artista": "Ioannis Fiore",
+  "colecao": "Lorwyn Eclipsed",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "50% 35%"
+ },
+ {
+  "arquivo": "lorwyn-graciano",
+  "carta": null,
+  "artista": "Lucas Graciano",
+  "colecao": "Lorwyn Eclipsed",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "55% 40%"
+ },
+ {
+  "arquivo": "lorwyn-danner",
+  "carta": null,
+  "artista": "Alayna Danner",
+  "colecao": "Lorwyn Eclipsed",
+  "grupo": "geral",
+  "largura": 1920,
+  "altura": 1080,
+  "foco": "50% 45%"
+ },
+ {
+  "arquivo": "chalice-of-the-void",
+  "carta": "Chalice of the Void",
+  "artista": "Mark Zug",
+  "colecao": "Mirrodin",
+  "grupo": "geral",
+  "largura": 870,
+  "altura": 648,
+  "foco": "50% 40%"
+ },
+ {
+  "arquivo": "serras-emissary",
+  "carta": "Serra's Emissary",
+  "artista": "Nils Hamm",
+  "colecao": "Modern Horizons 2",
+  "grupo": "geral",
+  "largura": 1080,
+  "altura": 810,
+  "foco": "50% 30%"
+ },
+ {
+  "arquivo": "yawgmoth",
+  "carta": "Yawgmoth, Thran Physician",
+  "artista": "Mark Winters",
+  "colecao": "Modern Horizons",
+  "grupo": "geral",
+  "largura": 1024,
+  "altura": 768,
+  "foco": "45% 35%"
+ }
+]

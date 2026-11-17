@@ -6,6 +6,8 @@
  * Ao trocar uma arte, confira no Scryfall se a impressão não é "Universes Beyond".
  */
 
+import bancoJson from "./artes-banco.json";
+
 export type Arte = { carta: string; artista: string; caminho: string };
 
 const BASE = "https://cards.scryfall.io";
@@ -50,3 +52,59 @@ export const CARTAS_FAIXA: Arte[] = [
   ARTES.thorn,
   ARTES.ponder,
 ];
+
+/* =====================================================================
+ * Banco de artes em alta resolução (arquivos em /public/artes).
+ * Fonte: artigos oficiais da Wizards (Planeswalker's Guides) e Art of MtG.
+ * Para adicionar: coloque a imagem em artes-originais, converta para WebP
+ * (até 1920px) em public/artes e registre aqui com o crédito.
+ * ===================================================================== */
+
+export type ArteBanco = {
+  arquivo: string;
+  carta: string | null;
+  artista: string;
+  colecao?: string;
+  /** "pauper": carta legal no Pauper (serve para tudo). "geral": só Limited e banners gerais. */
+  grupo: "pauper" | "geral";
+  largura: number;
+  altura: number;
+  /** Ponto de foco do recorte (CSS object-position). */
+  foco?: string;
+};
+
+export const BANCO: ArteBanco[] = bancoJson as ArteBanco[];
+
+export const srcArte = (a: ArteBanco) => `/artes/${a.arquivo}.webp`;
+export const creditoArte = (a: ArteBanco) =>
+  `${a.carta ? `${a.carta} · ` : ""}ilustração de ${a.artista} · © Wizards of the Coast`;
+
+/** Pauper usa só cartas do Pauper; Limited (e o resto do site) pode usar qualquer arte de Magic. */
+function pool(formato: "pauper" | "limited" | "geral", minLargura = 0) {
+  const lista = BANCO.filter((a) => (formato === "pauper" ? a.grupo === "pauper" : true) && a.largura >= minLargura);
+  return lista.length ? lista : BANCO.filter((a) => (formato === "pauper" ? a.grupo === "pauper" : true));
+}
+
+function hash(texto: string) {
+  let h = 2166136261;
+  for (let i = 0; i < texto.length; i++) h = Math.imul(h ^ texto.charCodeAt(i), 16777619);
+  return Math.abs(h);
+}
+
+/** Arte fixa para um evento (sempre a mesma para aquela etapa, diferente entre etapas). */
+export function arteDoEvento(evento: { id: string; liga: { slug: string } }): ArteBanco {
+  const lista = pool(evento.liga.slug === "pauper" ? "pauper" : "limited");
+  return lista[hash(evento.id) % lista.length];
+}
+
+/** Sorteio a cada visita. `grande` exige imagens largas o bastante para o topo da página. */
+export function sortearArtes(formato: "pauper" | "limited" | "geral", quantidade: number, grande = false): ArteBanco[] {
+  const lista = [...pool(formato, grande ? 1800 : 0)];
+  for (let i = lista.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [lista[i], lista[j]] = [lista[j], lista[i]];
+  }
+  const saida: ArteBanco[] = [];
+  for (let i = 0; i < quantidade; i++) saida.push(lista[i % lista.length]);
+  return saida;
+}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Etiqueta } from "@/components/Botao";
-import { ARTE_LIGA, credito, ilustracao } from "@/lib/artes";
+import { arteDoEvento, creditoArte, srcArte } from "@/lib/artes";
 import type { Evento } from "@/lib/dados";
 import { dataCurta, hora, NOMES_FORMATO, reais } from "@/lib/formato";
 
@@ -14,7 +14,7 @@ export function EtiquetaLiga({ evento }: { evento: Evento }) {
 
 /** Cartão de evento com a arte da liga no topo e a etiqueta encostada na imagem. */
 export function CartaoEvento({ evento }: { evento: Evento }) {
-  const arte = ARTE_LIGA[evento.liga.slug] ?? ARTE_LIGA.pauper;
+  const arte = arteDoEvento(evento);
   return (
     <Link
       href={`/eventos/${evento.slug}`}
@@ -23,16 +23,17 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
       <div className="relative aspect-[16/8] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={ilustracao(arte)}
+          src={srcArte(arte)}
           alt=""
           loading="lazy"
+          style={{ objectPosition: arte.foco }}
           className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-grafite via-grafite/10 to-transparent" />
         <span className="absolute bottom-3 left-4">
           <EtiquetaLiga evento={evento} />
         </span>
-        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={credito(arte)}>
+        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={creditoArte(arte)}>
           {arte.artista}
         </span>
       </div>

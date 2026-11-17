@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
-import { ARTES, ARTE_LIGA, credito, ilustracao } from "@/lib/artes";
+import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sobre a liga",
@@ -27,12 +29,16 @@ const DIFERENCIAIS = [
 ];
 
 export default function Sobre() {
-  const arte = ARTES.spellstutter;
+  const [arte] = sortearArtes("geral", 1, true);
+  const artesFormato: Record<string, ReturnType<typeof sortearArtes>[number]> = {
+    pauper: sortearArtes("pauper", 1)[0],
+    limited: sortearArtes("geral", 1)[0],
+  };
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-borda">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={ilustracao(arte)} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover object-top opacity-50" />
+        <img src={srcArte(arte)} alt="" style={{ objectPosition: arte.foco }} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-50" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/90 to-preto/40" />
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-20">
           <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
@@ -43,7 +49,7 @@ export default function Sobre() {
             coleção cara ou de uma loja perto de casa para competir.
           </p>
         </div>
-        <span className="absolute bottom-3 right-4 text-[11px] text-white/50">Fundo: {credito(arte)}</span>
+        <span className="absolute bottom-3 right-4 text-[11px] text-white/50">{creditoArte(arte)}</span>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.4fr]">
@@ -87,9 +93,9 @@ export default function Sobre() {
               className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-lg p-7 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={ilustracao(ARTE_LIGA[f.slug])} alt="" loading="lazy" className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              <img src={srcArte(artesFormato[f.slug])} alt="" loading="lazy" style={{ objectPosition: artesFormato[f.slug].foco }} className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/75 to-preto/10" />
-              <span className="absolute right-4 top-3 text-[11px] text-white/60">{credito(ARTE_LIGA[f.slug])}</span>
+              <span className="absolute right-4 top-3 text-[11px] text-white/60">{creditoArte(artesFormato[f.slug])}</span>
               <h3 className="titulo text-4xl">{f.nome}</h3>
               <p className="mt-2 max-w-md text-texto2">{f.texto}</p>
             </Link>

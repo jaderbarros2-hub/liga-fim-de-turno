@@ -89,7 +89,7 @@ export function HeroRotativo({ destaques }: { destaques: Destaque[] }) {
               {d.rodape && <span className="text-sm text-cinza">{d.rodape}</span>}
             </div>
           </div>
-          <span className="absolute bottom-4 right-4 hidden text-[11px] text-white/50 sm:block">Arte: {d.credito}</span>
+          <span className="absolute bottom-4 right-4 hidden text-[11px] text-white/50 sm:block">{d.credito}</span>
         </div>
       ))}
 
