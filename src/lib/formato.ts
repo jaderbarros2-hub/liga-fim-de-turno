@@ -43,3 +43,7 @@ export const NOMES_STATUS: Record<string, string> = {
   resultados: "Resultados publicados",
   cancelado: "Cancelado",
 };
+
+export function dataPublicacao(iso: string) {
+  return new Date(iso).toLocaleDateString("pt-BR", { timeZone: FUSO, day: "numeric", month: "short", year: "numeric" });
+}

@@ -8,6 +8,7 @@ const MENU = [
   { href: "/painel", rotulo: "Visão geral" },
   { href: "/painel/eventos", rotulo: "Eventos" },
   { href: "/painel/arquetipos", rotulo: "Arquétipos" },
+  { href: "/painel/blog", rotulo: "Blog" },
   { href: "/painel/parceiros", rotulo: "Parceiros" },
 ];
 

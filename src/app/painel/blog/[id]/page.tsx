@@ -1,0 +1,37 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Artigo } from "@/lib/blog";
+import { criarClienteAdmin } from "@/lib/supabase/admin";
+import { apagarArtigo } from "../actions";
+import { Editor } from "../Editor";
+
+export default async function EditarArtigo({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ salvo?: string }>;
+}) {
+  const { id } = await params;
+  const { salvo } = await searchParams;
+  const { data } = await criarClienteAdmin().from("artigos").select("*").eq("id", id).maybeSingle();
+  if (!data) notFound();
+  const artigo = data as Artigo;
+
+  return (
+    <div className="flex max-w-4xl flex-col gap-6">
+      <Link href="/painel/blog" className="text-sm">
+        ← Blog
+      </Link>
+      <h1 className="titulo text-5xl">Editar artigo</h1>
+      {salvo && <p className="rounded-lg border border-ciano/50 bg-ciano/10 p-4 font-semibold text-ciano">Artigo criado.</p>}
+      <Editor key={artigo.id} artigo={artigo} autorPadrao={artigo.autor_nome} />
+      <form action={apagarArtigo} className="border-t border-borda pt-6">
+        <input type="hidden" name="id" value={artigo.id} />
+        <button type="submit" className="text-sm font-semibold text-red-400 hover:text-red-300">
+          Apagar artigo (não dá para desfazer)
+        </button>
+      </form>
+    </div>
+  );
+}

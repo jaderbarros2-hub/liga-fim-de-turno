@@ -145,3 +145,60 @@ html {
     }
   }
 }
+
+/* Artigos do blog: tamanho de leitura e elementos extras do Markdown */
+.artigo p,
+.artigo li {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.artigo a {
+  color: var(--color-ciano);
+}
+.artigo blockquote {
+  border-left: 3px solid var(--color-azul);
+  margin: 1.5rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  font-style: italic;
+}
+.artigo img {
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  max-width: 100%;
+}
+.artigo hr {
+  margin: 2.5rem 0;
+  border-color: var(--color-borda);
+}
+.artigo code {
+  background: var(--color-grafite);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+.artigo pre {
+  background: var(--color-grafite);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 0 0 1rem;
+}
+.artigo pre code {
+  background: none;
+  padding: 0;
+}
+.artigo table {
+  width: 100%;
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  border-collapse: collapse;
+}
+.artigo th,
+.artigo td {
+  border-bottom: 1px solid var(--color-borda);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.artigo strong {
+  color: var(--color-gelo);
+}

@@ -91,6 +91,12 @@ function hash(texto: string) {
   return Math.abs(h);
 }
 
+/** Arte fixa por chave (ex.: id de um artigo), dentro do grupo do formato. */
+export function arteFixa(chave: string, formato: "pauper" | "limited" | "geral"): ArteBanco {
+  const lista = pool(formato);
+  return lista[hash(chave) % lista.length];
+}
+
 /** Arte fixa para um evento (sempre a mesma para aquela etapa, diferente entre etapas). */
 export function arteDoEvento(evento: { id: string; liga: { slug: string } }): ArteBanco {
   const lista = pool(evento.liga.slug === "pauper" ? "pauper" : "limited");

@@ -5,6 +5,7 @@ const COLUNAS = [
     titulo: "A liga",
     links: [
       { href: "/sobre", rotulo: "Sobre" },
+      { href: "/blog", rotulo: "Blog" },
       { href: "/como-jogar", rotulo: "Como jogar" },
       { href: "/regras", rotulo: "Regras e políticas" },
       { href: "/parceiros", rotulo: "Parceiros" },

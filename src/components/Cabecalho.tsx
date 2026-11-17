@@ -43,6 +43,9 @@ export async function Cabecalho() {
           <Link href="/resultados" className={linkMenu}>
             Resultados
           </Link>
+          <Link href="/blog" className={linkMenu}>
+            Blog
+          </Link>
           <Link href="/sobre" className={linkMenu}>
             Sobre
           </Link>
