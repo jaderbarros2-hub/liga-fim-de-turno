@@ -2,6 +2,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { FormularioEvento } from "../FormularioEvento";
+import { confirmarManual } from "./inscritos";
+
+type Inscrito = {
+  id: string;
+  status: string;
+  jogador: { nome: string | null; nick_endstep: string | null; discord_nome: string | null } | null;
+};
+
+const NOMES_INSCRICAO: Record<string, string> = {
+  confirmada: "Confirmada",
+  aguardando_pagamento: "Aguardando Pix",
+  expirada: "Pix expirado",
+  cancelada: "Cancelada",
+  reembolsada: "Reembolsada",
+};
 
 /** ISO → "AAAA-MM-DDTHH:MM" no horário de Brasília, para o campo datetime-local. */
 function paraCampo(iso: string) {
@@ -19,6 +34,13 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
   ]);
   if (!evento) notFound();
 
+  const { data: inscricoes } = await supabase
+    .from("inscricoes")
+    .select("id, status, jogador:jogadores(nome, nick_endstep, discord_nome)")
+    .eq("evento_id", id)
+    .order("criado_em");
+  const confirmadas = (inscricoes ?? []).filter((i) => i.status === "confirmada");
+
   return (
     <div className="flex flex-col gap-6">
       <Link href="/painel/eventos" className="text-sm">
@@ -30,6 +52,38 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
           Ver página pública
         </Link>
       </div>
+      <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="titulo text-3xl">Inscritos</h2>
+          <span className="text-sm text-cinza">
+            {confirmadas.length} confirmados · {(inscricoes ?? []).length - confirmadas.length} outros
+          </span>
+        </div>
+        {(inscricoes ?? []).length === 0 ? (
+          <p className="text-sm text-texto2">Nenhuma inscrição ainda.</p>
+        ) : (
+          <ul className="flex flex-col border-t border-borda text-sm">
+            {(inscricoes as unknown as Inscrito[]).map((i) => (
+              <li key={i.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 border-b border-borda py-2">
+                <span className="min-w-40 flex-1 font-semibold">{i.jogador?.nick_endstep || i.jogador?.nome}</span>
+                <span className="text-cinza">{i.jogador?.discord_nome}</span>
+                <span className={i.status === "confirmada" ? "text-ciano" : "text-alerta"}>
+                  {NOMES_INSCRICAO[i.status] ?? i.status}
+                </span>
+                {i.status !== "confirmada" && i.status !== "reembolsada" && (
+                  <form action={confirmarManual}>
+                    <input type="hidden" name="inscricao_id" value={i.id} />
+                    <input type="hidden" name="evento_id" value={evento.id} />
+                    <button type="submit" className="font-semibold text-ciano hover:text-gelo">
+                      Confirmar manualmente
+                    </button>
+                  </form>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <FormularioEvento
         ligas={ligas ?? []}
         valores={{

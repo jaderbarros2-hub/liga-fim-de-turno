@@ -7,7 +7,7 @@ Stack: Next.js 15 (App Router) · Supabase (Postgres, login, regras de acesso) �
 
 ## Configuração
 
-1. **Banco:** no Supabase, abra *SQL Editor*, cole o conteúdo de
+1. **Banco:** no Supabase, abra *SQL Editor* e execute, em ordem, os arquivos de `supabase/migrations/` (0001, 0002...). O primeiro é
    `supabase/migrations/0001_estrutura_inicial.sql` e execute (primeiro no projeto de teste).
 2. **Login com Discord:** em *Authentication > Sign In / Providers > Discord*, ative e cole o Client ID e o
    Client Secret da aplicação criada no portal de desenvolvedores do Discord. No Discord, cadastre o endereço de
@@ -33,5 +33,6 @@ npm run dev
 
 - [x] Bloco 0/1: base, identidade visual, páginas, login com Discord, cadastro, agenda, página do evento,
       painel de eventos (criar, editar, link do Endstep)
-- [ ] Bloco 2: inscrição e Pix (Mercado Pago), webhook, confirmação automática, e-mails e avisos no Discord
+- [x] Bloco 2: inscrição e Pix (Mercado Pago), webhook, confirmação automática, cancelamento, confirmação manual no painel
+- [ ] Avisos por e-mail e Discord (depende do domínio)
 - [ ] Bloco 3: resultados colados do Endstep, cálculo de prêmios, pagamentos de prêmios, financeiro

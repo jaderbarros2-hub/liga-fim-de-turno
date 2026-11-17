@@ -6,6 +6,7 @@ import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server
 import { dataCurta, hora } from "@/lib/formato";
 import { mascararChave } from "@/lib/validacao";
 import { sair } from "./actions";
+import { cancelarInscricao } from "../eventos/[slug]/inscricao/actions";
 
 export const metadata: Metadata = { title: "Minha área" };
 export const dynamic = "force-dynamic";
@@ -23,6 +24,14 @@ const STATUS_INSCRICAO: Record<string, { rotulo: string; tipo: "ciano" | "alerta
   cancelada: { rotulo: "Cancelada", tipo: "contorno" },
   reembolsada: { rotulo: "Reembolsada", tipo: "contorno" },
 };
+
+/** Pendente: sempre; confirmada: até 24h antes do início (gera pedido de reembolso). */
+function podeCancelar(i: Inscricao) {
+  const inicio = new Date(i.evento.inicio).getTime();
+  if (i.status === "aguardando_pagamento") return inicio > Date.now();
+  if (i.status === "confirmada") return inicio - 24 * 3600_000 > Date.now();
+  return false;
+}
 
 export default async function MinhaArea() {
   if (!supabaseConfigurado()) redirect("/");
@@ -85,6 +94,9 @@ export default async function MinhaArea() {
 
       <section className="flex flex-col gap-3">
         <h2 className="titulo text-3xl">Minhas inscrições</h2>
+        <p className="text-sm text-cinza">
+          Inscrição paga pode ser cancelada até 24h antes do evento; o reembolso vai para sua chave Pix em até 48h.
+        </p>
         {inscricoes.length === 0 ? (
           <p className="text-texto2">Você ainda não se inscreveu em nenhum evento.</p>
         ) : (
@@ -100,6 +112,14 @@ export default async function MinhaArea() {
                     {dataCurta(i.evento.inicio)} · {hora(i.evento.inicio)}
                   </span>
                   <Etiqueta tipo={s.tipo}>{s.rotulo}</Etiqueta>
+                  {podeCancelar(i) && (
+                    <form action={cancelarInscricao}>
+                      <input type="hidden" name="slug" value={i.evento.slug} />
+                      <button type="submit" className="text-xs font-semibold text-cinza hover:text-gelo">
+                        Cancelar
+                      </button>
+                    </form>
+                  )}
                 </li>
               );
             })}
