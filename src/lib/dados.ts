@@ -78,12 +78,21 @@ export async function listarResultados(eventoId: string) {
   return data ?? [];
 }
 
-/** Prêmio por posição (só eventos com resultado publicado). */
-export async function listarPremiosPorPosicao(eventoId: string): Promise<Record<number, number>> {
-  if (!supabaseConfigurado()) return {};
+/** Prêmio do jogador logado neste evento (só ele e o organizador enxergam valores). */
+export async function meuPremio(eventoId: string) {
+  if (!supabaseConfigurado()) return null;
   const supabase = await criarClienteServidor();
-  const { data } = await supabase.from("premios_publico").select("posicao, valor_centavos").eq("evento_id", eventoId);
-  return Object.fromEntries((data ?? []).filter((p) => p.posicao).map((p) => [p.posicao, p.valor_centavos]));
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase
+    .from("premios")
+    .select("valor_centavos, status, posicao")
+    .eq("evento_id", eventoId)
+    .eq("jogador_id", user.id)
+    .maybeSingle();
+  return data;
 }
 
 export async function buscarPagina(slug: string) {
@@ -106,9 +115,4 @@ export async function usuarioAtual() {
     .eq("id", user.id)
     .maybeSingle();
   return jogador;
-}
-
-/** Prêmio estimado: inscritos confirmados × valor × percentual do prêmio. */
-export function premioEstimado(evento: Evento, confirmados: number) {
-  return Math.floor((evento.valor_centavos * confirmados * evento.percentual_premio) / 100);
 }

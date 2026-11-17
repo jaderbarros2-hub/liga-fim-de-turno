@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
-import { dataCurta, hora } from "@/lib/formato";
+import { dataCurta, hora, reais } from "@/lib/formato";
 import { mascararChave } from "@/lib/validacao";
 import { sair } from "./actions";
 import { cancelarInscricao } from "../eventos/[slug]/inscricao/actions";
@@ -50,6 +50,20 @@ export default async function MinhaArea() {
     .eq("jogador_id", user.id)
     .order("criado_em", { ascending: false });
   const inscricoes = (data as Inscricao[] | null) ?? [];
+
+  const { data: dadosPremios } = await supabase
+    .from("premios")
+    .select("id, valor_centavos, status, posicao, pago_em, evento:eventos(slug, titulo, inicio)")
+    .eq("jogador_id", user.id)
+    .order("criado_em", { ascending: false });
+  const premios =
+    (dadosPremios as unknown as {
+      id: string;
+      valor_centavos: number;
+      status: string;
+      posicao: number | null;
+      evento: { slug: string; titulo: string; inicio: string };
+    }[]) ?? [];
 
   const agora = Date.now();
   const futuras = inscricoes.filter((i) => new Date(i.evento.inicio).getTime() > agora - 6 * 3600_000);
@@ -126,6 +140,24 @@ export default async function MinhaArea() {
           </ul>
         )}
       </section>
+
+      {premios.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="titulo text-3xl">Meus prêmios</h2>
+          <ul className="flex flex-col border-t border-borda">
+            {premios.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-borda py-3">
+                <Link href={`/eventos/${p.evento.slug}?aba=resultados`} className="min-w-56 flex-1 font-semibold text-gelo no-underline hover:text-ciano">
+                  {p.evento.titulo}
+                </Link>
+                <span className="text-sm text-cinza">{p.posicao}º lugar</span>
+                <strong className="text-ciano">{reais(p.valor_centavos)}</strong>
+                <Etiqueta tipo={p.status === "pago" ? "ciano" : "alerta"}>{p.status === "pago" ? "Pago" : "A receber"}</Etiqueta>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-borda bg-grafite p-5 text-sm">
         <span className="text-texto2">

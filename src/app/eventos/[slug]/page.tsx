@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { AcaoEvento } from "@/components/AcaoEvento";
-import { buscarEvento, listarInscritos, listarPremiosPorPosicao, listarResultados, premioEstimado } from "@/lib/dados";
+import { buscarEvento, listarInscritos, listarResultados, meuPremio } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, NOMES_FORMATO, NOMES_STATUS, reais } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
@@ -29,10 +29,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados, premios] = await Promise.all([
+  const [inscritos, resultados, premio] = await Promise.all([
     listarInscritos(evento.id),
     listarResultados(evento.id),
-    listarPremiosPorPosicao(evento.id),
+    meuPremio(evento.id),
   ]);
   const pauper = evento.liga.slug === "pauper";
 
@@ -57,7 +57,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
           </div>
           <aside className="flex min-w-0 flex-[1_1_300px] flex-col gap-3 rounded-xl border border-borda bg-grafite p-6">
             <Linha rotulo="Inscrição" valor={reais(evento.valor_centavos)} />
-            <Linha rotulo="Prêmio estimado" valor={reais(premioEstimado(evento, inscritos.length))} destaque />
+            <Linha rotulo="Premiação" valor={`${evento.percentual_premio}% das inscrições`} destaque />
             <Linha
               rotulo="Inscritos"
               valor={`${inscritos.length}${evento.vagas ? ` de ${evento.vagas}` : ""} · mínimo ${evento.minimo}`}
@@ -96,6 +96,16 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               </ul>
             )}
 
+            {aba === "resultados" && premio && (
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-ciano bg-grafite p-4">
+                <span>
+                  Seu prêmio neste evento: <strong className="text-ciano">{reais(premio.valor_centavos)}</strong>
+                </span>
+                <span className="text-sm text-cinza">
+                  {premio.status === "pago" ? "✓ Pago na sua chave Pix" : "Pagamento por Pix em até 48h"}
+                </span>
+              </div>
+            )}
             {aba === "resultados" && (
               resultados.length === 0 ? (
                 <p className="text-texto2">Os resultados aparecem aqui depois do evento.</p>
@@ -108,7 +118,6 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         <th className="p-3">Jogador</th>
                         <th className="p-3">Pontos</th>
                         <th className="p-3">V-D-E</th>
-                        <th className="p-3">Prêmio</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -120,7 +129,6 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                           <td className="p-3">
                             {r.vitorias}-{r.derrotas}-{r.empates}
                           </td>
-                          <td className="p-3 text-ciano">{premios[r.posicao] ? reais(premios[r.posicao]) : ""}</td>
                         </tr>
                       ))}
                     </tbody>

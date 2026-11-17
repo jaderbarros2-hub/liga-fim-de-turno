@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
-import { listarEventosEncerrados, listarInscritos, listarProximosEventos, premioEstimado } from "@/lib/dados";
+import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
 import { dataLonga, dataCurta, hora, reais } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
@@ -49,7 +49,8 @@ export default async function Inicio() {
               <span className="text-xs font-semibold tracking-widest text-cinza">RESUMO DA ETAPA</span>
               <EtiquetaLiga evento={destaque} />
               <Linha rotulo="Inscritos" valor={`${inscritos.length}${destaque.vagas ? ` de ${destaque.vagas}` : ""} · mínimo ${destaque.minimo}`} />
-              <Linha rotulo="Prêmio estimado" valor={reais(premioEstimado(destaque, inscritos.length))} destaque />
+              <Linha rotulo="Inscrição" valor={reais(destaque.valor_centavos)} />
+              <Linha rotulo="Premiação" valor={`${destaque.percentual_premio}% das inscrições`} destaque />
               <Linha rotulo="Inscrições até" valor={`${dataCurta(destaque.inscricoes_ate)}, ${hora(destaque.inscricoes_ate)}`} />
             </div>
           )}
