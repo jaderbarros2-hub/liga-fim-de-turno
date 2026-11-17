@@ -24,7 +24,7 @@ export default async function NovoEvento() {
           minimo: "8",
           percentual_premio: "80",
           detalhes: "",
-          status: "rascunho",
+          status: "aberto",
           link_endstep: "",
         }}
       />

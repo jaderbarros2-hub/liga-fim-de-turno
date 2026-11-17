@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, startTransition } from "react";
 import { salvarEvento, type EstadoEvento } from "./actions";
 
 export type ValoresEvento = {
@@ -27,9 +27,33 @@ const campo =
 
 export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; ligas: { id: number; nome: string }[] }) {
   const [estado, acao, enviando] = useActionState<EstadoEvento, FormData>(salvarEvento, {});
+  const aviso = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (estado.erro || estado.ok) aviso.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [estado]);
+
+  // Envio sem "form action": assim o formulário não volta aos valores antigos depois de salvar
+  function enviar(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const dados = new FormData(e.currentTarget);
+    startTransition(() => acao(dados));
+  }
+
+  const mensagem = (estado.erro || estado.ok) && (
+    <div
+      ref={aviso}
+      role={estado.erro ? "alert" : "status"}
+      className={`rounded-lg border px-4 py-3 text-sm font-semibold md:col-span-2 ${
+        estado.erro ? "border-erro text-erro" : "border-ciano text-ciano"
+      }`}
+    >
+      {estado.erro ?? estado.ok}
+    </div>
+  );
 
   return (
-    <form action={acao} className="grid gap-5 md:grid-cols-2">
+    <form onSubmit={enviar} className="grid gap-5 md:grid-cols-2">
       {valores.id && <input type="hidden" name="id" value={valores.id} />}
       <Campo rotulo="Título" id="titulo" largo>
         <input id="titulo" name="titulo" required defaultValue={valores.titulo} placeholder="Etapa 1 · Pauper" className={campo} />
@@ -93,7 +117,7 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
         <input id="percentual_premio" name="percentual_premio" type="number" min="0" max="100" defaultValue={valores.percentual_premio} className={campo} />
       </Campo>
       <Campo rotulo="Link privado do evento no Endstep" id="link_endstep" largo ajuda="Só aparece para quem tem inscrição confirmada.">
-        <input id="link_endstep" name="link_endstep" type="url" defaultValue={valores.link_endstep} placeholder="https://endstep.cc/..." className={campo} />
+        <input id="link_endstep" name="link_endstep" type="text" inputMode="url" defaultValue={valores.link_endstep} placeholder="https://endstep.cc/..." className={campo} />
       </Campo>
       <Campo rotulo="Informações extras (opcional)" id="detalhes" largo>
         <textarea id="detalhes" name="detalhes" rows={4} defaultValue={valores.detalhes} className={`${campo} py-2`} />
@@ -107,13 +131,8 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
         >
           {enviando ? "Salvando…" : "Salvar evento"}
         </button>
-        {estado.erro && (
-          <span role="alert" className="text-sm text-erro">
-            {estado.erro}
-          </span>
-        )}
-        {estado.ok && <span className="text-sm text-ciano">{estado.ok}</span>}
       </div>
+      {mensagem}
     </form>
   );
 }

@@ -38,18 +38,21 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   const formato = t("formato");
   const inicio = t("inicio");
   const inscricoesAte = t("inscricoes_ate");
-  const valor = Number(t("valor").replace(",", "."));
+  const valor = Number(t("valor").replace(/[^\d,.-]/g, "").replace(",", "."));
   const vagas = t("vagas") ? Number(t("vagas")) : null;
   const minimo = Number(t("minimo") || "8");
   const percentual = Number(t("percentual_premio") || "80");
   const status = t("status");
-  const link = t("link_endstep");
+  let link = t("link_endstep");
+  if (link && !/^https?:\/\//i.test(link)) link = `https://${link}`;
 
   if (!titulo || !ligaId || !inicio || !inscricoesAte) return { erro: "Preencha título, liga, data e prazo." };
   if (!FORMATOS.includes(formato)) return { erro: "Formato inválido." };
   if (!STATUS.includes(status)) return { erro: "Status inválido." };
   if (Number.isNaN(valor) || valor < 0) return { erro: "Valor inválido." };
-  if (link && !/^https:\/\//.test(link)) return { erro: "O link do Endstep deve começar com https://" };
+  if (link && !/^https?:\/\/\S+\.\S+/i.test(link)) return { erro: "O link do Endstep não parece um endereço válido." };
+  if (new Date(`${inscricoesAte}:00-03:00`) > new Date(`${inicio}:00-03:00`))
+    return { erro: "O prazo de inscrição precisa ser antes do início do evento." };
 
   const dados = {
     titulo,
@@ -74,11 +77,11 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
     const { error } = await supabase.from("eventos").update(dados).eq("id", id);
     if (error) return { erro: `Não foi possível salvar: ${error.message}` };
   } else {
-    const { data, error } = await supabase
-      .from("eventos")
-      .insert({ ...dados, slug: criarSlug(titulo, inicio) })
-      .select("id")
-      .single();
+    // Mesmo título e data: acrescenta um sufixo ao endereço
+    let slug = criarSlug(titulo, inicio);
+    const { count } = await supabase.from("eventos").select("id", { count: "exact", head: true }).like("slug", `${slug}%`);
+    if (count) slug = `${slug}-${count + 1}`;
+    const { data, error } = await supabase.from("eventos").insert({ ...dados, slug }).select("id").single();
     if (error) return { erro: `Não foi possível criar: ${error.message}` };
     eventoId = data.id;
   }
@@ -101,5 +104,7 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
 
   revalidatePath("/", "layout");
   if (!id) redirect(`/painel/eventos/${eventoId}`);
-  return { ok: "Evento salvo." };
+  return {
+    ok: status === "rascunho" ? "Evento salvo como rascunho (ainda não aparece no site)." : "Evento salvo e publicado no site.",
+  };
 }
