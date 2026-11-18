@@ -67,7 +67,12 @@ export async function AcaoEvento({ evento, totalInscritos }: { evento: Evento; t
   if (evento.vagas && totalInscritos >= evento.vagas) return aviso("Vagas esgotadas.");
 
   if (inscricao?.status === "aguardando_pagamento") {
-    return <BotaoLink href={`${caminho}/inscricao`}>Pagar com Pix</BotaoLink>;
+    return (
+      <div className="flex flex-col gap-2">
+        <BotaoLink href={`${caminho}/inscricao`}>Concluir compra do ingresso</BotaoLink>
+        <span className="text-xs text-alerta">Você tem um Pix gerado aguardando pagamento.</span>
+      </div>
+    );
   }
 
   return (

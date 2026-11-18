@@ -116,8 +116,8 @@ export function FormularioEvento({ valores }: { valores: ValoresEvento; ligas?: 
           <option value="presencial">Presencial</option>
         </select>
       </Campo>
-      <Campo rotulo="Local (presencial)" id="local">
-        <input id="local" name="local" defaultValue={valores.local} className={campo} />
+      <Campo rotulo="Endereço (obrigatório no presencial)" id="local">
+        <input id="local" name="local" defaultValue={valores.local} placeholder="Loja, rua, número, bairro, cidade" className={campo} />
       </Campo>
       <Campo rotulo="Valor da inscrição (R$)" id="valor">
         <input id="valor" name="valor" inputMode="decimal" required defaultValue={valores.valor} className={campo} />
@@ -131,7 +131,7 @@ export function FormularioEvento({ valores }: { valores: ValoresEvento; ligas?: 
       <Campo rotulo="% da inscrição para o prêmio" id="percentual_premio">
         <input id="percentual_premio" name="percentual_premio" type="number" min="0" max="100" defaultValue={valores.percentual_premio} className={campo} />
       </Campo>
-      <Campo rotulo="Link privado do evento no Endstep" id="link_endstep" largo ajuda="Só aparece para quem tem inscrição confirmada.">
+      <Campo rotulo="Link privado do evento no Endstep" id="link_endstep" largo ajuda="Obrigatório para publicar um evento online. Só aparece para quem tem ingresso confirmado.">
         <input id="link_endstep" name="link_endstep" type="text" inputMode="url" defaultValue={valores.link_endstep} placeholder="https://endstep.cc/..." className={campo} />
       </Campo>
       <Campo rotulo="Informações extras (opcional)" id="detalhes" largo>

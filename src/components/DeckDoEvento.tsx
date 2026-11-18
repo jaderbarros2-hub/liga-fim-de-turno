@@ -18,7 +18,8 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
     .eq("evento_id", evento.id)
     .eq("jogador_id", user.id)
     .maybeSingle();
-  if (!insc || !["aguardando_pagamento", "confirmada"].includes(insc.status)) return null;
+  // Antes do pagamento, o deck é escolhido no checkout do ingresso; aqui só para quem já tem ingresso
+  if (insc?.status !== "confirmada") return null;
 
   const aberto = new Date(evento.inicio).getTime() > Date.now() && ["aberto", "fechado"].includes(evento.status);
   if (!aberto) {

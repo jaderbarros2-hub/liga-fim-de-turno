@@ -53,8 +53,8 @@ export default async function Financeiro() {
 
       <dl className="grid gap-3 sm:grid-cols-3">
         {[
-          ["Saques a pagar", reais(-saques.reduce((s, m) => s + m.valor_centavos, 0)), `${saques.length} pedido(s)`],
-          ["Repasses a lojas", reais(-envios.reduce((s, m) => s + m.valor_centavos, 0)), `${envios.length} pedido(s)`],
+          ["Saques a pagar", reais(Math.abs(saques.reduce((s, m) => s + m.valor_centavos, 0))), `${saques.length} pedido(s)`],
+          ["Repasses a lojas", reais(Math.abs(envios.reduce((s, m) => s + m.valor_centavos, 0))), `${envios.length} pedido(s)`],
           ["Saldo nas Carteiras", reais(emCarteiras), "Disponível para os jogadores"],
         ].map(([r, v, t]) => (
           <div key={r} className="flex flex-col gap-1 rounded-xl border border-borda bg-grafite p-5">

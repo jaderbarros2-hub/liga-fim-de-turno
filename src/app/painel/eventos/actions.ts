@@ -53,6 +53,14 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   if (!FORMATOS.includes(formato)) return { erro: "Formato inválido." };
   if (!STATUS.includes(status)) return { erro: "Status inválido." };
   if (Number.isNaN(valor) || valor < 0) return { erro: "Valor inválido." };
+  // Só publica com o lugar do evento definido: link do Endstep (online) ou endereço (presencial)
+  if (status !== "rascunho" && status !== "cancelado") {
+    if (t("modalidade") === "presencial") {
+      if (t("local").length < 10) return { erro: "Evento presencial: informe o endereço completo da loja (rua, número, bairro, cidade) para publicar." };
+    } else if (!link) {
+      return { erro: "Informe o link do evento no Endstep para publicar. Sem ele, salve como rascunho." };
+    }
+  }
   if (link && !/^https?:\/\/\S+\.\S+/i.test(link)) return { erro: "O link do Endstep não parece um endereço válido." };
   if (new Date(`${inscricoesAte}:00-03:00`) > new Date(`${inicio}:00-03:00`))
     return { erro: "O prazo de inscrição precisa ser antes do início do evento." };

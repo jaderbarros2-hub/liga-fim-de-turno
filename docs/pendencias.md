@@ -4,6 +4,8 @@ Lista viva do que ficou combinado para fases futuras. Atualizada em 18/11/2026.
 
 ## 1. Overhaul de texto (todo o portal)
 
+- Página do evento e ingresso: descrever horário do check-in, horário de início das rodadas e como confirmar presença no Endstep (campos próprios no cadastro do evento).
+
 Os textos atuais são rascunho e estão genéricos. Revisar com calma, com pesquisa, página por página:
 home, circuito, formatos (Pauper e Limited), sobre, como jogar, regras, perguntas frequentes, evento, login, Minha área, parceiros e blog.
 
