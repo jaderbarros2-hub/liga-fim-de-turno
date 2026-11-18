@@ -2,14 +2,79 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { descreverCupom, validarCupom } from "@/lib/cupons";
+import { conferirPauper, lerLista, total } from "@/lib/decklist";
+import { reais } from "@/lib/formato";
 import { criarPedidoPix, MINUTOS_PIX } from "@/lib/mercadopago";
-import { sincronizarPagamento } from "@/lib/pagamentos";
+import { confirmarPagamento, sincronizarPagamento } from "@/lib/pagamentos";
+import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type EstadoInscricao = { erro?: string };
+export type EstadoDeckRapido = { erro?: string; problemas?: string[]; deck?: { id: string; nome: string } };
 
 const HORAS_CANCELAMENTO = 24;
+
+/** Deck obrigatório no Pauper: confere dono e legalidade e devolve a cópia que vai para a inscrição. */
+async function deckParaInscricao(jogadorId: string, deckId: string) {
+  if (!deckId) return { erro: "Escolha o deck que você vai jogar." };
+  const { data: deck } = await criarClienteAdmin()
+    .from("decks")
+    .select("id, nome, arquetipo_id, principal, sideboard, legal")
+    .eq("id", deckId)
+    .eq("jogador_id", jogadorId)
+    .maybeSingle();
+  if (!deck) return { erro: "Deck não encontrado." };
+  if (!deck.legal) return { erro: "Esse deck tem cartas fora da lista do Pauper. Corrija antes de continuar." };
+  return {
+    dados: {
+      deck_id: deck.id,
+      deck_nome: deck.nome,
+      arquetipo_id: deck.arquetipo_id,
+      deck_principal: deck.principal,
+      deck_sideboard: deck.sideboard,
+      deck_enviado_em: new Date().toISOString(),
+    },
+  };
+}
+
+/** Cadastra um deck colado na própria tela do ingresso (sem sair do checkout). */
+export async function salvarDeckRapido(_: EstadoDeckRapido, form: FormData): Promise<EstadoDeckRapido> {
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { erro: "Sua sessão expirou. Entre de novo." };
+  const nome = String(form.get("nome") ?? "").trim();
+  const arquetipoId = Number(form.get("arquetipo_id")) || null;
+  const lista = lerLista(String(form.get("lista") ?? ""));
+  if (!nome) return { erro: "Dê um nome ao deck." };
+  if (!arquetipoId) return { erro: "Escolha o arquétipo." };
+  if (!lista.principal.length) return { erro: "Não encontrei cartas na lista. Cole o texto exportado do Endstep." };
+  const cartas = await buscarCartas([...lista.principal, ...lista.sideboard].map((i) => i.nome));
+  if (!cartas.size) return { erro: "Não foi possível consultar as cartas agora. Tente de novo em instantes." };
+  const problemas = conferirPauper(lista, cartas);
+  const { data, error } = await criarClienteAdmin()
+    .from("decks")
+    .insert({
+      jogador_id: user.id,
+      nome,
+      formato: "pauper",
+      arquetipo_id: arquetipoId,
+      principal: lista.principal,
+      sideboard: lista.sideboard,
+      qtd_principal: total(lista.principal),
+      qtd_sideboard: total(lista.sideboard),
+      legal: problemas.length === 0,
+      problemas,
+    })
+    .select("id, nome")
+    .single();
+  if (error || !data) return { erro: "Não foi possível salvar o deck." };
+  if (problemas.length) return { erro: "O deck foi salvo, mas tem pendências:", problemas };
+  return { deck: data };
+}
 
 /** Cria (ou reabre) a inscrição e gera um Pix novo. */
 export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<EstadoInscricao> {
@@ -32,13 +97,31 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
 
   const { data: evento } = await db
     .from("eventos")
-    .select("id, titulo, status, valor_centavos, vagas, inscricoes_ate")
+    .select("id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate")
     .eq("slug", slug)
     .maybeSingle();
   if (!evento) return { erro: "Evento não encontrado." };
   if (evento.status !== "aberto") return { erro: "As inscrições deste evento não estão abertas." };
+  if (form.get("aceite") !== "on") return { erro: "Confirme que leu as regras do ingresso." };
+  let deck: Record<string, unknown> = {};
+  if (evento.formato === "pauper") {
+    const r = await deckParaInscricao(jogador.id, String(form.get("deck_id") ?? ""));
+    if (r.erro) return { erro: r.erro };
+    deck = r.dados!;
+  }
   if (evento.inscricoes_ate && new Date(evento.inscricoes_ate).getTime() < Date.now())
     return { erro: "O prazo de inscrição deste evento já terminou." };
+
+  // Cupom: desconto ou ingresso gratuito
+  let valor = evento.valor_centavos;
+  let cupom: { id: string; desconto: number } | null = null;
+  const codigo = String(form.get("cupom") ?? "").trim();
+  if (codigo) {
+    const v = await validarCupom(codigo, evento, jogador.id);
+    if ("erro" in v) return { erro: v.erro };
+    cupom = { id: v.cupom.id, desconto: v.desconto };
+    valor = v.final;
+  }
 
   if (evento.vagas) {
     const { count } = await db
@@ -62,7 +145,7 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
   if (inscricaoId) {
     await db
       .from("inscricoes")
-      .update({ status: "aguardando_pagamento", cancelado_em: null })
+      .update({ status: "aguardando_pagamento", cancelado_em: null, ...deck })
       .eq("id", inscricaoId);
     // Pix antigo ainda pendente: verifica se foi pago antes de gerar outro
     const { data: pendentes } = await db
@@ -78,18 +161,33 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
   } else {
     const { data: nova, error } = await db
       .from("inscricoes")
-      .insert({ evento_id: evento.id, jogador_id: jogador.id })
+      .insert({ evento_id: evento.id, jogador_id: jogador.id, ...deck })
       .select("id")
       .single();
     if (error || !nova) return { erro: "Não foi possível registrar a inscrição. Tente de novo." };
     inscricaoId = nova.id;
   }
 
+  // Cupom de 100%: emite o ingresso sem Pix
+  if (valor === 0 && cupom) {
+    const { data: gratis } = await db
+      .from("pagamentos")
+      .insert({ inscricao_id: inscricaoId, provedor: "cupom", valor_centavos: 0, cupom_id: cupom.id, desconto_centavos: cupom.desconto })
+      .select("id")
+      .single();
+    if (!gratis) return { erro: "Não foi possível emitir o ingresso." };
+    await confirmarPagamento(gratis.id, undefined, "cupom");
+    revalidatePath(caminho);
+    redirect(caminho);
+  }
+
   const { data: pagamento, error: erroPag } = await db
     .from("pagamentos")
     .insert({
       inscricao_id: inscricaoId,
-      valor_centavos: evento.valor_centavos,
+      valor_centavos: valor,
+      cupom_id: cupom?.id ?? null,
+      desconto_centavos: cupom?.desconto ?? 0,
       expira_em: new Date(Date.now() + MINUTOS_PIX * 60_000).toISOString(),
     })
     .select("id")
@@ -99,8 +197,8 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
   try {
     const pedido = await criarPedidoPix({
       referencia: pagamento.id,
-      valorCentavos: evento.valor_centavos,
-      descricao: `Inscrição · ${evento.titulo}`.slice(0, 150),
+      valorCentavos: valor,
+      descricao: `Ingresso · ${evento.titulo}`.slice(0, 150),
       email: jogador.email || user.email || "",
       nome: jogador.nome,
       cpf: jogador.cpf,
@@ -159,10 +257,12 @@ export async function cancelarInscricao(form: FormData) {
       .maybeSingle();
     await db.from("inscricoes").update({ status: "cancelada", cancelado_em: agora }).eq("id", insc.id);
     if (pago) {
+      // O jogador escolhe: reembolso por Pix (a organização paga) ou crédito para outro ingresso
+      const tipo = form.get("destino") === "credito" ? "credito" : "reembolso";
       await db.from("creditos_reembolsos").insert({
         jogador_id: user.id,
         inscricao_id: insc.id,
-        tipo: "reembolso",
+        tipo,
         valor_centavos: pago.valor_centavos,
       });
     }
@@ -175,4 +275,105 @@ export async function cancelarInscricao(form: FormData) {
   });
   revalidatePath(`/eventos/${slug}`);
   redirect("/minha-area");
+}
+
+/** Saldo de crédito disponível (ingressos cancelados que viraram crédito). */
+export async function saldoDeCredito(jogadorId: string) {
+  const { data } = await criarClienteAdmin()
+    .from("creditos_reembolsos")
+    .select("id, valor_centavos")
+    .eq("jogador_id", jogadorId)
+    .eq("tipo", "credito")
+    .eq("status", "pendente")
+    .order("criado_em");
+  return { creditos: data ?? [], total: (data ?? []).reduce((s, c) => s + c.valor_centavos, 0) };
+}
+
+/** Paga o ingresso com crédito (sem Pix): confirma na hora. */
+export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promise<EstadoInscricao> {
+  const slug = String(form.get("slug") ?? "");
+  const caminho = `/eventos/${slug}/inscricao`;
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/entrar?voltar=${encodeURIComponent(caminho)}`);
+  if (form.get("aceite") !== "on") return { erro: "Confirme que leu as regras do ingresso." };
+
+  const db = criarClienteAdmin();
+  const { data: evento } = await db
+    .from("eventos")
+    .select("id, status, formato, valor_centavos, vagas, inscricoes_ate")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!evento || evento.status !== "aberto") return { erro: "As inscrições deste evento não estão abertas." };
+  if (evento.inscricoes_ate && new Date(evento.inscricoes_ate).getTime() < Date.now()) return { erro: "O prazo de inscrição terminou." };
+  if (evento.vagas) {
+    const { count } = await db.from("inscricoes").select("id", { count: "exact", head: true }).eq("evento_id", evento.id).eq("status", "confirmada");
+    if ((count ?? 0) >= evento.vagas) return { erro: "As vagas deste evento esgotaram." };
+  }
+  let deck: Record<string, unknown> = {};
+  if (evento.formato === "pauper") {
+    const r = await deckParaInscricao(user.id, String(form.get("deck_id") ?? ""));
+    if (r.erro) return { erro: r.erro };
+    deck = r.dados!;
+  }
+
+  let valor = evento.valor_centavos;
+  let cupom: { id: string; desconto: number } | null = null;
+  const codigo = String(form.get("cupom") ?? "").trim();
+  if (codigo) {
+    const v = await validarCupom(codigo, evento, user.id);
+    if ("erro" in v) return { erro: v.erro };
+    cupom = { id: v.cupom.id, desconto: v.desconto };
+    valor = v.final;
+  }
+  const { creditos, total: saldo } = await saldoDeCredito(user.id);
+  if (saldo < valor) return { erro: "Seu crédito não cobre este ingresso." };
+
+  const { data: existente } = await db.from("inscricoes").select("id, status").eq("evento_id", evento.id).eq("jogador_id", user.id).maybeSingle();
+  if (existente?.status === "confirmada") redirect(caminho);
+  let inscricaoId = existente?.id as string | undefined;
+  if (inscricaoId) {
+    await db.from("pagamentos").update({ status: "cancelado" }).eq("inscricao_id", inscricaoId).eq("status", "pendente");
+    await db.from("inscricoes").update({ status: "aguardando_pagamento", cancelado_em: null, ...deck }).eq("id", inscricaoId);
+  } else {
+    const { data: nova } = await db.from("inscricoes").insert({ evento_id: evento.id, jogador_id: user.id, ...deck }).select("id").single();
+    inscricaoId = nova?.id;
+  }
+  if (!inscricaoId) return { erro: "Não foi possível registrar o ingresso." };
+
+  // Consome os créditos mais antigos; o que sobrar de um crédito volta como crédito novo
+  let falta = valor;
+  for (const c of creditos) {
+    if (falta <= 0) break;
+    await db.from("creditos_reembolsos").update({ status: "usado", usado_em_inscricao_id: inscricaoId }).eq("id", c.id);
+    if (c.valor_centavos > falta)
+      await db.from("creditos_reembolsos").insert({ jogador_id: user.id, tipo: "credito", valor_centavos: c.valor_centavos - falta });
+    falta -= c.valor_centavos;
+  }
+  const { data: pag } = await db
+    .from("pagamentos")
+    .insert({ inscricao_id: inscricaoId, provedor: "credito", valor_centavos: valor, status: "pendente", cupom_id: cupom?.id ?? null, desconto_centavos: cupom?.desconto ?? 0 })
+    .select("id")
+    .single();
+  if (pag) await confirmarPagamento(pag.id, undefined, "credito");
+  revalidatePath(caminho);
+  redirect(caminho);
+}
+
+export type ResultadoCupom = { erro?: string; codigo?: string; rotulo?: string; desconto?: string; final?: number; finalTexto?: string };
+
+/** Confere o cupom no checkout e devolve o novo total (a validação vale de novo na hora de pagar). */
+export async function aplicarCupom(slug: string, codigo: string): Promise<ResultadoCupom> {
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { erro: "Sua sessão expirou. Entre de novo." };
+  const { data: evento } = await criarClienteAdmin().from("eventos").select("id, formato, valor_centavos").eq("slug", slug).maybeSingle();
+  if (!evento) return { erro: "Evento não encontrado." };
+  const v = await validarCupom(codigo, evento, user.id);
+  if ("erro" in v) return { erro: v.erro };
+  return { codigo: v.cupom.codigo, rotulo: descreverCupom(v.cupom), desconto: reais(v.desconto), final: v.final, finalTexto: reais(v.final) };
 }

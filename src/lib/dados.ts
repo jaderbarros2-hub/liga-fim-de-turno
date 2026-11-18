@@ -141,7 +141,7 @@ export async function usuarioAtual() {
   if (!user) return null;
   const { data: jogador } = await supabase
     .from("jogadores")
-    .select("id, nome, nick_endstep, discord_nome, avatar_url, papel, cpf, chave_pix, aceite_termos_em")
+    .select("id, nome, email, nick_endstep, discord_nome, avatar_url, papel, cpf, chave_pix, aceite_termos_em")
     .eq("id", user.id)
     .maybeSingle();
   return jogador;

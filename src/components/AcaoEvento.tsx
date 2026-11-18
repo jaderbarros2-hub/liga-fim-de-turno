@@ -36,7 +36,12 @@ export async function AcaoEvento({ evento, totalInscritos }: { evento: Evento; t
         link = l?.link_endstep ?? null;
       }
     } else if (evento.status === "aberto") {
-      return <BotaoLink href={`/entrar?voltar=${encodeURIComponent(`${caminho}/inscricao`)}`}>Inscrever-se</BotaoLink>;
+      return (
+        <div className="flex flex-col gap-2">
+          <BotaoLink href={`/entrar?voltar=${encodeURIComponent(`${caminho}/inscricao`)}`}>Garantir ingresso</BotaoLink>
+          <span className="text-xs text-cinza">Pix com confirmação na hora · cancelamento até 24h antes</span>
+        </div>
+      );
     }
   }
 
@@ -50,7 +55,9 @@ export async function AcaoEvento({ evento, totalInscritos }: { evento: Evento; t
         ) : (
           aviso("Inscrição confirmada. O link do Endstep aparece aqui assim que a organização liberar.")
         )}
-        <span className="text-xs text-ciano">✓ Inscrição confirmada</span>
+        <a href={`${caminho}/inscricao`} className="text-xs font-semibold text-ciano">
+          ✓ Ingresso confirmado · ver ingresso
+        </a>
       </div>
     );
   }
@@ -63,5 +70,10 @@ export async function AcaoEvento({ evento, totalInscritos }: { evento: Evento; t
     return <BotaoLink href={`${caminho}/inscricao`}>Pagar com Pix</BotaoLink>;
   }
 
-  return <BotaoLink href={`${caminho}/inscricao`}>Inscrever-se</BotaoLink>;
+  return (
+    <div className="flex flex-col gap-2">
+      <BotaoLink href={`${caminho}/inscricao`}>Garantir ingresso</BotaoLink>
+      <span className="text-xs text-cinza">Pix com confirmação na hora · cancelamento até 24h antes</span>
+    </div>
+  );
 }

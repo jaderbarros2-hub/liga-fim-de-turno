@@ -45,7 +45,7 @@ const STATUS_INSCRICAO: Record<string, { rotulo: string; tipo: "ciano" | "alerta
 
 const ABAS = [
   { id: "visao", rotulo: "Visão geral" },
-  { id: "inscricoes", rotulo: "Inscrições" },
+  { id: "inscricoes", rotulo: "Ingressos" },
   { id: "decks", rotulo: "Decks" },
   { id: "premios", rotulo: "Prêmios" },
   { id: "dados", rotulo: "Meus dados" },
@@ -75,7 +75,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
 
   const agora = new Date();
   const per = periodo(agora.toISOString());
-  const [{ data: dInsc }, { data: dPremios }, { data: dDecks }, { data: dRes }, rankP, rankL, potyP, potyL] = await Promise.all([
+  const [{ data: dInsc }, { data: dPremios }, { data: dDecks }, { data: dRes }, rankP, rankL, potyP, potyL, { data: dCred }] = await Promise.all([
     supabase
       .from("inscricoes")
       .select("id, status, deck_nome, evento:eventos(id, slug, titulo, inicio, status, formato, colecao, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito))")
@@ -100,7 +100,11 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
     ranking("limited", per.temporada, per.trimestre),
     classificadosPOTY("pauper", per.temporada),
     classificadosPOTY("limited", per.temporada),
+    supabase.from("creditos_reembolsos").select("id, tipo, valor_centavos, status, criado_em").eq("jogador_id", user.id).order("criado_em", { ascending: false }),
   ]);
+  const movimentos = (dCred as { id: string; tipo: string; valor_centavos: number; status: string; criado_em: string }[] | null) ?? [];
+  const saldoCredito = movimentos.filter((m) => m.tipo === "credito" && m.status === "pendente").reduce((s, m) => s + m.valor_centavos, 0);
+  const reembolsosPendentes = movimentos.filter((m) => m.tipo === "reembolso" && m.status === "pendente");
   const inscricoes = ((dInsc as unknown as Inscricao[]) ?? []).filter((i) => i.evento);
   const premios = (dPremios as unknown as Premio[]) ?? [];
   const decks = (dDecks as unknown as Deck[]) ?? [];
@@ -140,6 +144,12 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
       texto: `${aReceber.length === 1 ? "Um prêmio" : `${aReceber.length} prêmios`} a receber: ${reais(aReceber.reduce((s, p) => s + p.valor_centavos, 0))}.`,
       href: "/minha-area?aba=premios",
       acao: "Ver prêmios",
+    },
+    saldoCredito > 0 && { texto: `Você tem ${reais(saldoCredito)} de crédito para usar em qualquer ingresso.`, href: "/eventos", acao: "Escolher etapa" },
+    reembolsosPendentes.length > 0 && {
+      texto: `Reembolso em processamento: ${reais(reembolsosPendentes.reduce((s, m) => s + m.valor_centavos, 0))} para a sua chave Pix (até 48h).`,
+      href: "/minha-area?aba=inscricoes",
+      acao: "Ver",
     },
     deckProblema && { texto: `O deck "${deckProblema.nome}" tem cartas fora da lista do Pauper.`, href: `/minha-area/decks/${deckProblema.id}`, acao: "Revisar" },
   ].filter(Boolean) as { texto: string; href: string; acao: string }[];
@@ -329,6 +339,18 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
 
         {aba === "inscricoes" && (
           <section className="flex flex-col gap-6">
+            <dl className="grid gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-1 rounded-md bg-grafite p-5 ring-1 ring-borda">
+                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Crédito disponível</dt>
+                <dd className="titulo text-3xl">{reais(saldoCredito)}</dd>
+                <span className="text-sm text-texto2">Use na hora de comprar qualquer ingresso.</span>
+              </div>
+              <div className="flex flex-col gap-1 rounded-md bg-grafite p-5 ring-1 ring-borda">
+                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Reembolsos em processamento</dt>
+                <dd className="titulo text-3xl">{reais(reembolsosPendentes.reduce((s, m) => s + m.valor_centavos, 0))}</dd>
+                <span className="text-sm text-texto2">Pagos por Pix em até 48 horas.</span>
+              </div>
+            </dl>
             {[
               { titulo: "Próximas", lista: futuras },
               { titulo: "Histórico", lista: inscricoes.filter((i) => !futuras.includes(i)) },
@@ -354,14 +376,21 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
                               Pagar
                             </Link>
                           )}
-                          {podeCancelar(i) && (
-                            <form action={cancelarInscricao}>
-                              <input type="hidden" name="slug" value={i.evento.slug} />
-                              <button type="submit" className="text-sm font-semibold text-cinza hover:text-erro">
-                                Cancelar
-                              </button>
-                            </form>
+                          {i.status === "confirmada" && (
+                            <Link href={`/eventos/${i.evento.slug}/inscricao`} className="text-sm font-semibold">
+                              Ingresso
+                            </Link>
                           )}
+                          {podeCancelar(i) &&
+                            (i.status === "confirmada" ? [["credito", "Cancelar → crédito"], ["reembolso", "Cancelar → Pix"]] : [["", "Cancelar"]]).map(([destino, rotulo]) => (
+                              <form key={rotulo} action={cancelarInscricao}>
+                                <input type="hidden" name="slug" value={i.evento.slug} />
+                                {destino && <input type="hidden" name="destino" value={destino} />}
+                                <button type="submit" className="text-sm font-semibold text-cinza hover:text-erro">
+                                  {rotulo}
+                                </button>
+                              </form>
+                            ))}
                         </li>
                       );
                     })}
@@ -371,7 +400,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
             )}
             {inscricoes.length === 0 && <p className="border-l-2 border-azul py-2 pl-4 text-texto2">Você ainda não se inscreveu em nenhuma etapa.</p>}
             <p className="text-sm text-cinza">
-              Inscrição paga pode ser cancelada até 24h antes do início; o reembolso vai para a sua chave Pix em até 48h.
+              Ingresso pago pode ser cancelado até 24h antes do início: escolha crédito para outro ingresso ou reembolso na sua chave Pix (em até 48h).
             </p>
           </section>
         )}

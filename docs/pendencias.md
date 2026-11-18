@@ -34,7 +34,10 @@ Princípio: **toda etapa vale por si; o circuito é bônus.**
 - Deixar o repositório privado e revogar o token do GitHub colado na conversa.
 - Apagar o projeto duplicado na Vercel (liga-fim-de-turno-m5l3), com a confirmação do Jader.
 - Contato com o Endstep sobre API para importar resultados.
-- Apagar `src/components/VisualDeck.tsx` (não é mais usado).
+- Apagar `src/components/VisualDeck.tsx` e `src/app/eventos/[slug]/inscricao/BotaoGerar.tsx` (não são mais usados).
+- Cartão de crédito no ingresso (Mercado Pago Card Payment Brick, transparente).
+- E-mail de confirmação do ingresso (depende do domínio e do Resend).
+- Jurídico: validar com Wizards/Endstep/advogado a cobrança de ingresso com prêmio em dinheiro (ver conversa de 18/11).
 
 ## 4. Dados fictícios para a apresentação (por último)
 
