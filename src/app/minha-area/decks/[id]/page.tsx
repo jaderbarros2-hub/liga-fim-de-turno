@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Etiqueta } from "@/components/Botao";
-import { VisualDeck } from "@/components/VisualDeck";
+import { PaginaDeck } from "@/components/PaginaDeck";
+import { arteFixa } from "@/lib/artes";
+import { lojaParaDeck } from "@/lib/parceiros";
 import type { ItemLista } from "@/lib/decklist";
 import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -57,39 +58,59 @@ export default async function Deck({
     );
   }
 
-  const cartas = await buscarCartas([...principal, ...sideboard].map((i) => i.nome));
+  const [cartas, loja, { data: eu }] = await Promise.all([
+    buscarCartas([...principal, ...sideboard].map((i) => i.nome)),
+    lojaParaDeck(),
+    supabase.from("jogadores").select("nick_endstep, discord_nome, avatar_url").eq("id", user.id).maybeSingle(),
+  ]);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-12">
-      <Link href="/minha-area/decks" className="text-sm">
-        ← Meus decks
-      </Link>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="titulo text-5xl">{deck.nome}</h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-texto2">
-            <span>Pauper · {arquetipo}</span>
-            <Etiqueta tipo={deck.legal ? "ciano" : "alerta"}>{deck.legal ? "✓ Legal no Pauper" : "Com pendências"}</Etiqueta>
-          </div>
-        </div>
-        <div className="flex items-center gap-4 text-sm font-semibold">
-          <Link href={`/minha-area/decks/${id}?editar=1`}>Editar lista</Link>
+    <PaginaDeck
+      principal={principal}
+      sideboard={sideboard}
+      cartas={cartas}
+      titulo={deck.nome}
+      pagina={`/minha-area/decks/${id}`}
+      arteReserva={arteFixa(id, "pauper")}
+      loja={loja ? { id: loja.id, nome: loja.nome, aceitaLista: !!loja.url_compra_lista } : null}
+      autor={{ nick: eu?.nick_endstep || eu?.discord_nome || "Você", avatar: eu?.avatar_url ?? null }}
+      detalhe={`Pauper${arquetipo ? ` · ${arquetipo}` : ""}`}
+      caminho={
+        <>
+          <Link href="/minha-area">Minha área</Link>
+          <span>/</span>
+          <Link href="/minha-area/decks">Meus decks</Link>
+        </>
+      }
+      etiquetas={
+        <span
+          className={`rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${deck.legal ? "bg-ciano/20 text-ciano" : "bg-alerta/20 text-alerta"}`}
+        >
+          {deck.legal ? "Legal no Pauper" : "Com pendências"}
+        </span>
+      }
+      acoes={
+        <>
+          <Link href={`/minha-area/decks/${id}?editar=1`} className="text-sm font-semibold">
+            Editar lista
+          </Link>
           <form action={apagarDeck}>
             <input type="hidden" name="id" value={id} />
-            <button type="submit" className="text-cinza hover:text-erro">
+            <button type="submit" className="text-sm font-semibold text-cinza hover:text-erro">
               Apagar
             </button>
           </form>
-        </div>
-      </div>
-      {!deck.legal && (
-        <ul className="list-disc rounded-xl border border-alerta bg-grafite py-4 pl-9 pr-5 text-sm text-alerta">
-          {(deck.problemas as string[]).map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ul>
-      )}
-      <VisualDeck principal={principal} sideboard={sideboard} cartas={cartas} />
-    </div>
+        </>
+      }
+      aviso={
+        !deck.legal && (
+          <ul className="list-disc rounded-md border border-alerta bg-grafite py-4 pl-9 pr-5 text-sm text-alerta">
+            {(deck.problemas as string[]).map((p) => (
+              <li key={p}>{p}</li>
+            ))}
+          </ul>
+        )
+      }
+    />
   );
 }
