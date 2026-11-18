@@ -68,7 +68,7 @@ export async function apagarDeck(form: FormData) {
   const id = String(form.get("id"));
   await criarClienteAdmin().from("decks").delete().eq("id", id).eq("jogador_id", jogadorId);
   revalidatePath("/minha-area/decks");
-  redirect("/minha-area/decks");
+  redirect("/minha-area?aba=decks");
 }
 
 /** Escolhe o deck do evento: guarda uma cópia congelada da lista na inscrição. Fecha no início do evento. */

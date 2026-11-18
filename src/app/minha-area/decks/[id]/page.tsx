@@ -79,7 +79,7 @@ export default async function Deck({
         <>
           <Link href="/minha-area">Minha área</Link>
           <span>/</span>
-          <Link href="/minha-area/decks">Meus decks</Link>
+          <Link href="/minha-area?aba=decks">Meus decks</Link>
         </>
       }
       etiquetas={

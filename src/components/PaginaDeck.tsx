@@ -9,7 +9,7 @@ import { chaveCarta, grupoDaCarta, ORDEM_GRUPOS, total, type Carta, type ItemLis
  * Carta que representa o deck: de preferência a criatura com mais cópias (desempate: maior custo);
  * sem criaturas, a mágica com mais cópias. Terrenos nunca.
  */
-function cartaDestaque(principal: ItemLista[], cartas: Map<string, Carta>) {
+export function cartaDestaque(principal: ItemLista[], cartas: Map<string, Carta>) {
   const candidatas = [...principal]
     .map((i) => ({ i, c: cartas.get(chaveCarta(i.nome)) }))
     .filter((x) => x.c && grupoDaCarta(x.c.tipo) !== "Terrenos" && x.c.imagem_grande);

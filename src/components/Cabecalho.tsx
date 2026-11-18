@@ -25,9 +25,9 @@ export async function Cabecalho() {
 
   const itensConta: ItemMenu[] = [
     { href: "/minha-area", rotulo: "Minha área", descricao: "Inscrições e próximos passos" },
-    { href: "/minha-area/decks", rotulo: "Meus decks" },
-    { href: "/minha-area#premios", rotulo: "Meus prêmios" },
-    { href: "/cadastro?voltar=/minha-area", rotulo: "Meus dados" },
+    { href: "/minha-area?aba=decks", rotulo: "Meus decks" },
+    { href: "/minha-area?aba=premios", rotulo: "Meus prêmios" },
+    { href: "/minha-area?aba=dados", rotulo: "Meus dados" },
     ...(equipe ? [{ href: "/painel", rotulo: "Painel da organização", separar: true }] : []),
   ];
 

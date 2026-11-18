@@ -24,7 +24,7 @@ export default async function NovoDeck() {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
-      <Link href="/minha-area/decks" className="text-sm">
+      <Link href="/minha-area?aba=decks" className="text-sm">
         ← Meus decks
       </Link>
       <h1 className="titulo text-5xl">Novo deck</h1>
