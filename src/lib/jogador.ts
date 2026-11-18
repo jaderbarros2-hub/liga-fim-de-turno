@@ -33,7 +33,7 @@ export type Insignia = {
   titulo: string;
   texto: string;
   nivel: "ouro" | "prata" | "bronze" | "azul";
-  icone: "trofeu" | "coroa" | "estrela" | "escudo" | "pena" | "chama" | "alvo";
+  icone: "trofeu" | "coroa" | "estrela" | "escudo" | "pena" | "chama" | "alvo" | "diamante";
   vezes?: number;
 };
 

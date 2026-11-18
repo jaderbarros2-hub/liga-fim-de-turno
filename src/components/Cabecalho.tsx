@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { sair } from "@/app/minha-area/actions";
+import { Diamante } from "@/components/Diamante";
 import { Logo } from "@/components/Logo";
 import { MenuSuspenso, type ItemMenu } from "@/components/MenuSuspenso";
 import { listarFormatos, usuarioAtual } from "@/lib/dados";
@@ -7,8 +8,12 @@ import { listarFormatos, usuarioAtual } from "@/lib/dados";
 const linkMenu = "shrink-0 py-1 text-gelo no-underline hover:text-ciano";
 
 export async function Cabecalho() {
-  const [jogador, formatos] = await Promise.all([usuarioAtual(), listarFormatos()]);
-  const equipe = jogador && (jogador.papel === "organizador" || jogador.papel === "juiz");
+  const [jogador, formatos] = await Promise.all([
+    usuarioAtual(),
+    listarFormatos(),
+  ]);
+  const equipe =
+    jogador && (jogador.papel === "organizador" || jogador.papel === "juiz");
   const nome = jogador?.nick_endstep || jogador?.discord_nome || "Minha conta";
 
   const itensFormatos: ItemMenu[] = formatos.map((f) => ({
@@ -18,17 +23,41 @@ export async function Cabecalho() {
   }));
 
   const itensCircuito: ItemMenu[] = [
-    { href: "/circuito", rotulo: "Como funciona", descricao: "Etapas, finais do trimestre e Player of the Year" },
-    { href: "/ranking", rotulo: "Ranking", descricao: "Pontos da temporada e corrida ao top 8" },
-    { href: "/resultados", rotulo: "Resultados", descricao: "Classificação de cada etapa" },
+    {
+      href: "/circuito",
+      rotulo: "Como funciona",
+      descricao: "Etapas, finais do trimestre e Player of the Year",
+    },
+    {
+      href: "/ranking",
+      rotulo: "Ranking",
+      descricao: "Pontos da temporada e corrida ao top 8",
+    },
+    {
+      href: "/resultados",
+      rotulo: "Resultados",
+      descricao: "Classificação de cada etapa",
+    },
   ];
 
   const itensConta: ItemMenu[] = [
-    { href: "/minha-area", rotulo: "Minha área", descricao: "Inscrições e próximos passos" },
+    {
+      href: "/minha-area",
+      rotulo: "Minha área",
+      descricao: "Inscrições e próximos passos",
+    },
     { href: "/minha-area?aba=decks", rotulo: "Meus decks" },
     { href: "/minha-area?aba=carteira", rotulo: "Carteira" },
     { href: "/minha-area?aba=dados", rotulo: "Meus dados" },
-    ...(equipe ? [{ href: "/painel", rotulo: "Painel da organização", separar: true }] : []),
+    {
+      href: "/apoie",
+      rotulo: "Seja apoiador",
+      descricao: "Apoie a liga e ganhe brindes",
+      separar: true,
+    },
+    ...(equipe
+      ? [{ href: "/painel", rotulo: "Painel da organização", separar: true }]
+      : []),
   ];
 
   return (
@@ -45,8 +74,16 @@ export async function Cabecalho() {
           <Link href="/eventos" className={linkMenu}>
             Eventos
           </Link>
-          <MenuSuspenso gatilho="Formatos" itens={itensFormatos} classeGatilho={`${linkMenu} uppercase`} />
-          <MenuSuspenso gatilho="Circuito" itens={itensCircuito} classeGatilho={`${linkMenu} uppercase`} />
+          <MenuSuspenso
+            gatilho="Formatos"
+            itens={itensFormatos}
+            classeGatilho={`${linkMenu} uppercase`}
+          />
+          <MenuSuspenso
+            gatilho="Circuito"
+            itens={itensCircuito}
+            classeGatilho={`${linkMenu} uppercase`}
+          />
           <Link href="/blog" className={linkMenu}>
             Blog
           </Link>
@@ -55,41 +92,59 @@ export async function Cabecalho() {
           </Link>
         </nav>
 
-        {jogador ? (
-          <MenuSuspenso
-            alinhar="direita"
-            rotuloAcessivel={`Conta de ${nome}`}
-            classeGatilho="rounded-full py-1 pl-1 pr-3 text-sm font-semibold text-gelo ring-1 ring-borda-forte hover:ring-ciano"
-            gatilho={
-              <>
-                {jogador.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={jogador.avatar_url} alt="" width={28} height={28} className="h-7 w-7 rounded-full" />
-                ) : (
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-azul text-xs font-bold text-white">
-                    {nome.slice(0, 1).toUpperCase()}
-                  </span>
-                )}
-                <span className="max-w-32 truncate">{nome}</span>
-              </>
-            }
-            itens={itensConta}
-            rodape={
-              <form action={sair}>
-                <button type="submit" className="w-full py-1.5 text-left text-sm text-cinza hover:text-gelo">
-                  Sair
-                </button>
-              </form>
-            }
-          />
-        ) : (
+        <div className="flex items-center gap-4">
           <Link
-            href="/entrar"
-            className="inline-flex min-h-10 items-center rounded-lg px-4 text-sm font-semibold text-gelo no-underline ring-1 ring-borda-forte hover:ring-ciano"
+            href="/apoie"
+            className="group hidden items-center gap-2 text-sm font-semibold text-texto2 no-underline hover:text-gelo sm:inline-flex"
           >
-            Entrar
+            <span>Apoie</span>
+            <Diamante className="text-ciano transition group-hover:rotate-45 group-hover:text-gelo" />
           </Link>
-        )}
+          {jogador ? (
+            <MenuSuspenso
+              alinhar="direita"
+              rotuloAcessivel={`Conta de ${nome}`}
+              classeGatilho="rounded-full py-1 pl-1 pr-3 text-sm font-semibold text-gelo ring-1 ring-borda-forte hover:ring-ciano"
+              gatilho={
+                <>
+                  {jogador.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={jogador.avatar_url}
+                      alt=""
+                      width={28}
+                      height={28}
+                      className="h-7 w-7 rounded-full"
+                    />
+                  ) : (
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-azul text-xs font-bold text-white">
+                      {nome.slice(0, 1).toUpperCase()}
+                    </span>
+                  )}
+                  <span className="max-w-32 truncate">{nome}</span>
+                </>
+              }
+              itens={itensConta}
+              rodape={
+                <form action={sair}>
+                  <button
+                    type="submit"
+                    className="w-full py-1.5 text-left text-sm text-cinza hover:text-gelo"
+                  >
+                    Sair
+                  </button>
+                </form>
+              }
+            />
+          ) : (
+            <Link
+              href="/entrar"
+              className="inline-flex min-h-10 items-center rounded-lg px-4 text-sm font-semibold text-gelo no-underline ring-1 ring-borda-forte hover:ring-ciano"
+            >
+              Entrar
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

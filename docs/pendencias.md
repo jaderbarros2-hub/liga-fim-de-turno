@@ -48,3 +48,9 @@ Princípio: **toda etapa vale por si; o circuito é bônus.**
 
 Temporada simulada: ~60 jogadores, etapas de janeiro a novembro com resultados e decks, Finais do Trimestre, artigos e parceiros com nomes inventados.
 Tudo marcado no banco de teste para limpar com um comando antes da produção.
+
+## Seja apoiador (/apoie) — esboço no ar, falta definir
+- Valores (hoje R$ 19,90/mês e R$ 199/ano), brindes finais e meta da comunidade (hoje fictícia: 23/50).
+- Integração: Assinaturas do Mercado Pago (preapproval, mensal/anual), webhook, gestão na Minha área, endereço para brindes.
+- Insígnia "Apoiador" (azul) / "Apoiador anual" (ouro) e losango ao lado do nick.
+- ATENÇÃO: a Fan Content Policy da Wizards proíbe cobrar acesso a conteúdo (artigos exclusivos/paywall). Benefícios devem ser comunidade, reconhecimento e brindes com a marca da liga (sem arte de cartas/logos da Wizards).
