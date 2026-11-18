@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { saldoDaCarteira } from "@/lib/carteira";
 import { descreverCupom, validarCupom } from "@/lib/cupons";
 import { conferirPauper, lerLista, total } from "@/lib/decklist";
 import { reais } from "@/lib/formato";
@@ -258,13 +259,28 @@ export async function cancelarInscricao(form: FormData) {
     await db.from("inscricoes").update({ status: "cancelada", cancelado_em: agora }).eq("id", insc.id);
     if (pago) {
       // O jogador escolhe: reembolso por Pix (a organização paga) ou crédito para outro ingresso
-      const tipo = form.get("destino") === "credito" ? "credito" : "reembolso";
-      await db.from("creditos_reembolsos").insert({
+      const { data: ev } = await db.from("eventos").select("titulo").eq("id", evento.id).single();
+      await db.from("carteira_movimentos").insert({
         jogador_id: user.id,
-        inscricao_id: insc.id,
-        tipo,
+        tipo: "credito",
         valor_centavos: pago.valor_centavos,
+        descricao: `Ingresso cancelado · ${ev?.titulo ?? ""}`,
+        inscricao_id: insc.id,
+        concluido_em: agora,
       });
+      if (form.get("destino") !== "credito") {
+        const { data: j } = await db.from("jogadores").select("chave_pix").eq("id", user.id).single();
+        await db.from("carteira_movimentos").insert({
+          jogador_id: user.id,
+          tipo: "saque",
+          valor_centavos: -pago.valor_centavos,
+          status: "pendente",
+          descricao: "Reembolso de ingresso",
+          inscricao_id: insc.id,
+          automatico: true,
+          chave_pix: j?.chave_pix ?? null,
+        });
+      }
     }
   }
   await db.from("registro_atividades").insert({
@@ -277,16 +293,9 @@ export async function cancelarInscricao(form: FormData) {
   redirect("/minha-area");
 }
 
-/** Saldo de crédito disponível (ingressos cancelados que viraram crédito). */
+/** Saldo disponível na Carteira (prêmios, créditos e ajustes, menos usos e saques). */
 export async function saldoDeCredito(jogadorId: string) {
-  const { data } = await criarClienteAdmin()
-    .from("creditos_reembolsos")
-    .select("id, valor_centavos")
-    .eq("jogador_id", jogadorId)
-    .eq("tipo", "credito")
-    .eq("status", "pendente")
-    .order("criado_em");
-  return { creditos: data ?? [], total: (data ?? []).reduce((s, c) => s + c.valor_centavos, 0) };
+  return { total: await saldoDaCarteira(jogadorId) };
 }
 
 /** Paga o ingresso com crédito (sem Pix): confirma na hora. */
@@ -303,7 +312,7 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
   const db = criarClienteAdmin();
   const { data: evento } = await db
     .from("eventos")
-    .select("id, status, formato, valor_centavos, vagas, inscricoes_ate")
+    .select("id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate")
     .eq("slug", slug)
     .maybeSingle();
   if (!evento || evento.status !== "aberto") return { erro: "As inscrições deste evento não estão abertas." };
@@ -328,8 +337,8 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
     cupom = { id: v.cupom.id, desconto: v.desconto };
     valor = v.final;
   }
-  const { creditos, total: saldo } = await saldoDeCredito(user.id);
-  if (saldo < valor) return { erro: "Seu crédito não cobre este ingresso." };
+  const { total: saldo } = await saldoDeCredito(user.id);
+  if (saldo < valor) return { erro: "O saldo da sua Carteira não cobre este ingresso." };
 
   const { data: existente } = await db.from("inscricoes").select("id, status").eq("evento_id", evento.id).eq("jogador_id", user.id).maybeSingle();
   if (existente?.status === "confirmada") redirect(caminho);
@@ -343,15 +352,16 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
   }
   if (!inscricaoId) return { erro: "Não foi possível registrar o ingresso." };
 
-  // Consome os créditos mais antigos; o que sobrar de um crédito volta como crédito novo
-  let falta = valor;
-  for (const c of creditos) {
-    if (falta <= 0) break;
-    await db.from("creditos_reembolsos").update({ status: "usado", usado_em_inscricao_id: inscricaoId }).eq("id", c.id);
-    if (c.valor_centavos > falta)
-      await db.from("creditos_reembolsos").insert({ jogador_id: user.id, tipo: "credito", valor_centavos: c.valor_centavos - falta });
-    falta -= c.valor_centavos;
-  }
+  // Debita da Carteira
+  if (valor > 0)
+    await db.from("carteira_movimentos").insert({
+      jogador_id: user.id,
+      tipo: "ingresso",
+      valor_centavos: -valor,
+      descricao: `Ingresso · ${evento.titulo}`,
+      inscricao_id: inscricaoId,
+      concluido_em: new Date().toISOString(),
+    });
   const { data: pag } = await db
     .from("pagamentos")
     .insert({ inscricao_id: inscricaoId, provedor: "credito", valor_centavos: valor, status: "pendente", cupom_id: cupom?.id ?? null, desconto_centavos: cupom?.desconto ?? 0 })

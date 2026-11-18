@@ -35,3 +35,24 @@ export function mascararChave(chave: string | null) {
   if (chave.length <= 6) return "***";
   return `${chave.slice(0, 3)}***${chave.slice(-3)}`;
 }
+
+export type TipoPix = "cpf" | "email" | "telefone" | "aleatoria";
+
+/** Confere o formato da chave Pix e, se for CPF, se é o CPF do próprio jogador (ou do responsável). */
+export function validarChavePix(tipo: string, chave: string, cpfs: string[]): { chave?: string; erro?: string } {
+  const c = chave.trim();
+  if (tipo === "cpf") {
+    const d = soDigitos(c);
+    if (!cpfValido(d)) return { erro: "Chave Pix CPF inválida." };
+    if (!cpfs.map(soDigitos).includes(d)) return { erro: "A chave CPF precisa ser o seu CPF (ou o do responsável)." };
+    return { chave: d };
+  }
+  if (tipo === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c) ? { chave: c.toLowerCase() } : { erro: "Chave Pix de e-mail inválida." };
+  if (tipo === "telefone") {
+    const d = soDigitos(c).replace(/^55(?=\d{10,11}$)/, "");
+    return /^\d{10,11}$/.test(d) ? { chave: `+55${d}` } : { erro: "Telefone inválido: use DDD + número." };
+  }
+  if (tipo === "aleatoria")
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(c) ? { chave: c.toLowerCase() } : { erro: "Chave aleatória inválida (formato 0000…-…)." };
+  return { erro: "Escolha o tipo da chave Pix." };
+}

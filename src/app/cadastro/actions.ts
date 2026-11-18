@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { cpfValido, idadeEm, soDigitos } from "@/lib/validacao";
+import { cpfValido, idadeEm, soDigitos, validarChavePix } from "@/lib/validacao";
 
 export type EstadoCadastro = { erro?: string };
 
@@ -37,6 +37,11 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
   if (idade < 18 && (!responsavelNome || !cpfValido(responsavelCpf)))
     return { erro: "Menores de 18 anos precisam informar nome e CPF do responsável." };
   if (!aceite) return { erro: "É preciso aceitar os Termos de uso e a Política de privacidade." };
+  const pixTipo = texto("pix_tipo");
+  const pix = validarChavePix(pixTipo, chavePix, [cpf, responsavelCpf].filter(Boolean));
+  if (pix.erro) return { erro: pix.erro };
+  if (form.get("pix_titular") !== "on") return { erro: "Confirme que a chave Pix está no seu nome." };
+  const { data: atual } = await supabase.from("jogadores").select("chave_pix").eq("id", user.id).maybeSingle();
 
   const { error } = await supabase
     .from("jogadores")
@@ -46,7 +51,10 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
       nascimento,
       nick_endstep: nick,
       cpf,
-      chave_pix: chavePix,
+      chave_pix: pix.chave,
+      pix_tipo: pixTipo,
+      // Chave nova precisa ser conferida de novo no próximo pagamento
+      ...(atual?.chave_pix !== pix.chave ? { pix_verificado_em: null } : {}),
       responsavel_nome: idade < 18 ? responsavelNome : null,
       responsavel_cpf: idade < 18 ? responsavelCpf : null,
       aceite_termos_em: new Date().toISOString(),

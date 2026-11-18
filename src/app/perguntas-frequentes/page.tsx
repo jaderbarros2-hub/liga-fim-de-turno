@@ -22,7 +22,7 @@ const PERGUNTAS = [
   },
   {
     p: "Como recebo o prêmio?",
-    r: "Por Pix, em até 48 horas, na chave cadastrada no seu perfil. A chave precisa estar no seu nome (ou do responsável, se você for menor de idade).",
+    r: "O prêmio cai na sua Carteira. Você pode sacar por Pix (mínimo de R$ 48, o prêmio de um campeão numa etapa de 8 jogadores; pago em até 48 horas), usar em ingressos ou enviar para uma loja parceira. Saldo parado há 30 dias é depositado automaticamente na chave Pix cadastrada, que precisa estar no seu nome (ou do responsável).",
   },
   {
     p: "Onde tiro dúvidas no dia do evento?",

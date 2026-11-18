@@ -25,7 +25,7 @@ const POR_QUE = [
   },
   {
     titulo: "80% da inscrição vira prêmio",
-    texto: "Pago por Pix em até 48 horas, com a divisão e a classificação publicadas.",
+    texto: "O prêmio cai na sua Carteira: saque por Pix, use em ingressos ou envie para lojas parceiras.",
     icone: "M12 3v18M17 7H9.5a2.5 2.5 0 000 5h5a2.5 2.5 0 010 5H7",
   },
   {
@@ -106,7 +106,7 @@ export default async function Inicio() {
           80% da inscrição <span className="text-ciano">vira prêmio</span>
         </>
       ),
-      texto: "Pago por Pix em até 48 horas. A divisão segue a regra de cada liga e a classificação fica pública no portal.",
+      texto: "O prêmio cai na sua Carteira da liga: saque por Pix, use no próximo ingresso ou envie para uma loja parceira. A classificação fica pública no portal.",
       acao: { href: "/regras", rotulo: "Ver as regras" },
       acaoSecundaria: { href: "/resultados", rotulo: "Resultados anteriores" },
     },

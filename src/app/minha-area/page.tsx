@@ -13,6 +13,8 @@ import { dataCurta, dataLonga, hora, reais } from "@/lib/formato";
 import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
 import { mascararChave } from "@/lib/validacao";
+import { DIAS_SAQUE_AUTOMATICO, movimentosDaCarteira, NOMES_MOVIMENTO, SAQUE_MINIMO } from "@/lib/carteira";
+import { CarteiraAcoes } from "./CarteiraAcoes";
 import { FormularioCadastro } from "../cadastro/Formulario";
 import { cancelarInscricao } from "../eventos/[slug]/inscricao/actions";
 
@@ -32,7 +34,6 @@ type Evento = {
   cubo_info?: { imagem_url: string | null; imagem_credito: string | null } | null;
 };
 type Inscricao = { id: string; status: string; deck_nome: string | null; evento: Evento };
-type Premio = { id: string; valor_centavos: number; status: string; posicao: number | null; pago_em: string | null; evento: { slug: string; titulo: string; inicio: string } };
 type Deck = { id: string; nome: string; legal: boolean; qtd_principal: number; qtd_sideboard: number; principal: ItemLista[]; atualizado_em: string; arquetipo: { nome: string } | null };
 
 const STATUS_INSCRICAO: Record<string, { rotulo: string; tipo: "ciano" | "alerta" | "contorno" }> = {
@@ -47,7 +48,7 @@ const ABAS = [
   { id: "visao", rotulo: "Visão geral" },
   { id: "inscricoes", rotulo: "Ingressos" },
   { id: "decks", rotulo: "Decks" },
-  { id: "premios", rotulo: "Prêmios" },
+  { id: "carteira", rotulo: "Carteira" },
   { id: "dados", rotulo: "Meus dados" },
 ];
 
@@ -75,15 +76,10 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
 
   const agora = new Date();
   const per = periodo(agora.toISOString());
-  const [{ data: dInsc }, { data: dPremios }, { data: dDecks }, { data: dRes }, rankP, rankL, potyP, potyL, { data: dCred }] = await Promise.all([
+  const [{ data: dInsc }, { data: dDecks }, { data: dRes }, rankP, rankL, potyP, potyL, dCred] = await Promise.all([
     supabase
       .from("inscricoes")
       .select("id, status, deck_nome, evento:eventos(id, slug, titulo, inicio, status, formato, colecao, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito))")
-      .eq("jogador_id", user.id)
-      .order("criado_em", { ascending: false }),
-    supabase
-      .from("premios")
-      .select("id, valor_centavos, status, posicao, pago_em, evento:eventos(slug, titulo, inicio)")
       .eq("jogador_id", user.id)
       .order("criado_em", { ascending: false }),
     supabase
@@ -100,17 +96,27 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
     ranking("limited", per.temporada, per.trimestre),
     classificadosPOTY("pauper", per.temporada),
     classificadosPOTY("limited", per.temporada),
-    supabase.from("creditos_reembolsos").select("id, tipo, valor_centavos, status, criado_em").eq("jogador_id", user.id).order("criado_em", { ascending: false }),
+    movimentosDaCarteira(user.id),
   ]);
-  const movimentos = (dCred as { id: string; tipo: string; valor_centavos: number; status: string; criado_em: string }[] | null) ?? [];
-  const saldoCredito = movimentos.filter((m) => m.tipo === "credito" && m.status === "pendente").reduce((s, m) => s + m.valor_centavos, 0);
-  const reembolsosPendentes = movimentos.filter((m) => m.tipo === "reembolso" && m.status === "pendente");
+  const movimentos = dCred;
+  const saldo = movimentos.filter((m) => m.status !== "cancelado").reduce((s, m) => s + m.valor_centavos, 0);
+  const emProcessamento = movimentos.filter((m) => m.status === "pendente" && m.valor_centavos < 0);
+  const totalProcessamento = -emProcessamento.reduce((s, m) => s + m.valor_centavos, 0);
+  const ultimoMov = movimentos.filter((m) => m.status !== "cancelado")[0]?.criado_em;
+  const diasAutomatico = ultimoMov ? Math.max(0, DIAS_SAQUE_AUTOMATICO - Math.floor((Date.now() - new Date(ultimoMov).getTime()) / 864e5)) : null;
   const inscricoes = ((dInsc as unknown as Inscricao[]) ?? []).filter((i) => i.evento);
-  const premios = (dPremios as unknown as Premio[]) ?? [];
   const decks = (dDecks as unknown as Deck[]) ?? [];
   const resultados = (
     (dRes as unknown as { posicao: number; vitorias: number; derrotas: number; empates: number; evento: Evento }[]) ?? []
   ).sort((a, b) => b.evento.inicio.localeCompare(a.evento.inicio));
+
+  const { data: dLojas } = await supabase
+    .from("parceiros")
+    .select("id, nome, instrucoes_credito, bonus_credito_pct")
+    .eq("ativo", true)
+    .eq("aceita_credito", true)
+    .order("nome");
+  const lojasCredito = (dLojas ?? []).map((l) => ({ id: l.id, nome: l.nome, instrucoes: l.instrucoes_credito, bonus: l.bonus_credito_pct }));
 
   // Circuito: posição no trimestre e vaga no Player of the Year, por formato
   const temporada = [
@@ -134,22 +140,22 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
   ]);
 
   // Pendências
-  const aReceber = premios.filter((p) => p.status !== "pago");
   const deckProblema = decks.find((d) => !d.legal);
   const semDeck = confirmada && confirmada.evento.formato === "pauper" && !confirmada.deck_nome;
   const pendencias = [
     !jogador.chave_pix && { texto: "Cadastre sua chave Pix para receber prêmios.", href: "/minha-area?aba=dados", acao: "Cadastrar" },
     semDeck && { texto: `Escolha o deck para ${confirmada!.evento.titulo}.`, href: `/eventos/${confirmada!.evento.slug}`, acao: "Escolher deck" },
-    aReceber.length > 0 && {
-      texto: `${aReceber.length === 1 ? "Um prêmio" : `${aReceber.length} prêmios`} a receber: ${reais(aReceber.reduce((s, p) => s + p.valor_centavos, 0))}.`,
-      href: "/minha-area?aba=premios",
-      acao: "Ver prêmios",
+    saldo > 0 && {
+      texto: `Você tem ${reais(saldo)} na Carteira: use num ingresso, saque ou envie para uma loja.${
+        diasAutomatico !== null && diasAutomatico <= 7 ? ` Sem uso, vai para o seu Pix em ${diasAutomatico} dia(s).` : ""
+      }`,
+      href: "/minha-area?aba=carteira",
+      acao: "Abrir Carteira",
     },
-    saldoCredito > 0 && { texto: `Você tem ${reais(saldoCredito)} de crédito para usar em qualquer ingresso.`, href: "/eventos", acao: "Escolher etapa" },
-    reembolsosPendentes.length > 0 && {
-      texto: `Reembolso em processamento: ${reais(reembolsosPendentes.reduce((s, m) => s + m.valor_centavos, 0))} para a sua chave Pix (até 48h).`,
-      href: "/minha-area?aba=inscricoes",
-      acao: "Ver",
+    emProcessamento.length > 0 && {
+      texto: `Em processamento: ${reais(totalProcessamento)} (saques e envios para lojas).`,
+      href: "/minha-area?aba=carteira",
+      acao: "Acompanhar",
     },
     deckProblema && { texto: `O deck "${deckProblema.nome}" tem cartas fora da lista do Pauper.`, href: `/minha-area/decks/${deckProblema.id}`, acao: "Revisar" },
   ].filter(Boolean) as { texto: string; href: string; acao: string }[];
@@ -165,7 +171,6 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
   const reserva = arteFixa(user.id, "pauper");
   const arteTopo = (decks[0] && arteDeck.get(decks[0].id)) || srcArte(reserva);
 
-  const recebido = premios.filter((p) => p.status === "pago").reduce((s, p) => s + p.valor_centavos, 0);
 
   return (
     <>
@@ -211,7 +216,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
               className={`shrink-0 py-4 no-underline ${aba === a.id ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
             >
               {a.rotulo}
-              {a.id === "premios" && aReceber.length > 0 && <span className="ml-1.5 rounded-full bg-alerta px-1.5 text-xs text-preto">{aReceber.length}</span>}
+              {a.id === "carteira" && saldo > 0 && <span className="ml-1.5 rounded-full bg-ciano px-1.5 text-xs text-preto">{reais(saldo).replace("R$", "").trim()}</span>}
             </Link>
           ))}
         </div>
@@ -341,14 +346,14 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
           <section className="flex flex-col gap-6">
             <dl className="grid gap-3 sm:grid-cols-2">
               <div className="flex flex-col gap-1 rounded-md bg-grafite p-5 ring-1 ring-borda">
-                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Crédito disponível</dt>
-                <dd className="titulo text-3xl">{reais(saldoCredito)}</dd>
+                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Saldo da Carteira</dt>
+                <dd className="titulo text-3xl">{reais(saldo)}</dd>
                 <span className="text-sm text-texto2">Use na hora de comprar qualquer ingresso.</span>
               </div>
               <div className="flex flex-col gap-1 rounded-md bg-grafite p-5 ring-1 ring-borda">
-                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Reembolsos em processamento</dt>
-                <dd className="titulo text-3xl">{reais(reembolsosPendentes.reduce((s, m) => s + m.valor_centavos, 0))}</dd>
-                <span className="text-sm text-texto2">Pagos por Pix em até 48 horas.</span>
+                <dt className="text-xs font-bold uppercase tracking-wider text-cinza">Em processamento</dt>
+                <dd className="titulo text-3xl">{reais(totalProcessamento)}</dd>
+                <span className="text-sm text-texto2">Saques e reembolsos são pagos por Pix em até 48 horas.</span>
               </div>
             </dl>
             {[
@@ -382,7 +387,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
                             </Link>
                           )}
                           {podeCancelar(i) &&
-                            (i.status === "confirmada" ? [["credito", "Cancelar → crédito"], ["reembolso", "Cancelar → Pix"]] : [["", "Cancelar"]]).map(([destino, rotulo]) => (
+                            (i.status === "confirmada" ? [["credito", "Cancelar → Carteira"], ["reembolso", "Cancelar → Pix"]] : [["", "Cancelar"]]).map(([destino, rotulo]) => (
                               <form key={rotulo} action={cancelarInscricao}>
                                 <input type="hidden" name="slug" value={i.evento.slug} />
                                 {destino && <input type="hidden" name="destino" value={destino} />}
@@ -400,7 +405,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
             )}
             {inscricoes.length === 0 && <p className="border-l-2 border-azul py-2 pl-4 text-texto2">Você ainda não se inscreveu em nenhuma etapa.</p>}
             <p className="text-sm text-cinza">
-              Ingresso pago pode ser cancelado até 24h antes do início: escolha crédito para outro ingresso ou reembolso na sua chave Pix (em até 48h).
+              Ingresso pago pode ser cancelado até 24h antes do início: escolha o valor de volta na Carteira ou reembolso na sua chave Pix (em até 48h).
             </p>
           </section>
         )}
@@ -449,38 +454,68 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
           </section>
         )}
 
-        {aba === "premios" && (
+        {aba === "carteira" && (
           <section className="flex flex-col gap-6">
             <dl className="grid gap-3 sm:grid-cols-3">
               {[
-                ["Recebido", reais(recebido)],
-                ["A receber", reais(aReceber.reduce((s, p) => s + p.valor_centavos, 0))],
-                ["Chave Pix", jogador.chave_pix ? mascararChave(jogador.chave_pix) : "Não cadastrada"],
-              ].map(([r, v]) => (
+                ["Saldo disponível", reais(saldo), "Para ingressos, saque ou lojas parceiras."],
+                ["Em processamento", reais(totalProcessamento), "Saques e envios ainda não concluídos."],
+                [
+                  "Saque automático",
+                  saldo > 0 && diasAutomatico !== null ? `${diasAutomatico} dias` : "—",
+                  `Saldo parado há ${DIAS_SAQUE_AUTOMATICO} dias vai direto para o seu Pix.`,
+                ],
+              ].map(([r, v, t]) => (
                 <div key={r} className="flex flex-col gap-1 rounded-md bg-grafite p-5 ring-1 ring-borda">
                   <dt className="text-xs font-bold uppercase tracking-wider text-cinza">{r}</dt>
                   <dd className="titulo text-3xl">{v}</dd>
+                  <span className="text-sm text-texto2">{t}</span>
                 </div>
               ))}
             </dl>
-            {premios.length === 0 ? (
-              <p className="border-l-2 border-azul py-2 pl-4 text-texto2">Seus prêmios aparecem aqui quando o resultado da etapa sair.</p>
-            ) : (
-              <ul className="flex flex-col divide-y divide-borda rounded-md ring-1 ring-borda">
-                {premios.map((p) => (
-                  <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
-                    <span className="w-16 text-sm font-semibold text-cinza">{dataCurta(p.evento.inicio)}</span>
-                    <Link href={`/eventos/${p.evento.slug}?aba=resultados`} className="min-w-48 flex-1 font-semibold text-gelo no-underline hover:text-ciano">
-                      {p.evento.titulo}
-                    </Link>
-                    {p.posicao && <span className="text-sm text-texto2">{p.posicao}º lugar</span>}
-                    <strong className="text-ciano">{reais(p.valor_centavos)}</strong>
-                    <Etiqueta tipo={p.status === "pago" ? "ciano" : "alerta"}>{p.status === "pago" ? "Pago" : "A receber"}</Etiqueta>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <p className="text-sm text-cinza">Os prêmios são pagos por Pix em até 48 horas depois do resultado. Só você e a organização veem os valores.</p>
+
+            <CarteiraAcoes
+              saldo={saldo}
+              saldoTexto={reais(saldo)}
+              minimo={SAQUE_MINIMO}
+              minimoTexto={reais(SAQUE_MINIMO)}
+              chavePix={jogador.chave_pix ? mascararChave(jogador.chave_pix) : ""}
+              lojas={lojasCredito}
+            />
+
+            <div className="flex flex-col gap-3">
+              <h2 className="titulo text-3xl">Histórico</h2>
+              {movimentos.length === 0 ? (
+                <p className="border-l-2 border-azul py-2 pl-4 text-texto2">Prêmios e créditos aparecem aqui.</p>
+              ) : (
+                <ul className="flex flex-col divide-y divide-borda rounded-md ring-1 ring-borda">
+                  {movimentos.map((m) => (
+                    <li key={m.id} className={`flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-3 ${m.status === "cancelado" ? "opacity-50" : ""}`}>
+                      <span className="w-16 text-sm font-semibold text-cinza">{dataCurta(m.criado_em)}</span>
+                      <span className="flex min-w-48 flex-1 flex-col">
+                        <span className="font-semibold">{NOMES_MOVIMENTO[m.tipo]}</span>
+                        <span className="text-sm text-texto2">
+                          {m.descricao}
+                          {m.codigo_loja && (
+                            <>
+                              {" "}
+                              · código da loja: <strong className="select-all font-mono text-ciano">{m.codigo_loja}</strong>
+                            </>
+                          )}
+                        </span>
+                      </span>
+                      {m.status !== "concluido" && (
+                        <Etiqueta tipo={m.status === "pendente" ? "alerta" : "contorno"}>{m.status === "pendente" ? "Em processamento" : "Cancelado"}</Etiqueta>
+                      )}
+                      <strong className={m.valor_centavos >= 0 ? "text-ciano" : "text-gelo"}>
+                        {m.valor_centavos >= 0 ? "+" : "−"} {reais(Math.abs(m.valor_centavos))}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <p className="text-sm text-cinza">Só você e a organização veem os valores da sua Carteira.</p>
           </section>
         )}
 
@@ -502,6 +537,7 @@ export default async function MinhaArea({ searchParams }: { searchParams: Promis
                 nick_endstep: jogador.nick_endstep ?? "",
                 cpf: jogador.cpf ?? "",
                 chave_pix: jogador.chave_pix ?? "",
+                pix_tipo: jogador.pix_tipo ?? "",
                 responsavel_nome: jogador.responsavel_nome ?? "",
                 responsavel_cpf: jogador.responsavel_cpf ?? "",
               }}

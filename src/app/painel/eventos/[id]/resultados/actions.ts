@@ -141,3 +141,15 @@ export async function marcarPremioPago(form: FormData) {
   });
   revalidatePath(`/painel/eventos/${eventoId}/resultados`);
 }
+
+/** Libera os prêmios do evento na Carteira dos jogadores (uma vez por prêmio). */
+export async function liberarPremiosNaCarteira(form: FormData) {
+  const ator = await exigirOrganizador();
+  const eventoId = String(form.get("evento_id"));
+  const db = criarClienteAdmin();
+  const { data: evento } = await db.from("eventos").select("titulo").eq("id", eventoId).single();
+  const { liberarPremios } = await import("@/lib/carteira");
+  const n = await liberarPremios(eventoId, evento?.titulo ?? "Etapa");
+  await db.from("registro_atividades").insert({ ator_id: ator, acao: "premios_liberados", entidade: "eventos", entidade_id: eventoId, detalhes: { premios: n } });
+  revalidatePath(`/painel/eventos/${eventoId}/resultados`);
+}

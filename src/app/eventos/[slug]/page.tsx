@@ -315,7 +315,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 Depois da confirmação do Pix, o link privado do evento no Endstep aparece aqui. O check-in é feito lá até 10 minutos antes do início; emparelhamentos e rodadas acontecem no próprio Endstep.
               </Bloco>
               <Bloco titulo="Premiação">
-                {evento.percentual_premio}% das inscrições formam o prêmio, pago por Pix em até 48 horas.
+                {evento.percentual_premio}% das inscrições formam o prêmio. Ele cai na sua Carteira: use em ingressos, saque por Pix ou envie para uma loja parceira.
                 {pauper ? (
                   <span className="mt-3 block text-gelo">
                     Com {Math.max(evento.minimo, inscritos.length)} jogadores: {regraPauper(Math.max(evento.minimo, inscritos.length)).map((p, i) => `${i + 1}º ${pct(p)}`).join(" · ")}

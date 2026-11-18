@@ -10,6 +10,7 @@ type Inicial = {
   nick_endstep: string;
   cpf: string;
   chave_pix: string;
+  pix_tipo?: string;
   responsavel_nome: string;
   responsavel_cpf: string;
 };
@@ -55,9 +56,26 @@ export function FormularioCadastro({ inicial, voltar }: { inicial: Inicial; volt
       <Campo rotulo="CPF" id="cpf" ajuda="Usado só para identificar quem paga e evitar contas duplicadas. Nunca aparece no site.">
         <input id="cpf" name="cpf" required inputMode="numeric" defaultValue={inicial.cpf} placeholder="000.000.000-00" className={estiloCampo} />
       </Campo>
-      <Campo rotulo="Chave Pix para receber prêmios" id="chave_pix" ajuda="A chave precisa estar no seu nome (ou do responsável, se você for menor de idade).">
-        <input id="chave_pix" name="chave_pix" required defaultValue={inicial.chave_pix} className={estiloCampo} />
-      </Campo>
+      <fieldset className="flex flex-col gap-3 rounded-xl border border-borda p-4">
+        <legend className="px-2 text-sm font-semibold">Chave Pix (prêmios, saques e reembolsos)</legend>
+        <div className="grid gap-3 sm:grid-cols-[160px_1fr]">
+          <select name="pix_tipo" required defaultValue={inicial.pix_tipo || "cpf"} aria-label="Tipo da chave" className={estiloCampo}>
+            <option value="cpf">CPF</option>
+            <option value="email">E-mail</option>
+            <option value="telefone">Telefone</option>
+            <option value="aleatoria">Chave aleatória</option>
+          </select>
+          <input id="chave_pix" name="chave_pix" required defaultValue={inicial.chave_pix} placeholder="Sua chave Pix" className={estiloCampo} />
+        </div>
+        <span className="text-xs text-cinza">
+          A chave precisa estar no seu nome (ou do responsável, se você for menor). Recomendamos a chave CPF: o portal
+          confere na hora se é o seu. No primeiro pagamento, a organização confere o nome do titular no banco.
+        </span>
+        <label className="flex items-start gap-2 text-sm text-texto2">
+          <input type="checkbox" name="pix_titular" required className="mt-0.5 h-4 w-4 accent-[#2e6bff]" />
+          Confirmo que a chave está no meu nome (ou do meu responsável).
+        </label>
+      </fieldset>
 
       {menor && (
         <fieldset className="flex flex-col gap-4 rounded-xl border border-alerta p-4">

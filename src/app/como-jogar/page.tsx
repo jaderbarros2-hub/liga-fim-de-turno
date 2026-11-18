@@ -31,8 +31,8 @@ export default function ComoJogar() {
       </ul>
       <h2>5. Depois do evento</h2>
       <p>
-        A classificação aparece na página do evento. Os prêmios são pagos por Pix em até 48 horas, na chave
-        cadastrada.
+        A classificação aparece na página do evento. Os prêmios caem na sua Carteira, na Minha área: dá para sacar
+        por Pix, usar no próximo ingresso ou enviar para uma loja parceira.
       </p>
     </PaginaTexto>
   );

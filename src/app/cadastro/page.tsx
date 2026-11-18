@@ -33,6 +33,7 @@ export default async function Cadastro({ searchParams }: { searchParams: Promise
           nick_endstep: j?.nick_endstep ?? "",
           cpf: j?.cpf ?? "",
           chave_pix: j?.chave_pix ?? "",
+          pix_tipo: j?.pix_tipo ?? "",
           responsavel_nome: j?.responsavel_nome ?? "",
           responsavel_cpf: j?.responsavel_cpf ?? "",
         }}

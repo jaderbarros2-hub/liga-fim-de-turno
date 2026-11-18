@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { reais } from "@/lib/formato";
 import { type Inscrito, type LinhaResultado } from "@/lib/resultados";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { marcarPremioPago } from "./actions";
+import { liberarPremiosNaCarteira } from "./actions";
 import { Importador } from "./Importador";
 
 export const dynamic = "force-dynamic";
@@ -87,43 +87,36 @@ export default async function ResultadosEvento({ params }: { params: Promise<{ i
       />
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-        <h2 className="titulo text-2xl">3 · Pagar prêmios</h2>
+        <h2 className="titulo text-2xl">3 · Liberar prêmios na Carteira</h2>
         {lista.length === 0 ? (
           <p className="text-sm text-texto2">Os prêmios aparecem aqui depois de salvar a classificação.</p>
         ) : (
-          <ul className="flex flex-col border-t border-borda text-sm">
-            {lista.map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-borda py-3">
-                <span className="w-8 font-semibold text-ciano">{p.posicao}º</span>
-                <span className="min-w-36 flex-1 font-semibold">{p.jogador?.nick_endstep || p.jogador?.nome}</span>
-                <span className="text-ciano">{reais(p.valor_centavos)}</span>
-                <span className="text-cinza">
-                  Pix: <strong className="select-all text-gelo">{p.jogador?.chave_pix || "não cadastrado"}</strong>
-                  {p.jogador?.responsavel_nome ? ` · responsável: ${p.jogador.responsavel_nome}` : ""}
-                </span>
-                {p.status === "pago" ? (
-                  <span className="text-ciano">✓ Pago {p.pago_em ? new Date(p.pago_em).toLocaleDateString("pt-BR") : ""}</span>
-                ) : (
-                  <form action={marcarPremioPago} className="flex items-center gap-2">
-                    <input type="hidden" name="premio_id" value={p.id} />
-                    <input type="hidden" name="evento_id" value={id} />
-                    <input
-                      name="observacao"
-                      placeholder="ID do Pix (opcional)"
-                      className="min-h-9 w-44 rounded-md border border-borda-forte bg-fundo2 px-2 text-sm"
-                    />
-                    <button type="submit" className="font-semibold text-ciano hover:text-gelo">
-                      Marcar como pago
-                    </button>
-                  </form>
-                )}
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="flex flex-col border-t border-borda text-sm">
+              {lista.map((p) => (
+                <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-borda py-3">
+                  <span className="w-8 font-semibold text-ciano">{p.posicao}º</span>
+                  <span className="min-w-36 flex-1 font-semibold">{p.jogador?.nick_endstep || p.jogador?.nome}</span>
+                  <span className="text-ciano">{reais(p.valor_centavos)}</span>
+                  {p.status === "pago" ? (
+                    <span className="text-ciano">✓ Na Carteira {p.pago_em ? new Date(p.pago_em).toLocaleDateString("pt-BR") : ""}</span>
+                  ) : (
+                    <span className="text-alerta">Aguardando liberação</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {lista.some((p) => p.status !== "pago") && (
+              <form action={liberarPremiosNaCarteira} className="flex flex-wrap items-center gap-4">
+                <input type="hidden" name="evento_id" value={id} />
+                <button type="submit" className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
+                  Liberar prêmios na Carteira
+                </button>
+                <span className="text-xs text-cinza">Depois de liberar, a classificação fica travada. Saques aparecem em Painel → Financeiro.</span>
+              </form>
+            )}
+          </>
         )}
-        <p className="text-xs text-cinza">
-          Faça o Pix pelo app do banco e marque aqui; o prazo é de 48h.
-        </p>
       </section>
     </div>
   );

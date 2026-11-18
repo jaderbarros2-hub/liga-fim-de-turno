@@ -37,6 +37,9 @@ Princípio: **toda etapa vale por si; o circuito é bônus.**
 - Apagar `src/components/VisualDeck.tsx` e `src/app/eventos/[slug]/inscricao/BotaoGerar.tsx` (não são mais usados).
 - Cartão de crédito no ingresso (Mercado Pago Card Payment Brick, transparente).
 - E-mail de confirmação do ingresso (depende do domínio e do Resend).
+- Jurídico: incluir a Carteira (guarda de saldo de jogadores, saque automático em 30 dias) na conversa com o advogado; avaliar regras do Banco Central.
+- E-mail avisando saque automático e depósito feito (depende do domínio).
+- Pagamento automático de saques via API do Mercado Pago (exige aprovação da conta) em vez de Pix manual.
 - Jurídico: validar com Wizards/Endstep/advogado a cobrança de ingresso com prêmio em dinheiro (ver conversa de 18/11).
 
 ## 4. Dados fictícios para a apresentação (por último)

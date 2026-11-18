@@ -289,12 +289,12 @@ export function Checkout({
         <ul className="flex flex-col gap-2 rounded-md bg-grafite p-4 text-sm text-texto2 ring-1 ring-borda">
           <li>
             <strong className="text-gelo">Cancelamento:</strong> até 24 horas
-            antes do início, com reembolso por Pix ou crédito para outro
-            ingresso (você escolhe). Depois disso, o ingresso não é reembolsado.
+            antes do início, com reembolso por Pix ou o valor de volta na sua
+            Carteira (você escolhe). Depois disso, o ingresso não é reembolsado.
           </li>
           <li>
             <strong className="text-gelo">Evento cancelado</strong> (menos
-            jogadores que o mínimo): reembolso ou crédito para todos.
+            jogadores que o mínimo): reembolso ou valor na Carteira para todos.
           </li>
           <li>
             <strong className="text-gelo">No dia:</strong> o link do Endstep
@@ -434,7 +434,7 @@ export function Checkout({
                 },
                 {
                   id: "credito",
-                  rotulo: "Crédito da liga",
+                  rotulo: "Saldo da Carteira",
                   texto: saldo.centavos ? `Saldo ${saldo.texto}` : "Sem saldo",
                   ativo: creditoCobre && saldo.centavos > 0,
                 },
@@ -503,15 +503,15 @@ export function Checkout({
               <form action={acaoCred} className="flex flex-col gap-3">
                 {ocultos}
                 <p className="text-sm text-texto2">
-                  O valor do ingresso ({finalTexto}) sai do seu crédito de{" "}
-                  {saldo.texto}. A confirmação é imediata.
+                  O valor do ingresso ({finalTexto}) sai do saldo da sua Carteira
+                  ({saldo.texto}). A confirmação é imediata.
                 </p>
                 <button
                   type="submit"
                   disabled={!pronto || usando}
                   className="corte inline-flex min-h-14 items-center justify-center bg-azul px-8 font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {usando ? "Emitindo…" : "Usar crédito e emitir ingresso"}
+                  {usando ? "Emitindo…" : "Pagar com a Carteira e emitir ingresso"}
                 </button>
                 {estadoCred.erro && (
                   <p role="alert" className="text-sm text-erro">

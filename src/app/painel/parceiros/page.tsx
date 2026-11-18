@@ -13,6 +13,9 @@ type P = {
   site_url: string;
   url_compra_lista: string | null;
   compra_deck: boolean;
+  aceita_credito: boolean;
+  instrucoes_credito: string | null;
+  bonus_credito_pct: number;
   ativo: boolean;
   ordem: number;
 };
@@ -122,6 +125,20 @@ export default async function PainelParceiros({ searchParams }: { searchParams: 
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="ativo" defaultChecked={atual?.ativo ?? true} /> Ativo
         </label>
+        <fieldset className="grid gap-3 rounded-lg border border-borda p-4 sm:col-span-2 sm:grid-cols-[1fr_160px]">
+          <legend className="px-2 text-sm font-semibold">Crédito da liga</legend>
+          <label className="flex items-center gap-2 text-sm sm:col-span-2">
+            <input type="checkbox" name="aceita_credito" defaultChecked={atual?.aceita_credito} /> Aceita receber saldo da Carteira dos jogadores
+          </label>
+          <label className={ROTULO}>
+            Instruções para o jogador
+            <input name="instrucoes_credito" defaultValue={atual?.instrucoes_credito ?? ""} placeholder="O cupom chega por e-mail em até 3 dias úteis." className={CAMPO} />
+          </label>
+          <label className={ROTULO}>
+            Bônus da loja (%)
+            <input name="bonus_credito_pct" type="number" min={0} max={100} defaultValue={atual?.bonus_credito_pct ?? 0} className={CAMPO} />
+          </label>
+        </fieldset>
         <div className="flex gap-4 sm:col-span-2">
           <button type="submit" className={BOTAO}>
             Salvar parceiro

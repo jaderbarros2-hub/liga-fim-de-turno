@@ -169,11 +169,11 @@ export default async function Inscricao({ params }: { params: Promise<{ slug: st
             <h2 className="font-semibold">Não vai poder jogar?</h2>
             <p className="text-sm text-texto2">
               Até 24 horas antes do início você pode cancelar e escolher entre reembolso por Pix (em até 48h, na chave{" "}
-              {mascararChave(jogador.chave_pix)}) ou crédito para usar em outro ingresso.
+              {mascararChave(jogador.chave_pix)}) ou o valor de volta na sua Carteira, para usar em outro ingresso.
             </p>
             <div className="flex flex-wrap gap-3">
               {[
-                ["credito", "Cancelar e virar crédito"],
+                ["credito", "Cancelar e voltar para a Carteira"],
                 ["reembolso", "Cancelar e receber por Pix"],
               ].map(([destino, rotulo]) => (
                 <form key={destino} action={cancelarInscricao}>

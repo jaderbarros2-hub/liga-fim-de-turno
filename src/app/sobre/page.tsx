@@ -19,7 +19,7 @@ const DIFERENCIAIS = [
   {
     titulo: "Prêmio de verdade, com transparência",
     texto:
-      "80% de cada inscrição volta como prêmio, pago por Pix em até 48 horas. Classificação, divisão e regras ficam públicas no portal.",
+      "80% de cada inscrição volta como prêmio, creditado na Carteira do jogador (saque por Pix, ingressos ou lojas parceiras). Classificação, divisão e regras ficam públicas no portal.",
   },
   {
     titulo: "Competição toda semana",
