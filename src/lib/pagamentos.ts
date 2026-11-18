@@ -49,7 +49,7 @@ export async function sincronizarPagamento(pagamentoId: string): Promise<Situaca
 
   if (pag.id_externo) {
     const pedido = await buscarPedido(pag.id_externo);
-    if (pedido?.status === "processed") {
+    if (pedido?.pago) {
       await confirmarPagamento(pag.id, pedido.pagoEm);
       return "aprovado";
     }

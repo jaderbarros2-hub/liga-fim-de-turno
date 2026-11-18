@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { assinaturaValida } from "@/lib/mercadopago";
+import { assinaturaValida, buscarPedido } from "@/lib/mercadopago";
 import { sincronizarPorIdExterno } from "@/lib/pagamentos";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
@@ -31,6 +31,16 @@ export async function POST(req: Request) {
   }
 
   try {
+    // Diagnóstico: guarda o que o Mercado Pago diz sobre o pedido neste momento
+    const pedido = await buscarPedido(dataId).catch(() => null);
+    await criarClienteAdmin()
+      .from("registro_atividades")
+      .insert({
+        acao: "mercadopago_status",
+        entidade: "mercadopago",
+        detalhes: { id: dataId, pedido: pedido?.status, detalhe: pedido?.statusDetalhe, pix: pedido?.statusPagamento },
+      })
+      .then(() => undefined, () => undefined);
     await sincronizarPorIdExterno(dataId);
   } catch (e) {
     console.error("Webhook Mercado Pago:", e);

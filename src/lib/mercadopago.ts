@@ -13,6 +13,8 @@ export type PedidoPix = {
   idExterno: string;
   status: string; // action_required | processed | expired | canceled | refunded | failed ...
   statusDetalhe?: string;
+  statusPagamento?: string; // status da transação Pix dentro do pedido (approved, processed, pending...)
+  pago: boolean;
   copiaCola?: string;
   qrBase64?: string;
   expiraEm?: string;
@@ -41,14 +43,19 @@ type RespostaOrder = {
 
 function converter(o: RespostaOrder): PedidoPix {
   const p = o.transactions?.payments?.[0];
+  // Pago quando o pedido foi processado ou a transação Pix foi aprovada (no modo de teste o
+  // Mercado Pago às vezes atualiza só a transação antes do pedido)
+  const pago = o.status === "processed" || ["approved", "processed"].includes(p?.status ?? "");
   return {
     idExterno: o.id,
     status: o.status,
     statusDetalhe: o.status_detail,
+    statusPagamento: p?.status,
+    pago,
     copiaCola: p?.payment_method?.qr_code,
     qrBase64: p?.payment_method?.qr_code_base64,
     expiraEm: p?.date_of_expiration,
-    pagoEm: o.status === "processed" ? (o.last_updated_date ?? new Date().toISOString()) : undefined,
+    pagoEm: pago ? (o.last_updated_date ?? new Date().toISOString()) : undefined,
   };
 }
 

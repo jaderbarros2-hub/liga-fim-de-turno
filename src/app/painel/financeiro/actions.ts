@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { buscarPedido } from "@/lib/mercadopago";
+import { sincronizarPagamento } from "@/lib/pagamentos";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -41,5 +43,22 @@ export async function cancelarMovimento(form: FormData) {
   const db = criarClienteAdmin();
   await db.from("carteira_movimentos").update({ status: "cancelado" }).eq("id", id).eq("status", "pendente");
   await db.from("registro_atividades").insert({ ator_id: ator, acao: "movimento_cancelado", entidade: "carteira_movimentos", entidade_id: id, detalhes: { motivo: String(form.get("motivo") ?? "") } });
+  revalidatePath("/painel/financeiro");
+}
+
+/** Consulta o pedido no Mercado Pago agora (diagnóstico) e confirma se já estiver pago. */
+export async function consultarPix(form: FormData) {
+  await exigirOrganizador();
+  const id = String(form.get("id"));
+  const db = criarClienteAdmin();
+  const { data: pag } = await db.from("pagamentos").select("id, id_externo").eq("id", id).maybeSingle();
+  if (!pag?.id_externo) return;
+  const pedido = await buscarPedido(pag.id_externo).catch(() => null);
+  await db.from("registro_atividades").insert({
+    acao: "mercadopago_status",
+    entidade: "mercadopago",
+    detalhes: { id: pag.id_externo, pedido: pedido?.status ?? "sem resposta", detalhe: pedido?.statusDetalhe, pix: pedido?.statusPagamento, origem: "consulta manual" },
+  });
+  await sincronizarPagamento(pag.id);
   revalidatePath("/painel/financeiro");
 }

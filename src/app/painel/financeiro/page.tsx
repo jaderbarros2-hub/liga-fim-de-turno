@@ -1,6 +1,6 @@
 import { reais } from "@/lib/formato";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
-import { cancelarMovimento, concluirMovimento } from "./actions";
+import { cancelarMovimento, concluirMovimento, consultarPix } from "./actions";
 
 type Pendente = {
   id: string;
@@ -19,7 +19,7 @@ const NOME_TIPO: Record<string, string> = { cpf: "CPF", email: "E-mail", telefon
 
 export default async function Financeiro() {
   const db = criarClienteAdmin();
-  const [{ data }, { data: saldos }, { data: avisos }] = await Promise.all([
+  const [{ data }, { data: saldos }, { data: avisos }, { data: pixPendentes }] = await Promise.all([
     db
       .from("carteira_movimentos")
       .select(
@@ -28,7 +28,14 @@ export default async function Financeiro() {
       .eq("status", "pendente")
       .order("criado_em"),
     db.from("carteira_movimentos").select("valor_centavos").neq("status", "cancelado"),
-    db.from("registro_atividades").select("id, acao, detalhes, criado_em").in("acao", ["webhook_recebido", "webhook_assinatura_invalida", "pagamento_confirmado"]).order("criado_em", { ascending: false }).limit(10),
+    db.from("registro_atividades").select("id, acao, detalhes, criado_em").in("acao", ["webhook_recebido", "webhook_assinatura_invalida", "pagamento_confirmado", "mercadopago_status"]).order("criado_em", { ascending: false }).limit(10),
+    db
+      .from("pagamentos")
+      .select("id, id_externo, valor_centavos, criado_em, expira_em, inscricao:inscricoes(jogador:jogadores(nick_endstep), evento:eventos(titulo))")
+      .eq("status", "pendente")
+      .eq("provedor", "mercadopago")
+      .order("criado_em", { ascending: false })
+      .limit(10),
   ]);
   const pendentes = (data as unknown as Pendente[]) ?? [];
   const saques = pendentes.filter((p) => p.tipo === "saque");
@@ -171,6 +178,32 @@ export default async function Financeiro() {
       </section>
 
       <section className="flex flex-col gap-3">
+        <h2 className="titulo text-3xl">Pix aguardando pagamento</h2>
+        {(pixPendentes ?? []).length === 0 ? (
+          <p className="text-texto2">Nenhum Pix em aberto.</p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-borda rounded-xl border border-borda text-sm">
+            {((pixPendentes as unknown as { id: string; id_externo: string | null; valor_centavos: number; criado_em: string; inscricao: { jogador: { nick_endstep: string | null } | null; evento: { titulo: string } | null } | null }[]) ?? []).map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5">
+                <span className="w-32 text-cinza">{quando(p.criado_em)}</span>
+                <span className="min-w-40 flex-1">
+                  <strong>{p.inscricao?.jogador?.nick_endstep}</strong> · {p.inscricao?.evento?.titulo}
+                </span>
+                <span>{reais(p.valor_centavos)}</span>
+                <span className="font-mono text-xs text-cinza">{p.id_externo}</span>
+                <form action={consultarPix}>
+                  <input type="hidden" name="id" value={p.id} />
+                  <button type="submit" className="font-semibold text-ciano">
+                    Consultar no Mercado Pago
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
         <h2 className="titulo text-3xl">Avisos do Mercado Pago</h2>
         <p className="text-sm text-cinza">Últimos avisos automáticos (webhook) e pagamentos confirmados. Útil para conferir os testes.</p>
         {(avisos ?? []).length === 0 ? (
@@ -181,7 +214,13 @@ export default async function Financeiro() {
               <li key={a.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5">
                 <span className="w-32 text-cinza">{quando(a.criado_em)}</span>
                 <span className={a.acao === "webhook_assinatura_invalida" ? "font-semibold text-erro" : "font-semibold"}>
-                  {a.acao === "webhook_recebido" ? "Aviso recebido" : a.acao === "pagamento_confirmado" ? "Pagamento confirmado" : "Assinatura inválida"}
+                  {a.acao === "webhook_recebido"
+                    ? "Aviso recebido"
+                    : a.acao === "pagamento_confirmado"
+                      ? "Pagamento confirmado"
+                      : a.acao === "mercadopago_status"
+                        ? "Situação no Mercado Pago"
+                        : "Assinatura inválida"}
                 </span>
                 <span className="font-mono text-xs text-texto2">{JSON.stringify(a.detalhes)}</span>
               </li>
