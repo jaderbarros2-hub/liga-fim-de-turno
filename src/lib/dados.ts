@@ -7,6 +7,7 @@ export type Evento = {
   slug: string;
   titulo: string;
   formato: string;
+  tipo: "etapa" | "final_trimestre" | "player_of_the_year";
   colecao: string | null;
   inicio: string;
   modalidade: string;

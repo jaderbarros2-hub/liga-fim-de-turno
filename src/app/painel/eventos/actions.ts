@@ -58,6 +58,7 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
     titulo,
     liga_id: ligaId,
     formato,
+    tipo: ["final_trimestre", "player_of_the_year"].includes(t("tipo")) ? t("tipo") : "etapa",
     colecao: t("colecao") || null,
     inicio: deBrasilia(inicio),
     inscricoes_ate: deBrasilia(inscricoesAte),

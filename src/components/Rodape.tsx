@@ -15,6 +15,8 @@ const COLUNAS = [
     titulo: "Eventos",
     links: [
       { href: "/eventos", rotulo: "Agenda" },
+      { href: "/circuito", rotulo: "O circuito" },
+      { href: "/ranking", rotulo: "Ranking" },
       { href: "/resultados", rotulo: "Resultados" },
       { href: "/ligas/pauper", rotulo: "Liga Pauper" },
       { href: "/ligas/limited", rotulo: "Liga Limited" },

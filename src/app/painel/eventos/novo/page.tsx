@@ -14,6 +14,7 @@ export default async function NovoEvento() {
           titulo: "",
           liga_id: ligas?.[0]?.id ?? 1,
           formato: "pauper",
+          tipo: "etapa",
           colecao: "",
           inicio: "",
           inscricoes_ate: "",

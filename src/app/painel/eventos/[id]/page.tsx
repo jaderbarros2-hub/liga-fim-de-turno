@@ -102,6 +102,7 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
           titulo: evento.titulo,
           liga_id: evento.liga_id,
           formato: evento.formato,
+          tipo: evento.tipo ?? "etapa",
           colecao: evento.colecao ?? "",
           inicio: paraCampo(evento.inicio),
           inscricoes_ate: paraCampo(evento.inscricoes_ate),

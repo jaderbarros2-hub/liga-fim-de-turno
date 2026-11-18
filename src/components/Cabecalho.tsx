@@ -17,6 +17,12 @@ export async function Cabecalho() {
     descricao: f.descricao ?? undefined,
   }));
 
+  const itensCircuito: ItemMenu[] = [
+    { href: "/circuito", rotulo: "Como funciona", descricao: "Etapas, finais do trimestre e Player of the Year" },
+    { href: "/ranking", rotulo: "Ranking", descricao: "Pontos da temporada e corrida ao top 8" },
+    { href: "/resultados", rotulo: "Resultados", descricao: "Classificação de cada etapa" },
+  ];
+
   const itensConta: ItemMenu[] = [
     { href: "/minha-area", rotulo: "Minha área", descricao: "Inscrições e próximos passos" },
     { href: "/minha-area/decks", rotulo: "Meus decks" },
@@ -40,9 +46,7 @@ export async function Cabecalho() {
             Eventos
           </Link>
           <MenuSuspenso gatilho="Formatos" itens={itensFormatos} classeGatilho={`${linkMenu} uppercase`} />
-          <Link href="/resultados" className={linkMenu}>
-            Resultados
-          </Link>
+          <MenuSuspenso gatilho="Circuito" itens={itensCircuito} classeGatilho={`${linkMenu} uppercase`} />
           <Link href="/blog" className={linkMenu}>
             Blog
           </Link>

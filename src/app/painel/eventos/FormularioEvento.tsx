@@ -8,6 +8,7 @@ export type ValoresEvento = {
   titulo: string;
   liga_id: number;
   formato: string;
+  tipo: string;
   colecao: string;
   inicio: string;
   inscricoes_ate: string;
@@ -73,6 +74,13 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
           <option value="draft">Draft</option>
           <option value="selado">Selado</option>
           <option value="cubo">Cubo</option>
+        </select>
+      </Campo>
+      <Campo rotulo="Tipo no circuito" id="tipo">
+        <select id="tipo" name="tipo" defaultValue={valores.tipo} className={campo}>
+          <option value="etapa">Etapa (vale pontos no ranking)</option>
+          <option value="final_trimestre">Final do Trimestre (define campeão e vice)</option>
+          <option value="player_of_the_year">Player of the Year (final do ano)</option>
         </select>
       </Campo>
       <Campo rotulo="Coleção ou cubo (Limited)" id="colecao">
