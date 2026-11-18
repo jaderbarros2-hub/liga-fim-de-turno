@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { congelarCubo, guardarArteColecao, importarColecao, importarCubo, procurarColecoes, type ColecaoResumo, type CuboResumo } from "@/lib/limited";
+import { congelarCubo, guardarArteColecao, importarColecao, importarCubo, opcoesDeArte, procurarColecoes, type ColecaoResumo, type CuboResumo, type OpcaoArte } from "@/lib/limited";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -36,8 +36,9 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   const t = (c: string) => String(form.get(c) ?? "").trim();
   const id = t("id");
   const titulo = t("titulo");
-  const ligaId = Number(t("liga_id"));
   const formato = t("formato");
+  const { data: liga } = await supabase.from("ligas").select("id").eq("slug", formato === "pauper" ? "pauper" : "limited").maybeSingle();
+  const ligaId = liga?.id as number | undefined;
   const inicio = t("inicio");
   const inscricoesAte = t("inscricoes_ate");
   const valor = Number(t("valor").replace(/[^\d,.-]/g, "").replace(",", "."));
@@ -69,11 +70,15 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
         const c = existe ?? (await importarColecao(cod));
         colecaoCodigo = c.codigo;
         nomeLimited = c.nome;
+        const escolhida = t("arte_escolhida_url");
+        if (/^https:\/\/cards\.scryfall\.io\//.test(escolhida))
+          await criarClienteAdmin().from("colecoes").update({ arte_url: escolhida, arte_credito: t("arte_escolhida_credito") || null }).eq("codigo", c.codigo);
         const arte = form.get("arte_colecao");
         if (arte instanceof File && arte.size) await guardarArteColecao(c.codigo, arte, t("arte_credito"));
       }
       pacotes = Number(t("pacotes")) || (formato === "draft" ? 3 : 6);
     } else if (formato === "cubo") {
+      pacotes = Number(t("pacotes")) || 3;
       const link = t("cubo_link");
       if (link) {
         const cubo = await importarCubo(link);
@@ -173,5 +178,16 @@ export async function previsualizarCubo(link: string): Promise<{ cubo?: CuboResu
     return { cubo: await importarCubo(link) };
   } catch (e) {
     return { erro: (e as Error).message };
+  }
+}
+
+/** Artes da própria coleção para escolher a capa do evento. */
+export async function artesDaColecao(codigo: string): Promise<{ lista?: OpcaoArte[]; erro?: string }> {
+  if (!(await exigirEquipe())) return { erro: "Sem permissão." };
+  try {
+    const lista = await opcoesDeArte(codigo);
+    return lista.length ? { lista } : { erro: "Nenhuma arte encontrada para esta coleção." };
+  } catch {
+    return { erro: "Scryfall indisponível." };
   }
 }

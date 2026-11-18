@@ -40,7 +40,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const temResultado = resultados.length > 0;
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
   const deckPorPosicao = new Map(decks.map((d) => [d.posicao, d]));
-  const pauper = evento.liga.slug === "pauper";
+  const pauper = evento.formato === "pauper";
   const capa = capaDoEvento(evento);
   const colecao = evento.colecao_info;
   const cubo = evento.cubo_info;
@@ -256,33 +256,23 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
 
           {aba === "detalhes" && temVitrine && (
             <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
-              {colecao ? (
-                <div className="relative isolate bg-fundo2 px-4">
-                  <LequeBoosters
-                    quantidade={evento.pacotes ?? (evento.formato === "draft" ? 3 : 6)}
-                    arte={capa.src}
-                    foco={capa.foco}
-                    icone={colecao.icone_svg}
-                    nome={colecao.nome}
-                    rotulo={evento.formato === "draft" ? "Booster de draft" : "Selado"}
-                  />
-                </div>
-              ) : (
-                <div className="relative aspect-[16/10] h-full md:aspect-auto md:min-h-64">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={capa.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-grafite via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-grafite" />
-                </div>
-              )}
+              <div className="relative isolate bg-fundo2 px-4">
+                <LequeBoosters
+                  quantidade={evento.pacotes ?? (evento.formato === "selado" ? 6 : 3)}
+                  arte={capa.src}
+                  foco={capa.foco}
+                  icone={colecao?.icone_svg ?? "/icone-cubo.svg"}
+                  nome={colecao?.nome ?? cubo!.nome}
+                  rotulo={evento.formato === "draft" ? "Booster de draft" : evento.formato === "selado" ? "Selado" : "Cube draft"}
+                />
+              </div>
               <div className="flex flex-col gap-3 p-6 md:pl-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-ciano">
-                  {evento.formato === "draft" ? "Draft" : evento.formato === "selado" ? "Selado" : "Cubo"}
+                  {NOMES_FORMATO[evento.formato]}
                 </span>
                 <h2 className="titulo flex items-center gap-3 text-4xl">
-                  {colecao?.icone_svg && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={colecao.icone_svg} alt="" className="h-8 w-8 invert" />
-                  )}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={colecao?.icone_svg ?? "/icone-cubo.svg"} alt="" className="h-8 w-8 invert" />
                   {colecao?.nome ?? cubo?.nome}
                 </h2>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -295,8 +285,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                     </>
                   ) : (
                     <>
-                      <Dado rotulo="Cartas" valor={String(cubo!.total_cartas ?? "—")} />
+                      <Dado rotulo="Boosters por jogador" valor={String(evento.pacotes ?? 3)} />
+                      <Dado rotulo="Cartas no cubo" valor={String(cubo!.total_cartas ?? "—")} />
                       <Dado rotulo="Curadoria" valor={cubo!.dono ?? "—"} />
+                      <Dado rotulo="Lista" valor="Congelada na data do evento" />
                     </>
                   )}
                 </dl>

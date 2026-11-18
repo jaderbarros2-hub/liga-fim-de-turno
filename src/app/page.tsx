@@ -7,7 +7,7 @@ import { CARTAS_FAIXA, cartaInteira, creditoArte, sortearArtes, srcArte, type Ar
 import { SecaoArtigos } from "@/components/Artigos";
 import { listarArtigos } from "@/lib/blog";
 import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
-import { dataCurta, dataLonga, hora, reais } from "@/lib/formato";
+import { dataCurta, dataLonga, hora } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,7 @@ export default async function Inicio() {
   const inscritos = destaque ? await listarInscritos(destaque.id) : [];
 
   // Artes sorteadas a cada visita (topo: só imagens grandes)
-  const [aEvento] = sortearArtes(destaque?.liga.slug === "pauper" ? "pauper" : "geral", 1, true);
+  const [aEvento] = sortearArtes(destaque?.formato === "pauper" ? "pauper" : "geral", 1, true);
   const [a1, a2, a3] = sortearArtes("geral", 3, true).map((a, i, arr) => (a.arquivo === aEvento.arquivo ? arr[(i + 1) % arr.length] : a));
   const [artePauper] = sortearArtes("pauper", 1);
   const [arteLimited] = sortearArtes("limited", 1).map((a) => (a.arquivo === artePauper.arquivo ? sortearArtes("geral", 1)[0] : a));
@@ -70,7 +70,7 @@ export default async function Inicio() {
             </>
           ),
           titulo: destaque.titulo,
-          texto: `Online no Endstep, sem precisar ter as cartas. Inscrição de ${reais(destaque.valor_centavos)}, com ${destaque.percentual_premio}% das inscrições em prêmios pagos por Pix.`,
+          texto: `Online no Endstep, sem precisar ter as cartas, com ${destaque.percentual_premio}% das inscrições em prêmios pagos por Pix.`,
           acao: { href: `/eventos/${destaque.slug}`, rotulo: "Inscrever-se" },
           rodape: `${inscritos.length} inscritos${destaque.vagas ? ` de ${destaque.vagas}` : ""} · até ${dataCurta(destaque.inscricoes_ate)}, ${hora(destaque.inscricoes_ate)}`,
         }

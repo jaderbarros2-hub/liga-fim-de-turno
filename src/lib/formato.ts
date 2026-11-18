@@ -31,7 +31,7 @@ export const NOMES_FORMATO: Record<string, string> = {
   pauper: "Pauper",
   draft: "Draft",
   selado: "Selado",
-  cubo: "Cubo",
+  cubo: "Cube Draft",
 };
 
 export const NOMES_STATUS: Record<string, string> = {

@@ -32,7 +32,8 @@ export type ValoresEvento = {
 const campo =
   "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
 
-export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; ligas: { id: number; nome: string }[] }) {
+/** A liga sai do formato: Pauper vai para a Liga Pauper; draft, selado e cubo, para a Liga Limited. */
+export function FormularioEvento({ valores }: { valores: ValoresEvento; ligas?: { id: number; nome: string }[] }) {
   const [estado, acao, enviando] = useActionState<EstadoEvento, FormData>(salvarEvento, {});
   const aviso = useRef<HTMLDivElement>(null);
   const [formato, setFormato] = useState(valores.formato);
@@ -66,21 +67,12 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
       <Campo rotulo="Título" id="titulo" largo>
         <input id="titulo" name="titulo" required defaultValue={valores.titulo} placeholder="Etapa 1 · Pauper" className={campo} />
       </Campo>
-      <Campo rotulo="Liga" id="liga_id">
-        <select id="liga_id" name="liga_id" defaultValue={valores.liga_id} className={campo}>
-          {ligas.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.nome}
-            </option>
-          ))}
-        </select>
-      </Campo>
       <Campo rotulo="Formato" id="formato">
         <select id="formato" name="formato" value={formato} onChange={(e) => setFormato(e.target.value)} className={campo}>
           <option value="pauper">Pauper</option>
           <option value="draft">Draft</option>
           <option value="selado">Selado</option>
-          <option value="cubo">Cubo</option>
+          <option value="cubo">Cube Draft</option>
         </select>
       </Campo>
       <Campo rotulo="Tipo no circuito" id="tipo">

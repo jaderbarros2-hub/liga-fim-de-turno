@@ -71,10 +71,11 @@ export async function importarColecao(codigo: string) {
       const face = c.card_faces?.[0];
       const img = c.image_uris ?? face?.image_uris;
       destaques.push({ nome: c.name, imagem: img?.normal ?? null, cor: corDe(c.colors ?? face?.colors, c.type_line), raridade: c.rarity, tipo: c.type_line });
-      if (!capa && c.rarity === "mythic" && img?.art_crop && !/\bLand\b/.test(c.type_line ?? ""))
-        capa = { url: img.art_crop, credito: `${c.name} · ilustração de ${c.artist ?? "artista não informado"} · © Wizards of the Coast` };
     }
   }
+  // Capa provisória: a primeira opção de arte inédita da coleção (nunca reimpressão)
+  const opcoes = await opcoesDeArte(set.code).catch(() => []);
+  if (opcoes[0]) capa = { url: opcoes[0].url, credito: opcoes[0].credito };
 
   const { data: atual } = await db.from("colecoes").select("arte_url, arte_credito").eq("codigo", set.code).maybeSingle();
   const manterArte = atual?.arte_url && !atual.arte_url.includes("scryfall");
@@ -91,6 +92,28 @@ export async function importarColecao(codigo: string) {
     atualizado_em: new Date().toISOString(),
   });
   return { codigo: set.code, nome: set.name };
+}
+
+export type OpcaoArte = { url: string; credito: string; nome: string };
+
+/**
+ * Artes que pertencem à coleção: raras e míticas impressas pela primeira vez nela
+ * (sem reimpressões nem terrenos), uma por ilustração.
+ */
+export async function opcoesDeArte(codigo: string): Promise<OpcaoArte[]> {
+  const q = encodeURIComponent(`set:${codigo} (r:m or r:r) not:reprint -t:land -is:digital`);
+  const r = await fetch(`https://api.scryfall.com/cards/search?q=${q}&order=edhrec&unique=art`, { headers: UA, cache: "no-store" });
+  if (!r.ok) return [];
+  const { data } = (await r.json()) as { data: CartaScryfall[] };
+  return data
+    .map((c) => {
+      const img = c.image_uris ?? c.card_faces?.[0]?.image_uris;
+      return img?.art_crop
+        ? { url: img.art_crop, nome: c.name, credito: `${c.name} · ilustração de ${c.artist ?? "artista não informado"} · © Wizards of the Coast` }
+        : null;
+    })
+    .filter(Boolean)
+    .slice(0, 30) as OpcaoArte[];
 }
 
 /** Aceita o link do Cube Cobra (list, overview, playtest…) ou só o id. */

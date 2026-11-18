@@ -123,7 +123,7 @@ export default async function DeckPublico({ params }: Props) {
         <div className="absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-t from-preto to-transparent" />
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 pb-10 pt-8">
           <nav aria-label="Caminho" className="flex flex-wrap gap-2 text-sm text-texto2">
-            <Link href={`/ligas/${evento.liga.slug}`}>{evento.liga.slug === "pauper" ? "Pauper" : "Limited"}</Link>
+            <Link href={`/ligas/${evento.liga.slug}`}>{evento.formato === "pauper" ? "Pauper" : "Limited"}</Link>
             <span>/</span>
             <Link href={`/eventos/${slug}?aba=resultados`}>{evento.titulo}</Link>
           </nav>

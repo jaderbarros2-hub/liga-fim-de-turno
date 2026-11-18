@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { buscarColecoes, previsualizarCubo } from "./actions";
+import { artesDaColecao, buscarColecoes, previsualizarCubo } from "./actions";
 
 const campo = "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
 
@@ -24,6 +24,8 @@ export function CamposLimited({
   const [cubo, setCubo] = useState<Cubo | null>(inicial.cubo);
   const [link, setLink] = useState(inicial.cubo_link);
   const [erro, setErro] = useState("");
+  const [artes, setArtes] = useState<{ url: string; credito: string; nome: string }[]>([]);
+  const [arteEscolhida, setArteEscolhida] = useState<{ url: string; credito: string } | null>(null);
   const [carregando, iniciar] = useTransition();
 
   if (formato === "pauper") return null;
@@ -73,6 +75,10 @@ export function CamposLimited({
             </span>
           </div>
         )}
+        <label className="flex max-w-40 flex-col gap-1 text-sm font-semibold">
+          Boosters por jogador
+          <input name="pacotes" type="number" min={1} max={12} defaultValue={inicial.pacotes || 3} className={campo} />
+        </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="atualizar_lista" /> Atualizar a lista congelada deste evento com a versão atual do Cube Cobra
         </label>
@@ -155,6 +161,49 @@ export function CamposLimited({
           )}
         </>
       )}
+      <input type="hidden" name="arte_escolhida_url" value={arteEscolhida?.url ?? ""} />
+      <input type="hidden" name="arte_escolhida_credito" value={arteEscolhida?.credito ?? ""} />
+      {colecao && (
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={carregando}
+              onClick={() =>
+                iniciar(async () => {
+                  setErro("");
+                  const r = await artesDaColecao(colecao.codigo);
+                  if (r.lista) setArtes(r.lista);
+                  else setErro(r.erro ?? "Falha ao buscar as artes.");
+                })
+              }
+              className="min-h-10 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-50"
+            >
+              {carregando ? "Buscando…" : "Escolher a arte da coleção"}
+            </button>
+            {arteEscolhida && <span className="text-sm text-ciano">Arte escolhida: {arteEscolhida.credito.split(" · ")[0]}</span>}
+          </div>
+          {artes.length > 0 && (
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
+              {artes.map((a) => (
+                <li key={a.url}>
+                  <button
+                    type="button"
+                    onClick={() => setArteEscolhida(a)}
+                    aria-pressed={arteEscolhida?.url === a.url}
+                    className={`block w-full overflow-hidden rounded-md text-left ring-2 ${arteEscolhida?.url === a.url ? "ring-ciano" : "ring-transparent hover:ring-borda-forte"}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={a.url} alt="" loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                    <span className="block truncate bg-grafite px-2 py-1 text-xs">{a.nome}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <span className="text-xs text-cinza">Só aparecem ilustrações estreadas nesta coleção (sem reimpressões). Para máxima qualidade, envie a arte em alta abaixo.</span>
+        </div>
+      )}
       <div className="grid gap-3 sm:grid-cols-[120px_1fr]">
         <label className="flex flex-col gap-1 text-sm font-semibold">
           Boosters
@@ -166,7 +215,7 @@ export function CamposLimited({
         </label>
       </div>
       <input name="arte_credito" placeholder="Crédito da arte (ex.: Carta · ilustração de Artista · © Wizards of the Coast)" className={campo} />
-      <span className="text-xs text-cinza">Sem arte enviada, o portal usa a arte de uma mítica da coleção (do Scryfall).</span>
+      <span className="text-xs text-cinza">Sem escolha nem envio, o portal usa a primeira arte inédita da coleção.</span>
       {erro && <span className="text-sm text-erro">{erro}</span>}
     </div>
   );

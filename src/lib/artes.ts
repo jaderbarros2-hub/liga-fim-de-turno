@@ -98,8 +98,8 @@ export function arteFixa(chave: string, formato: "pauper" | "limited" | "geral")
 }
 
 /** Arte fixa para um evento (sempre a mesma para aquela etapa, diferente entre etapas). */
-export function arteDoEvento(evento: { id: string; liga: { slug: string } }): ArteBanco {
-  const lista = pool(evento.liga.slug === "pauper" ? "pauper" : "limited");
+export function arteDoEvento(evento: { id: string; liga: { slug: string }; formato?: string }): ArteBanco {
+  const lista = pool((evento.formato ?? evento.liga.slug) === "pauper" ? "pauper" : "limited");
   return lista[hash(evento.id) % lista.length];
 }
 
@@ -122,6 +122,7 @@ export function sortearArtes(formato: "pauper" | "limited" | "geral", quantidade
 export function capaDoEvento(evento: {
   id: string;
   liga: { slug: string };
+  formato?: string;
   colecao_info?: { arte_url: string | null; arte_credito: string | null } | null;
   cubo_info?: { imagem_url: string | null; imagem_credito: string | null } | null;
 }) {
