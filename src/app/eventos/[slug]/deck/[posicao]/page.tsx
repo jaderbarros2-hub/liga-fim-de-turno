@@ -28,12 +28,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `${deck?.arquetipo ?? deck?.deckNome ?? "Deck"} · ${deck?.nick ?? ""} · ${evento.titulo}` };
 }
 
-/** Carta que representa o deck: a não-terreno com mais cópias (desempate: maior custo). */
+/**
+ * Carta que representa o deck: de preferência a criatura com mais cópias (desempate: maior custo);
+ * sem criaturas, a mágica com mais cópias. Terrenos nunca.
+ */
 function cartaDestaque(principal: ItemLista[], cartas: Map<string, Carta>) {
-  return [...principal]
+  const candidatas = [...principal]
     .map((i) => ({ i, c: cartas.get(chaveCarta(i.nome)) }))
-    .filter((x) => x.c && grupoDaCarta(x.c.tipo) !== "Terrenos" && x.c.imagem_grande)
-    .sort((a, b) => b.i.qtd - a.i.qtd || (b.c!.cmc ?? 0) - (a.c!.cmc ?? 0))[0]?.c;
+    .filter((x) => x.c && grupoDaCarta(x.c.tipo) !== "Terrenos" && x.c.imagem_grande);
+  const ordem = (a: (typeof candidatas)[number], b: (typeof candidatas)[number]) =>
+    b.i.qtd - a.i.qtd || (b.c!.cmc ?? 0) - (a.c!.cmc ?? 0);
+  const criaturas = candidatas.filter((x) => grupoDaCarta(x.c!.tipo) === "Criaturas").sort(ordem);
+  return (criaturas[0] ?? candidatas.sort(ordem)[0])?.c;
 }
 
 const ordinal = (n: number) => `${n}º lugar`;
