@@ -215,3 +215,25 @@ html {
 .artigo strong {
   color: var(--color-gelo);
 }
+
+/* Booster desenhado pela liga: bordas serrilhadas em cima e embaixo */
+.booster {
+  --z: 6px;
+  mask:
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(2 * var(--z)) 51% repeat-x,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--z)) 51% repeat-x;
+}
+.booster-selo {
+  background: repeating-linear-gradient(90deg, #d7dde8 0 2px, #8792a6 2px 4px);
+}
+.booster-brilho {
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.18) 42%, transparent 55%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .leque > * {
+    transition: transform 0.35s ease;
+  }
+  .leque:hover > * {
+    transform: var(--abre);
+  }
+}

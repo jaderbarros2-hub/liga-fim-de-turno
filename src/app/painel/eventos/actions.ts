@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { congelarCubo, guardarArteColecao, importarColecao, importarCubo, procurarColecoes, type ColecaoResumo, type CuboResumo } from "@/lib/limited";
+import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type EstadoEvento = { erro?: string; ok?: string };
@@ -54,12 +56,44 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   if (new Date(`${inscricoesAte}:00-03:00`) > new Date(`${inicio}:00-03:00`))
     return { erro: "O prazo de inscrição precisa ser antes do início do evento." };
 
+  // Limited: coleção (draft/selado) ou cubo
+  let colecaoCodigo: string | null = null;
+  let cuboId: string | null = null;
+  let nomeLimited = t("colecao") || null;
+  let pacotes: number | null = null;
+  try {
+    if (formato === "draft" || formato === "selado") {
+      const cod = t("colecao_codigo").toLowerCase();
+      if (cod) {
+        const { data: existe } = await criarClienteAdmin().from("colecoes").select("codigo, nome").eq("codigo", cod).maybeSingle();
+        const c = existe ?? (await importarColecao(cod));
+        colecaoCodigo = c.codigo;
+        nomeLimited = c.nome;
+        const arte = form.get("arte_colecao");
+        if (arte instanceof File && arte.size) await guardarArteColecao(c.codigo, arte, t("arte_credito"));
+      }
+      pacotes = Number(t("pacotes")) || (formato === "draft" ? 3 : 6);
+    } else if (formato === "cubo") {
+      const link = t("cubo_link");
+      if (link) {
+        const cubo = await importarCubo(link);
+        cuboId = cubo.id;
+        nomeLimited = cubo.nome;
+      }
+    }
+  } catch (e) {
+    return { erro: (e as Error).message };
+  }
+
   const dados = {
     titulo,
     liga_id: ligaId,
     formato,
     tipo: ["final_trimestre", "player_of_the_year"].includes(t("tipo")) ? t("tipo") : "etapa",
-    colecao: t("colecao") || null,
+    colecao: formato === "pauper" ? null : nomeLimited,
+    colecao_codigo: colecaoCodigo,
+    cubo_id: cuboId,
+    pacotes,
     inicio: deBrasilia(inicio),
     inscricoes_ate: deBrasilia(inscricoesAte),
     modalidade: t("modalidade") === "presencial" ? "presencial" : "online",
@@ -87,6 +121,8 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
     eventoId = data.id;
   }
 
+  if (cuboId) await congelarCubo(eventoId, cuboId, form.get("atualizar_lista") === "on");
+
   if (link) {
     const { error } = await supabase
       .from("evento_links")
@@ -108,4 +144,34 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   return {
     ok: status === "rascunho" ? "Evento salvo como rascunho (ainda não aparece no site)." : "Evento salvo e publicado no site.",
   };
+}
+
+async function exigirEquipe() {
+  const supabase = await criarClienteServidor();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+  const { data } = await supabase.from("jogadores").select("papel").eq("id", user.id).maybeSingle();
+  return data?.papel === "organizador" || data?.papel === "juiz";
+}
+
+/** Busca de coleções no Scryfall para o formulário. */
+export async function buscarColecoes(termo: string): Promise<{ lista?: ColecaoResumo[]; erro?: string }> {
+  if (!(await exigirEquipe())) return { erro: "Sem permissão." };
+  try {
+    return { lista: await procurarColecoes(termo) };
+  } catch (e) {
+    return { erro: (e as Error).message };
+  }
+}
+
+/** Prévia do cubo do Cube Cobra para o formulário (já guarda a lista mais recente). */
+export async function previsualizarCubo(link: string): Promise<{ cubo?: CuboResumo; erro?: string }> {
+  if (!(await exigirEquipe())) return { erro: "Sem permissão." };
+  try {
+    return { cubo: await importarCubo(link) };
+  } catch (e) {
+    return { erro: (e as Error).message };
+  }
 }

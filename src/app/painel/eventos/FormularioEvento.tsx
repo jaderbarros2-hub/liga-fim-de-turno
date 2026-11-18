@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useEffect, useRef, startTransition } from "react";
+import { useActionState, useEffect, useRef, useState, startTransition } from "react";
+import { CamposLimited } from "./CamposLimited";
 import { salvarEvento, type EstadoEvento } from "./actions";
 
 export type ValoresEvento = {
@@ -21,6 +22,11 @@ export type ValoresEvento = {
   detalhes: string;
   status: string;
   link_endstep: string;
+  colecao_codigo?: string;
+  colecao_icone?: string | null;
+  pacotes?: string;
+  cubo_link?: string;
+  cubo?: { cubecobra_id: string; nome: string; dono: string | null; imagem_url: string | null; total_cartas: number } | null;
 };
 
 const campo =
@@ -29,6 +35,7 @@ const campo =
 export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; ligas: { id: number; nome: string }[] }) {
   const [estado, acao, enviando] = useActionState<EstadoEvento, FormData>(salvarEvento, {});
   const aviso = useRef<HTMLDivElement>(null);
+  const [formato, setFormato] = useState(valores.formato);
 
   useEffect(() => {
     if (estado.erro || estado.ok) aviso.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -69,7 +76,7 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
         </select>
       </Campo>
       <Campo rotulo="Formato" id="formato">
-        <select id="formato" name="formato" defaultValue={valores.formato} className={campo}>
+        <select id="formato" name="formato" value={formato} onChange={(e) => setFormato(e.target.value)} className={campo}>
           <option value="pauper">Pauper</option>
           <option value="draft">Draft</option>
           <option value="selado">Selado</option>
@@ -83,9 +90,17 @@ export function FormularioEvento({ valores, ligas }: { valores: ValoresEvento; l
           <option value="player_of_the_year">Player of the Year (final do ano)</option>
         </select>
       </Campo>
-      <Campo rotulo="Coleção ou cubo (Limited)" id="colecao">
-        <input id="colecao" name="colecao" defaultValue={valores.colecao} className={campo} />
-      </Campo>
+      <CamposLimited
+        formato={formato}
+        inicial={{
+          colecao_codigo: valores.colecao_codigo ?? "",
+          colecao_nome: valores.colecao,
+          colecao_icone: valores.colecao_icone ?? null,
+          pacotes: valores.pacotes ?? "",
+          cubo_link: valores.cubo_link ?? "",
+          cubo: valores.cubo ?? null,
+        }}
+      />
       <Campo rotulo="Status" id="status">
         <select id="status" name="status" defaultValue={valores.status} className={campo}>
           <option value="rascunho">Rascunho (não aparece no site)</option>

@@ -20,16 +20,37 @@ export type Evento = {
   detalhes: string | null;
   status: string;
   liga: Liga;
+  colecao_codigo: string | null;
+  cubo_id: string | null;
+  pacotes: number | null;
+  colecao_info: {
+    codigo: string;
+    nome: string;
+    icone_svg: string | null;
+    arte_url: string | null;
+    arte_credito: string | null;
+    lancamento: string | null;
+    total_cartas: number | null;
+  } | null;
+  cubo_info: {
+    cubecobra_id: string;
+    nome: string;
+    dono: string | null;
+    imagem_url: string | null;
+    imagem_credito: string | null;
+    total_cartas: number | null;
+  } | null;
 };
 
-const CAMPOS_EVENTO = "*, liga:ligas(*)";
+const CAMPOS_EVENTO =
+  "*, liga:ligas(*), colecao_info:colecoes(codigo, nome, icone_svg, arte_url, arte_credito, lancamento, total_cartas), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, imagem_credito, total_cartas)";
 
 export async function listarProximosEventos(limite = 20, ligaSlug?: string): Promise<Evento[]> {
   if (!supabaseConfigurado()) return [];
   const supabase = await criarClienteServidor();
   let consulta = supabase
     .from("eventos")
-    .select(ligaSlug ? "*, liga:ligas!inner(*)" : CAMPOS_EVENTO)
+    .select(ligaSlug ? CAMPOS_EVENTO.replace("liga:ligas(*)", "liga:ligas!inner(*)") : CAMPOS_EVENTO)
     .in("status", ["aberto", "fechado", "em_andamento"])
     .order("inicio", { ascending: true })
     .limit(limite);

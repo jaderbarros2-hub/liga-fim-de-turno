@@ -1,20 +1,20 @@
 import Link from "next/link";
 import { Etiqueta } from "@/components/Botao";
-import { arteDoEvento, creditoArte, srcArte } from "@/lib/artes";
+import { capaDoEvento } from "@/lib/artes";
 import type { Evento } from "@/lib/dados";
 import { dataCurta, hora, NOMES_FORMATO, reais } from "@/lib/formato";
 
 export function EtiquetaLiga({ evento }: { evento: Evento }) {
   return (
     <Etiqueta tipo={evento.liga.slug === "pauper" ? "azul" : "ciano"}>
-      {evento.liga.slug === "pauper" ? "Pauper" : `Limited · ${NOMES_FORMATO[evento.formato]}`}
+      {evento.liga.slug === "pauper" ? "Pauper" : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}`}
     </Etiqueta>
   );
 }
 
 /** Cartão de evento com a arte da liga no topo e a etiqueta encostada na imagem. */
 export function CartaoEvento({ evento }: { evento: Evento }) {
-  const arte = arteDoEvento(evento);
+  const capa = capaDoEvento(evento);
   return (
     <Link
       href={`/eventos/${evento.slug}`}
@@ -23,19 +23,23 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
       <div className="relative aspect-[16/8] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={srcArte(arte)}
+          src={capa.src}
           alt=""
           loading="lazy"
-          style={{ objectPosition: arte.foco }}
+          style={{ objectPosition: capa.foco }}
           className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-grafite via-grafite/10 to-transparent" />
         <span className="absolute bottom-3 left-4">
           <EtiquetaLiga evento={evento} />
         </span>
-        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={creditoArte(arte)}>
-          {arte.artista}
+        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={capa.credito}>
+          {capa.artista}
         </span>
+        {evento.colecao_info?.icone_svg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={evento.colecao_info.icone_svg} alt="" className="absolute bottom-3 right-4 h-7 w-7 invert drop-shadow" />
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-2 px-4 pb-5 pt-3">
         <span className="text-sm font-semibold text-ciano">

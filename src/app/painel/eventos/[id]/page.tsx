@@ -30,7 +30,11 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const supabase = await criarClienteServidor();
   const [{ data: evento }, { data: ligas }, { data: link }] = await Promise.all([
-    supabase.from("eventos").select("*").eq("id", id).maybeSingle(),
+    supabase
+      .from("eventos")
+      .select("*, colecao_info:colecoes(nome, icone_svg), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, total_cartas)")
+      .eq("id", id)
+      .maybeSingle(),
     supabase.from("ligas").select("id, nome").order("id"),
     supabase.from("evento_links").select("link_endstep").eq("evento_id", id).maybeSingle(),
   ]);
@@ -115,6 +119,11 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
           detalhes: evento.detalhes ?? "",
           status: evento.status,
           link_endstep: link?.link_endstep ?? "",
+          colecao_codigo: evento.colecao_codigo ?? "",
+          colecao_icone: evento.colecao_info?.icone_svg ?? null,
+          pacotes: evento.pacotes ? String(evento.pacotes) : "",
+          cubo_link: evento.cubo_info ? `https://cubecobra.com/cube/list/${evento.cubo_info.cubecobra_id}` : "",
+          cubo: evento.cubo_info ?? null,
         }}
       />
     </div>

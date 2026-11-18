@@ -114,3 +114,26 @@ export function sortearArtes(formato: "pauper" | "limited" | "geral", quantidade
   for (let i = 0; i < quantidade; i++) saida.push(lista[i % lista.length]);
   return saida;
 }
+
+/**
+ * Capa de um evento: a arte da coleção (draft/selado) ou do cubo, quando houver;
+ * senão, uma arte fixa do banco da liga.
+ */
+export function capaDoEvento(evento: {
+  id: string;
+  liga: { slug: string };
+  colecao_info?: { arte_url: string | null; arte_credito: string | null } | null;
+  cubo_info?: { imagem_url: string | null; imagem_credito: string | null } | null;
+}) {
+  const externa = evento.colecao_info?.arte_url
+    ? { src: evento.colecao_info.arte_url, credito: evento.colecao_info.arte_credito }
+    : evento.cubo_info?.imagem_url
+      ? { src: evento.cubo_info.imagem_url, credito: evento.cubo_info.imagem_credito }
+      : null;
+  if (externa) {
+    const credito = externa.credito ?? "© Wizards of the Coast";
+    return { src: externa.src, foco: "50% 30%", credito, artista: credito.match(/ilustração de ([^·]+)/)?.[1]?.trim() ?? "" };
+  }
+  const a = arteDoEvento(evento);
+  return { src: srcArte(a), foco: a.foco, credito: creditoArte(a), artista: a.artista };
+}

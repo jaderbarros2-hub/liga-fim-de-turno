@@ -7,7 +7,10 @@ import { DeckDoEvento } from "@/components/DeckDoEvento";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { FotoJogador } from "@/components/Jogador";
 import { BannerPatrocinado } from "@/components/Parceiros";
-import { arteDoEvento, creditoArte, srcArte } from "@/lib/artes";
+import { LequeBoosters } from "@/components/Booster";
+import { GaleriaCartas, type CartaGaleria } from "@/components/GaleriaCartas";
+import { capaDoEvento } from "@/lib/artes";
+import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { NOMES_TIPO, periodo, TABELA_PONTOS } from "@/lib/circuito";
 import { buscarEvento, listarInscritos, listarResultados } from "@/lib/dados";
 import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
@@ -38,15 +41,32 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
   const deckPorPosicao = new Map(decks.map((d) => [d.posicao, d]));
   const pauper = evento.liga.slug === "pauper";
-  const arte = arteDoEvento(evento);
+  const capa = capaDoEvento(evento);
+  const colecao = evento.colecao_info;
+  const cubo = evento.cubo_info;
+  const temVitrine = !pauper && (colecao || cubo);
   const campeao = resultados[0];
   const { trimestre } = periodo(evento.inicio);
 
   const abas = [
     { id: "detalhes", rotulo: "Detalhes" },
+    ...(temVitrine ? [{ id: "colecao", rotulo: cubo ? `Cubo (${cubo.total_cartas ?? 0})` : "Coleção" }] : []),
     { id: "inscritos", rotulo: `Inscritos (${inscritos.length})` },
     { id: "resultados", rotulo: "Resultados" },
   ];
+
+  // Cartas da aba Coleção/Cubo: lista congelada do cubo ou raras e míticas da coleção
+  let cartasVitrine: CartaGaleria[] = [];
+  if (aba === "colecao" && temVitrine) {
+    const db = criarClienteAdmin();
+    if (cubo) {
+      const { data } = await db.from("evento_cubo").select("cartas").eq("evento_id", evento.id).maybeSingle();
+      cartasVitrine = (data?.cartas as CartaGaleria[] | undefined) ?? (((await db.from("cubos").select("cartas").eq("id", evento.cubo_id!).single()).data?.cartas as CartaGaleria[]) ?? []);
+    } else if (colecao) {
+      const { data } = await db.from("colecoes").select("destaques").eq("codigo", colecao.codigo).single();
+      cartasVitrine = (data?.destaques as CartaGaleria[]) ?? [];
+    }
+  }
 
   // Metagame da etapa (arquétipos informados pelos jogadores)
   const meta = new Map<string, number>();
@@ -58,7 +78,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
       {/* Abertura com a arte do evento */}
       <section className="relative isolate overflow-hidden border-b border-borda">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={srcArte(arte)} alt="" style={{ objectPosition: arte.foco }} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-50" />
+        <img src={capa.src} alt="" style={{ objectPosition: capa.foco }} className="absolute inset-0 -z-20 h-full w-full object-cover opacity-50" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/30" />
         <div className="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-preto to-transparent" />
         <div className="mx-auto flex max-w-6xl flex-wrap items-end gap-8 px-6 pb-10 pt-8">
@@ -106,7 +126,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             <DeckDoEvento evento={evento} />
           </aside>
         </div>
-        <span className="absolute bottom-2 right-4 hidden text-[11px] text-white/50 sm:block">{creditoArte(arte)}</span>
+        <span className="absolute bottom-2 right-4 hidden text-[11px] text-white/50 sm:block">{capa.credito}</span>
       </section>
 
       <nav aria-label="Abas do evento" className="z-20 border-b border-borda bg-preto/90 backdrop-blur md:sticky md:top-16">
@@ -223,6 +243,75 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               </ul>
             ))}
 
+          {aba === "colecao" && temVitrine && (
+            <div className="flex flex-col gap-4">
+              <p className="text-sm text-texto2">
+                {cubo
+                  ? `Lista do ${cubo.nome} usada neste evento (congelada na data do evento).`
+                  : `Raras e míticas de ${colecao!.nome} que podem aparecer nos boosters.`}
+              </p>
+              <GaleriaCartas cartas={cartasVitrine} />
+            </div>
+          )}
+
+          {aba === "detalhes" && temVitrine && (
+            <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
+              {colecao ? (
+                <div className="relative isolate bg-fundo2 px-4">
+                  <LequeBoosters
+                    quantidade={evento.pacotes ?? (evento.formato === "draft" ? 3 : 6)}
+                    arte={capa.src}
+                    foco={capa.foco}
+                    icone={colecao.icone_svg}
+                    nome={colecao.nome}
+                    rotulo={evento.formato === "draft" ? "Booster de draft" : "Selado"}
+                  />
+                </div>
+              ) : (
+                <div className="relative aspect-[16/10] h-full md:aspect-auto md:min-h-64">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={capa.src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-grafite via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-grafite" />
+                </div>
+              )}
+              <div className="flex flex-col gap-3 p-6 md:pl-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+                  {evento.formato === "draft" ? "Draft" : evento.formato === "selado" ? "Selado" : "Cubo"}
+                </span>
+                <h2 className="titulo flex items-center gap-3 text-4xl">
+                  {colecao?.icone_svg && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={colecao.icone_svg} alt="" className="h-8 w-8 invert" />
+                  )}
+                  {colecao?.nome ?? cubo?.nome}
+                </h2>
+                <dl className="grid grid-cols-2 gap-3 text-sm">
+                  {colecao ? (
+                    <>
+                      <Dado rotulo="Boosters por jogador" valor={String(evento.pacotes ?? (evento.formato === "draft" ? 3 : 6))} />
+                      <Dado rotulo="Cartas na coleção" valor={colecao.total_cartas ? String(colecao.total_cartas) : "—"} />
+                      <Dado rotulo="Lançamento" valor={colecao.lancamento ? new Date(`${colecao.lancamento}T12:00:00Z`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) : "—"} />
+                      <Dado rotulo="Código" valor={colecao.codigo.toUpperCase()} />
+                    </>
+                  ) : (
+                    <>
+                      <Dado rotulo="Cartas" valor={String(cubo!.total_cartas ?? "—")} />
+                      <Dado rotulo="Curadoria" valor={cubo!.dono ?? "—"} />
+                    </>
+                  )}
+                </dl>
+                <div className="flex flex-wrap gap-4 pt-1 text-sm font-semibold">
+                  <Link href={`/eventos/${evento.slug}?aba=colecao`}>{cubo ? "Ver a lista do cubo →" : "Ver raras e míticas →"}</Link>
+                  {cubo && (
+                    <a href={`https://cubecobra.com/cube/list/${cubo.cubecobra_id}`} target="_blank" rel="noopener">
+                      Abrir no Cube Cobra ↗
+                    </a>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
           {aba === "detalhes" && (
             <div className="grid gap-4 sm:grid-cols-2">
               <Bloco titulo="Formato">
@@ -314,6 +403,15 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
         <BannerPatrocinado posicao="evento" pagina={`/eventos/${evento.slug}`} />
       </div>
     </>
+  );
+}
+
+function Dado({ rotulo, valor }: { rotulo: string; valor: string }) {
+  return (
+    <div className="flex flex-col">
+      <dt className="text-cinza">{rotulo}</dt>
+      <dd className="font-semibold">{valor}</dd>
+    </div>
   );
 }
 
