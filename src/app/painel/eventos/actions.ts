@@ -66,8 +66,10 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
     if (formato === "draft" || formato === "selado") {
       const cod = t("colecao_codigo").toLowerCase();
       if (cod) {
-        const { data: existe } = await criarClienteAdmin().from("colecoes").select("codigo, nome").eq("codigo", cod).maybeSingle();
-        const c = existe ?? (await importarColecao(cod));
+        const { data: existe } = await criarClienteAdmin().from("colecoes").select("codigo, nome, arte_url, destaques").eq("codigo", cod).maybeSingle();
+        // Importa de novo se ainda faltar a arte ou as cartas da coleção
+        const completa = existe?.arte_url && Array.isArray(existe.destaques) && existe.destaques.length > 0;
+        const c = completa ? existe! : await importarColecao(cod);
         colecaoCodigo = c.codigo;
         nomeLimited = c.nome;
         const escolhida = t("arte_escolhida_url");

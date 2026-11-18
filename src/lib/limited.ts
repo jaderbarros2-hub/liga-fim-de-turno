@@ -7,6 +7,8 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
  */
 
 const UA = { "User-Agent": "LigaFimDeTurno/1.0", Accept: "application/json" };
+/** O Scryfall pede um intervalo entre consultas seguidas. */
+const pausa = () => new Promise((r) => setTimeout(r, 120));
 const TIPOS_DRAFT = ["expansion", "core", "masters", "draft_innovation", "funny", "alchemy"];
 
 export type CartaGaleria = { nome: string; imagem: string | null; cor: string; raridade?: string; tipo?: string; cmc?: number };
@@ -63,7 +65,9 @@ export async function importarColecao(codigo: string) {
 
   const destaques: CartaGaleria[] = [];
   let capa: { url: string; credito: string } | null = null;
-  const q = encodeURIComponent(`set:${set.code} (r:r or r:m) is:booster -is:digital`);
+  // Sem "is:booster": em coleções novas o Scryfall ainda não marca as cartas de booster e a busca volta vazia
+  await pausa();
+  const q = encodeURIComponent(`set:${set.code} (r:r or r:m) -is:digital`);
   const rc = await fetch(`https://api.scryfall.com/cards/search?q=${q}&order=edhrec&unique=cards`, { headers: UA, cache: "no-store" });
   if (rc.ok) {
     const { data } = (await rc.json()) as { data: CartaScryfall[] };
@@ -74,6 +78,7 @@ export async function importarColecao(codigo: string) {
     }
   }
   // Capa provisória: a primeira opção de arte inédita da coleção (nunca reimpressão)
+  await pausa();
   const opcoes = await opcoesDeArte(set.code).catch(() => []);
   if (opcoes[0]) capa = { url: opcoes[0].url, credito: opcoes[0].credito };
 
@@ -86,9 +91,9 @@ export async function importarColecao(codigo: string) {
     lancamento: set.released_at ?? null,
     total_cartas: set.card_count,
     tipo: set.set_type,
-    destaques,
-    arte_url: manterArte ? atual!.arte_url : (capa?.url ?? null),
-    arte_credito: manterArte ? atual!.arte_credito : (capa?.credito ?? null),
+    ...(destaques.length ? { destaques } : {}),
+    arte_url: manterArte || (atual?.arte_url && !capa) ? atual!.arte_url : (capa?.url ?? null),
+    arte_credito: manterArte || (atual?.arte_url && !capa) ? atual!.arte_credito : (capa?.credito ?? null),
     atualizado_em: new Date().toISOString(),
   });
   return { codigo: set.code, nome: set.name };
