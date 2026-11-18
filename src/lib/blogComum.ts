@@ -1,6 +1,13 @@
 /** Tipos e utilitários do blog que também rodam no navegador (editor). */
 
-export type Autor = { id: string; nome: string; bio: string | null; avatar_url: string | null; link: string | null };
+export type Autor = {
+  id: string;
+  nome: string;
+  bio: string | null;
+  avatar_url: string | null;
+  link: string | null;
+  jogador?: { nick_endstep: string | null } | null; // perfil de jogador vinculado
+};
 
 export type Artigo = {
   id: string;

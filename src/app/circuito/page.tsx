@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
-import { FotoJogador } from "@/components/Jogador";
+import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
 import { classificadosPOTY, ETAPAS_POR_MES, periodo, ranking, TABELA_PONTOS, TRIMESTRES, VAGAS_POTY } from "@/lib/circuito";
 
@@ -251,7 +251,7 @@ export default async function Circuito() {
                     {fi.campeao ? (
                       <>
                         <FotoJogador nick={fi.campeao.nick} avatar={fi.campeao.avatar} tamanho={28} />
-                        <span className="truncate text-sm font-semibold text-ciano">{fi.campeao.nick}</span>
+                        <NomeJogador nick={fi.campeao.nick} className="truncate text-sm font-semibold text-ciano" />
                       </>
                     ) : (
                       <span className="text-sm text-cinza">A definir</span>
@@ -265,7 +265,7 @@ export default async function Circuito() {
                     <li key={l.chave} className="flex items-center gap-3 py-2 text-sm">
                       <span className="w-5 font-semibold text-cinza">{l.posicao}</span>
                       <FotoJogador nick={l.nick} avatar={l.avatar} tamanho={24} />
-                      <span className="flex-1 truncate font-semibold">{l.nick}</span>
+                      <NomeJogador nick={l.nick} className="flex-1 truncate font-semibold" />
                       <span className="font-bold">{l.pontos} pts</span>
                     </li>
                   ))}

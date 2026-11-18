@@ -1,6 +1,6 @@
 import { AcoesLista, ComprarDeck } from "@/components/ComprarDeck";
 import { DeckCompleto, type GrupoDeck } from "@/components/DeckCompleto";
-import { FotoJogador } from "@/components/Jogador";
+import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { COR_BARRA, NOMES_COR } from "@/components/Mana";
 import { creditoArte, srcArte, type ArteBanco } from "@/lib/artes";
 import { chaveCarta, grupoDaCarta, ORDEM_GRUPOS, total, type Carta, type ItemLista } from "@/lib/decklist";
@@ -117,7 +117,7 @@ export function PaginaDeck({
               <span className="flex items-center gap-2">
                 <FotoJogador nick={autor.nick} avatar={autor.avatar} tamanho={26} />
                 <span>
-                  por <strong className="text-gelo">{autor.nick}</strong>
+                  por <strong className="text-gelo"><NomeJogador nick={autor.nick} /></strong>
                 </span>
               </span>
             )}

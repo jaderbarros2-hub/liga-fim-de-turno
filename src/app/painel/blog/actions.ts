@@ -14,26 +14,36 @@ async function exigirOrganizador() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return false;
-  const { data } = await supabase.from("jogadores").select("papel").eq("id", user.id).maybeSingle();
+  const { data } = await supabase
+    .from("jogadores")
+    .select("papel")
+    .eq("id", user.id)
+    .maybeSingle();
   return data?.papel === "organizador";
 }
 
 async function subir(arquivo: File, pasta: string) {
   if (arquivo.size > 3 * 1024 * 1024) throw new Error("Imagem maior que 3 MB.");
-  if (!/^image\/(png|jpe?g|webp|gif)$/.test(arquivo.type)) throw new Error("Use PNG, JPG, WebP ou GIF.");
+  if (!/^image\/(png|jpe?g|webp|gif)$/.test(arquivo.type))
+    throw new Error("Use PNG, JPG, WebP ou GIF.");
   const ext = arquivo.type.split("/")[1].replace("jpeg", "jpg");
   const caminho = `${pasta}/${crypto.randomUUID()}.${ext}`;
   const db = criarClienteAdmin();
-  const { error } = await db.storage.from("blog").upload(caminho, arquivo, { contentType: arquivo.type });
+  const { error } = await db.storage
+    .from("blog")
+    .upload(caminho, arquivo, { contentType: arquivo.type });
   if (error) throw new Error("Falha ao enviar a imagem.");
   return db.storage.from("blog").getPublicUrl(caminho).data.publicUrl;
 }
 
 /** Envia uma imagem para usar no meio do texto. */
-export async function enviarImagem(form: FormData): Promise<{ url?: string; erro?: string }> {
+export async function enviarImagem(
+  form: FormData,
+): Promise<{ url?: string; erro?: string }> {
   if (!(await exigirOrganizador())) return { erro: "Apenas o organizador." };
   const arquivo = form.get("imagem");
-  if (!(arquivo instanceof File) || !arquivo.size) return { erro: "Escolha uma imagem." };
+  if (!(arquivo instanceof File) || !arquivo.size)
+    return { erro: "Escolha uma imagem." };
   try {
     return { url: await subir(arquivo, "texto") };
   } catch (e) {
@@ -41,24 +51,39 @@ export async function enviarImagem(form: FormData): Promise<{ url?: string; erro
   }
 }
 
-export async function salvarArtigo(_: EstadoArtigo, form: FormData): Promise<EstadoArtigo> {
-  if (!(await exigirOrganizador())) return { erro: "Apenas o organizador pode escrever no blog." };
+export async function salvarArtigo(
+  _: EstadoArtigo,
+  form: FormData,
+): Promise<EstadoArtigo> {
+  if (!(await exigirOrganizador()))
+    return { erro: "Apenas o organizador pode escrever no blog." };
   const t = (c: string) => String(form.get(c) ?? "").trim();
   const id = t("id");
   const acao = t("acao"); // rascunho | publicar | despublicar
   const titulo = t("titulo");
   if (!titulo) return { erro: "Dê um título ao artigo." };
   const db = criarClienteAdmin();
-  const { data: autor } = await db.from("autores").select("id, nome").eq("id", t("autor_id")).maybeSingle();
-  if (!autor) return { erro: "Escolha o autor (cadastre em Painel → Blog → Autores)." };
+  const { data: autor } = await db
+    .from("autores")
+    .select("id, nome")
+    .eq("id", t("autor_id"))
+    .maybeSingle();
+  if (!autor)
+    return { erro: "Escolha o autor (cadastre em Painel → Blog → Autores)." };
   let slug = slugificar(t("slug") || titulo) || "artigo";
-  const { data: igual } = await db.from("artigos").select("id").eq("slug", slug).maybeSingle();
-  if (igual && igual.id !== id) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+  const { data: igual } = await db
+    .from("artigos")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (igual && igual.id !== id)
+    slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
 
   let capa: string | null | undefined;
   const arquivo = form.get("capa");
   try {
-    if (arquivo instanceof File && arquivo.size) capa = await subir(arquivo, "capas");
+    if (arquivo instanceof File && arquivo.size)
+      capa = await subir(arquivo, "capas");
   } catch (e) {
     return { erro: (e as Error).message };
   }
@@ -92,7 +117,8 @@ export async function salvarArtigo(_: EstadoArtigo, form: FormData): Promise<Est
   const resultado = id
     ? await db.from("artigos").update(dados).eq("id", id).select("id").single()
     : await db.from("artigos").insert(dados).select("id").single();
-  if (resultado.error) return { erro: "Não foi possível salvar. Tente de novo." };
+  if (resultado.error)
+    return { erro: "Não foi possível salvar. Tente de novo." };
 
   revalidatePath("/blog");
   revalidatePath("/");
@@ -111,7 +137,10 @@ export async function salvarArtigo(_: EstadoArtigo, form: FormData): Promise<Est
 
 export async function apagarArtigo(form: FormData) {
   if (!(await exigirOrganizador())) return;
-  await criarClienteAdmin().from("artigos").delete().eq("id", String(form.get("id")));
+  await criarClienteAdmin()
+    .from("artigos")
+    .delete()
+    .eq("id", String(form.get("id")));
   revalidatePath("/blog");
   revalidatePath("/");
   redirect("/painel/blog");
@@ -126,11 +155,13 @@ export async function salvarAutor(form: FormData) {
   const link = t("link");
   let avatar: string | undefined;
   const arquivo = form.get("avatar");
-  if (arquivo instanceof File && arquivo.size) avatar = await subir(arquivo, "autores");
+  if (arquivo instanceof File && arquivo.size)
+    avatar = await subir(arquivo, "autores");
   const dados = {
     nome,
     bio: t("bio") || null,
     link: /^https?:\/\//.test(link) ? link : null,
+    jogador_id: t("jogador_id") || null,
     ...(avatar ? { avatar_url: avatar } : {}),
   };
   const db = criarClienteAdmin();

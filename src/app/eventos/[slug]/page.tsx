@@ -5,7 +5,7 @@ import { AcaoEvento } from "@/components/AcaoEvento";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { DeckDoEvento } from "@/components/DeckDoEvento";
 import { EtiquetaLiga } from "@/components/Eventos";
-import { FotoJogador } from "@/components/Jogador";
+import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { BannerPatrocinado } from "@/components/Parceiros";
 import { LequeBoosters } from "@/components/Booster";
 import { GaleriaCartas, type CartaGaleria } from "@/components/GaleriaCartas";
@@ -163,7 +163,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         <span className="flex items-center gap-2.5">
                           <FotoJogador nick={r.nick_endstep} avatar={null} tamanho={32} />
                           <span className="flex min-w-0 flex-col">
-                            <span className="truncate font-semibold">{r.nick_endstep}</span>
+                            <NomeJogador nick={r.nick_endstep} className="truncate font-semibold" />
                             {d?.arquetipo && <span className="truncate text-sm text-texto2">{d.arquetipo}</span>}
                           </span>
                         </span>
@@ -199,7 +199,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                             <td className="p-3">
                               <span className="flex items-center gap-2.5">
                                 <FotoJogador nick={r.nick_endstep} avatar={null} tamanho={24} />
-                                <span className="font-semibold">{r.nick_endstep}</span>
+                                <NomeJogador nick={r.nick_endstep} className="font-semibold" />
                               </span>
                             </td>
                             {pauper && <td className="p-3 text-texto2">{d?.arquetipo ?? <span className="text-cinza">—</span>}</td>}
@@ -236,7 +236,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   return (
                     <li key={n} className="flex items-center gap-3 rounded-md bg-grafite p-3 ring-1 ring-borda">
                       <FotoJogador nick={nick} avatar={null} tamanho={30} />
-                      <span className="truncate font-semibold">{nick}</span>
+                      <NomeJogador nick={nick} className="truncate font-semibold" />
                     </li>
                   );
                 })}

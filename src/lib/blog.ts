@@ -5,7 +5,7 @@ import type { Artigo } from "@/lib/blogComum";
 export * from "@/lib/blogComum";
 
 const CAMPOS =
-  "id, slug, titulo, resumo, conteudo, capa_url, categoria, tipo, autor_nome, autor_id, status, publicado_em, autor:autores(id, nome, bio, avatar_url, link)";
+  "id, slug, titulo, resumo, conteudo, capa_url, categoria, tipo, autor_nome, autor_id, status, publicado_em, autor:autores(id, nome, bio, avatar_url, link, jogador:jogadores(nick_endstep))";
 
 export const POR_PAGINA = 24;
 

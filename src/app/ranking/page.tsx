@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FotoJogador } from "@/components/Jogador";
+import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
 import { classificadosPOTY, periodo, ranking, temporadasDisponiveis, TRIMESTRES, VAGAS_POTY } from "@/lib/circuito";
 
@@ -103,7 +103,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
                     <span className={`titulo w-8 text-4xl ${i === 0 ? "text-ciano" : "text-cinza"}`}>{l.posicao}º</span>
                     <FotoJogador nick={l.nick} avatar={l.avatar} tamanho={40} />
                     <span className="flex min-w-0 flex-col">
-                      <span className="truncate font-semibold">{l.nick}</span>
+                      <NomeJogador nick={l.nick} className="truncate font-semibold" />
                       <span className="text-sm text-texto2">
                         {l.pontos} pts · {l.etapas} {l.etapas === 1 ? "etapa" : "etapas"}
                       </span>
@@ -132,7 +132,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
                         <td className="p-3">
                           <span className="flex items-center gap-2.5">
                             <FotoJogador nick={l.nick} avatar={l.avatar} tamanho={26} />
-                            <span className="font-semibold">{l.nick}</span>
+                            <NomeJogador nick={l.nick} className="font-semibold" />
                             {poty.vagas.some((v) => v.chave === l.chave) && (
                               <span title="Classificado ao Player of the Year" className="rounded bg-ciano/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-ciano">
                                 POTY
@@ -168,7 +168,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
                 <li key={v.chave} className="flex items-center gap-3 py-2.5">
                   <span className="w-5 text-sm font-semibold text-cinza">{i + 1}</span>
                   <FotoJogador nick={v.nick} avatar={v.avatar} tamanho={26} />
-                  <span className="min-w-0 flex-1 truncate font-semibold">{v.nick}</span>
+                  <NomeJogador nick={v.nick} className="min-w-0 flex-1 truncate font-semibold" />
                   <span className="text-xs text-texto2">{v.motivo}</span>
                 </li>
               ))}
@@ -198,11 +198,11 @@ export default async function PaginaRanking({ searchParams }: Props) {
                   {f.campeao ? (
                     <span className="mt-2 flex flex-col gap-1 text-sm">
                       <span>
-                        <strong className="text-ciano">{f.campeao.nick}</strong> <span className="text-cinza">campeão</span>
+                        <strong className="text-ciano"><NomeJogador nick={f.campeao.nick} /></strong> <span className="text-cinza">campeão</span>
                       </span>
                       {f.vice && (
                         <span>
-                          <strong>{f.vice.nick}</strong> <span className="text-cinza">vice</span>
+                          <strong><NomeJogador nick={f.vice.nick} /></strong> <span className="text-cinza">vice</span>
                         </span>
                       )}
                     </span>

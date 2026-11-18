@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { SecaoArtigos } from "@/components/Artigos";
 import { BotaoLink } from "@/components/Botao";
 import { ListaEventos } from "@/components/Eventos";
-import { FotoJogador } from "@/components/Jogador";
+import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
 import { listarArtigos } from "@/lib/blog";
 import { finaisDaTemporada, periodo, ranking } from "@/lib/circuito";
@@ -190,7 +190,7 @@ export default async function PaginaFormato({ params }: Props) {
                       <span className="w-12 text-sm font-semibold text-cinza">{dataCurta(c.evento.inicio)}</span>
                       <FotoJogador nick={c.nick} avatar={null} tamanho={28} />
                       <span className="flex min-w-40 flex-1 flex-col">
-                        <span className="font-semibold">{c.nick}</span>
+                        <NomeJogador nick={c.nick} className="font-semibold" />
                         <span className="text-sm text-texto2">
                           {c.arquetipo ?? (slug === "pauper" ? "Arquétipo não informado" : `${NOMES_FORMATO[c.evento.formato] ?? ""}${c.evento.colecao ? ` · ${c.evento.colecao}` : ""}`)}
                           {c.evento.tipo === "final_trimestre" && <span className="ml-2 text-xs font-bold uppercase text-ciano">Final do Trimestre</span>}
@@ -237,7 +237,7 @@ export default async function PaginaFormato({ params }: Props) {
               <li key={l.chave} className="flex items-center gap-3 px-4 py-2.5 text-sm">
                 <span className="w-6 font-semibold text-cinza">{l.posicao}</span>
                 <FotoJogador nick={l.nick} avatar={l.avatar} tamanho={26} />
-                <span className="flex-1 truncate font-semibold">{l.nick}</span>
+                <NomeJogador nick={l.nick} className="flex-1 truncate font-semibold" />
                 <span className="text-texto2">{l.etapas} etapas</span>
                 <span className="w-16 text-right font-bold">{l.pontos} pts</span>
               </li>
