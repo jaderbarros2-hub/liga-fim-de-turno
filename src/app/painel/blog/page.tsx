@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
-import { CATEGORIAS, type Artigo } from "@/lib/blog";
+import { CATEGORIAS, type Artigo } from "@/lib/blogComum";
 import { dataPublicacao } from "@/lib/formato";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
@@ -19,7 +19,12 @@ export default async function PainelBlog() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="titulo text-5xl">Blog</h1>
-        <BotaoLink href="/painel/blog/novo">Novo artigo</BotaoLink>
+        <div className="flex items-center gap-5">
+          <Link href="/painel/blog/autores" className="text-sm font-semibold">
+            Autores
+          </Link>
+          <BotaoLink href="/painel/blog/novo">Novo artigo</BotaoLink>
+        </div>
       </div>
       {artigos.length === 0 ? (
         <p className="text-texto2">Nenhum artigo ainda. Escreva o primeiro.</p>

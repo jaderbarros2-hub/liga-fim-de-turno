@@ -48,9 +48,9 @@ export async function salvarArtigo(_: EstadoArtigo, form: FormData): Promise<Est
   const acao = t("acao"); // rascunho | publicar | despublicar
   const titulo = t("titulo");
   if (!titulo) return { erro: "Dê um título ao artigo." };
-  if (!t("autor_nome")) return { erro: "Informe o autor." };
-
   const db = criarClienteAdmin();
+  const { data: autor } = await db.from("autores").select("id, nome").eq("id", t("autor_id")).maybeSingle();
+  if (!autor) return { erro: "Escolha o autor (cadastre em Painel → Blog → Autores)." };
   let slug = slugificar(t("slug") || titulo) || "artigo";
   const { data: igual } = await db.from("artigos").select("id").eq("slug", slug).maybeSingle();
   if (igual && igual.id !== id) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
@@ -74,7 +74,9 @@ export async function salvarArtigo(_: EstadoArtigo, form: FormData): Promise<Est
     resumo: t("resumo") || null,
     conteudo: String(form.get("conteudo") ?? ""),
     categoria: t("categoria") || "geral",
-    autor_nome: t("autor_nome"),
+    autor_nome: autor.nome,
+    autor_id: autor.id,
+    tipo: t("tipo").slice(0, 30) || "Artigo",
     atualizado_em: new Date().toISOString(),
     ...(capa !== undefined ? { capa_url: capa } : {}),
   };
@@ -113,4 +115,29 @@ export async function apagarArtigo(form: FormData) {
   revalidatePath("/blog");
   revalidatePath("/");
   redirect("/painel/blog");
+}
+
+export async function salvarAutor(form: FormData) {
+  if (!(await exigirOrganizador())) return;
+  const t = (c: string) => String(form.get(c) ?? "").trim();
+  const id = t("id");
+  const nome = t("nome");
+  if (!nome) return;
+  const link = t("link");
+  let avatar: string | undefined;
+  const arquivo = form.get("avatar");
+  if (arquivo instanceof File && arquivo.size) avatar = await subir(arquivo, "autores");
+  const dados = {
+    nome,
+    bio: t("bio") || null,
+    link: /^https?:\/\//.test(link) ? link : null,
+    ...(avatar ? { avatar_url: avatar } : {}),
+  };
+  const db = criarClienteAdmin();
+  if (id) {
+    await db.from("autores").update(dados).eq("id", id);
+    await db.from("artigos").update({ autor_nome: nome }).eq("autor_id", id);
+  } else await db.from("autores").insert(dados);
+  revalidatePath("/blog", "layout");
+  redirect("/painel/blog/autores");
 }

@@ -47,3 +47,10 @@ export const NOMES_STATUS: Record<string, string> = {
 export function dataPublicacao(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", { timeZone: FUSO, day: "numeric", month: "short", year: "numeric" });
 }
+
+/** Data compacta para cartões: "15 nov 2026". */
+export function dataCartao(iso: string) {
+  const partes = new Intl.DateTimeFormat("pt-BR", { timeZone: FUSO, day: "numeric", month: "short", year: "numeric" }).formatToParts(new Date(iso));
+  const v = (t: string) => partes.find((p) => p.type === t)?.value ?? "";
+  return `${v("day")} ${v("month").replace(".", "")} ${v("year")}`;
+}

@@ -154,6 +154,19 @@ html {
 }
 .artigo a {
   color: var(--color-ciano);
+  font-weight: 600;
+}
+.artigo h2 {
+  text-transform: none;
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 2.5rem 0 1rem;
+}
+.artigo h3 {
+  font-size: 1.25rem;
+}
+.artigo > *:first-child {
+  margin-top: 0;
 }
 .artigo blockquote {
   border-left: 3px solid var(--color-azul);

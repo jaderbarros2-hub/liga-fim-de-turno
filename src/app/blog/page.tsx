@@ -1,49 +1,97 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ListaArtigos } from "@/components/Artigos";
-import { CATEGORIAS, listarArtigos } from "@/lib/blog";
+import { GradeArtigos } from "@/components/Artigos";
+import { CATEGORIAS, paginaDeArtigos, POR_PAGINA } from "@/lib/blog";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Blog",
-  description: "Artigos sobre Pauper, Limited, metagame e os bastidores da Liga Fim de Turno.",
+  title: "Artigos",
+  description: "Guias de deck, metagame, relatórios das etapas e notícias da Liga Fim de Turno.",
 };
 
-export default async function Blog({ searchParams }: { searchParams: Promise<{ categoria?: string }> }) {
-  const { categoria } = await searchParams;
-  const filtro = categoria && CATEGORIAS[categoria] ? categoria : undefined;
-  const artigos = await listarArtigos(60, filtro);
+type Props = { searchParams: Promise<{ categoria?: string; pagina?: string }> };
 
-  const aba = (valor: string | undefined, rotulo: string) => (
-    <Link
-      key={rotulo}
-      href={valor ? `/blog?categoria=${valor}` : "/blog"}
-      aria-current={filtro === valor ? "page" : undefined}
-      className={`py-4 no-underline ${filtro === valor ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
-    >
-      {rotulo}
-    </Link>
-  );
+export default async function Blog({ searchParams }: Props) {
+  const { categoria, pagina: p } = await searchParams;
+  const filtro = categoria && CATEGORIAS[categoria] ? categoria : undefined;
+  const pagina = Math.max(1, Number(p) || 1);
+  const { artigos, total } = await paginaDeArtigos(pagina, filtro);
+  const paginas = Math.max(1, Math.ceil(total / POR_PAGINA));
+
+  const link = (q: { categoria?: string; pagina?: number }) => {
+    const s = new URLSearchParams();
+    if (q.categoria) s.set("categoria", q.categoria);
+    if (q.pagina && q.pagina > 1) s.set("pagina", String(q.pagina));
+    return `/blog${s.size ? `?${s}` : ""}`;
+  };
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-12">
-      <div className="flex flex-col gap-3">
-        <h1 className="titulo text-6xl sm:text-7xl">Blog</h1>
-        <p className="max-w-2xl text-lg text-texto2">
-          Metagame, guias de deck, relatórios das etapas e tudo o que acontece na liga.
-        </p>
-      </div>
-      <nav aria-label="Categorias" className="flex flex-wrap gap-x-6 border-b border-borda text-sm font-semibold">
-        {aba(undefined, "Todos")}
-        {Object.entries(CATEGORIAS).map(([v, r]) => aba(v, r))}
+    <>
+      <nav aria-label="Seções do blog" className="border-b border-borda bg-fundo2">
+        <div className="mx-auto flex max-w-6xl items-center gap-6 overflow-x-auto px-6 text-sm font-semibold">
+          <span className="titulo shrink-0 py-3 text-xl">Blog da liga</span>
+          <Link href="/blog" className="shrink-0 border-b-2 border-azul py-3 text-gelo no-underline">
+            Artigos
+          </Link>
+          <Link href="/resultados" className="shrink-0 py-3 text-texto2 no-underline hover:text-gelo">
+            Resultados
+          </Link>
+          <Link href="/como-jogar" className="shrink-0 py-3 text-texto2 no-underline hover:text-gelo">
+            Como jogar
+          </Link>
+        </div>
       </nav>
-      {artigos.length === 0 ? (
-        <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
-          {filtro ? "Nenhum artigo nesta categoria ainda." : "Os primeiros artigos estão sendo escritos. Volte em breve."}
-        </p>
-      ) : (
-        <ListaArtigos artigos={artigos} primeiroDestaque={!filtro} />
-      )}
-    </div>
+
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 pb-16 pt-10">
+        <h1 className="titulo text-5xl">Artigos</h1>
+        <nav aria-label="Categorias" className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          {[[undefined, "Todos os artigos"] as const, ...Object.entries(CATEGORIAS)].map(([v, r]) => (
+            <Link
+              key={r}
+              href={link({ categoria: v })}
+              aria-current={filtro === v ? "page" : undefined}
+              className={filtro === v ? "font-semibold text-ciano underline underline-offset-4" : "text-texto2 no-underline hover:text-gelo"}
+            >
+              {r}
+            </Link>
+          ))}
+        </nav>
+
+        {artigos.length === 0 ? (
+          <p className="mt-4 border-l-2 border-azul py-2 pl-4 text-texto2">
+            {filtro ? "Nenhum artigo nesta categoria ainda." : "Os primeiros artigos estão sendo escritos. Volte em breve."}
+          </p>
+        ) : (
+          <div className="mt-2">
+            <GradeArtigos artigos={artigos} />
+          </div>
+        )}
+
+        {paginas > 1 && (
+          <nav aria-label="Páginas" className="mt-6 flex items-center justify-center gap-2 text-sm font-semibold">
+            {pagina > 1 && (
+              <Link href={link({ categoria: filtro, pagina: pagina - 1 })} className="rounded px-3 py-2 ring-1 ring-borda no-underline">
+                ← Anteriores
+              </Link>
+            )}
+            {Array.from({ length: paginas }, (_, i) => i + 1).map((n) => (
+              <Link
+                key={n}
+                href={link({ categoria: filtro, pagina: n })}
+                aria-current={n === pagina ? "page" : undefined}
+                className={`grid h-9 w-9 place-items-center rounded no-underline ${n === pagina ? "bg-azul text-white" : "text-texto2 ring-1 ring-borda"}`}
+              >
+                {n}
+              </Link>
+            ))}
+            {pagina < paginas && (
+              <Link href={link({ categoria: filtro, pagina: pagina + 1 })} className="rounded px-3 py-2 ring-1 ring-borda no-underline">
+                Próximos →
+              </Link>
+            )}
+          </nav>
+        )}
+      </div>
+    </>
   );
 }

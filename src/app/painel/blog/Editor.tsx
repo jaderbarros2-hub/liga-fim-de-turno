@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { startTransition, useActionState, useRef, useState } from "react";
 import { Markdown } from "@/components/Markdown";
-import { CATEGORIAS, type Artigo } from "@/lib/blogComum";
+import { CATEGORIAS, TIPOS, type Artigo, type Autor } from "@/lib/blogComum";
 import { enviarImagem, salvarArtigo } from "./actions";
 
 const CAMPO = "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo";
@@ -12,7 +13,7 @@ const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
 const paraCampo = (iso: string | null) =>
   iso ? new Date(new Date(iso).getTime() - 3 * 3600e3).toISOString().slice(0, 16) : "";
 
-export function Editor({ artigo, autorPadrao }: { artigo?: Artigo; autorPadrao: string }) {
+export function Editor({ artigo, autores }: { artigo?: Artigo; autores: Autor[] }) {
   const [estado, executar, salvando] = useActionState(salvarArtigo, null);
   const [texto, setTexto] = useState(artigo?.conteudo ?? "");
   const [aba, setAba] = useState<"escrever" | "ver">("escrever");
@@ -156,8 +157,26 @@ export function Editor({ artigo, autorPadrao }: { artigo?: Artigo; autorPadrao: 
           </select>
         </label>
         <label className={ROTULO}>
+          Tipo (aparece acima do título)
+          <input name="tipo" list="tipos-artigo" defaultValue={artigo?.tipo ?? "Artigo"} maxLength={30} className={CAMPO} />
+          <datalist id="tipos-artigo">
+            {TIPOS.map((t) => (
+              <option key={t} value={t} />
+            ))}
+          </datalist>
+        </label>
+        <label className={ROTULO}>
           Autor
-          <input name="autor_nome" required defaultValue={artigo?.autor_nome ?? autorPadrao} className={CAMPO} />
+          <select name="autor_id" required defaultValue={artigo?.autor_id ?? autores[0]?.id} className={CAMPO}>
+            {autores.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.nome}
+              </option>
+            ))}
+          </select>
+          <Link href="/painel/blog/autores" className="font-normal">
+            Cadastrar ou editar autores
+          </Link>
         </label>
         <label className={ROTULO}>
           Endereço (slug)

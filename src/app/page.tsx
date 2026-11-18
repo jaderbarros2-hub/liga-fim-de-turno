@@ -4,7 +4,7 @@ import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
 import { BannerPatrocinado, FaixaParceiros } from "@/components/Parceiros";
 import { CARTAS_FAIXA, cartaInteira, creditoArte, sortearArtes, srcArte, type ArteBanco } from "@/lib/artes";
-import { ListaArtigos } from "@/components/Artigos";
+import { SecaoArtigos } from "@/components/Artigos";
 import { listarArtigos } from "@/lib/blog";
 import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
 import { dataCurta, dataLonga, hora, reais } from "@/lib/formato";
@@ -44,7 +44,7 @@ export default async function Inicio() {
   const [proximos, encerrados, artigos] = await Promise.all([
     listarProximosEventos(6),
     listarEventosEncerrados(3),
-    listarArtigos(3),
+    listarArtigos(4),
   ]);
   const destaque = proximos[0];
   const inscritos = destaque ? await listarInscritos(destaque.id) : [];
@@ -229,15 +229,9 @@ export default async function Inicio() {
       )}
 
       {artigos.length > 0 && (
-        <section className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-16">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-5xl">Últimos artigos</h2>
-            <Link href="/blog" className="text-sm font-semibold">
-              Ir para o blog →
-            </Link>
-          </div>
-          <ListaArtigos artigos={artigos} />
-        </section>
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <SecaoArtigos titulo="Últimos artigos" artigos={artigos} href="/blog" />
+        </div>
       )}
 
       <FaixaParceiros />

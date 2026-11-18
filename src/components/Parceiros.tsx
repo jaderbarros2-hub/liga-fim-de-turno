@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { bannerPara, linkRastreado, listarParceiros, type Posicao } from "@/lib/parceiros";
+import { bannerPara, linkRastreado, listarParceiros, type Banner, type Posicao } from "@/lib/parceiros";
 
 /** Faixa de logos das lojas parceiras, em cinza e colorindo ao passar o mouse. */
 export async function FaixaParceiros() {
@@ -45,8 +45,18 @@ export async function FaixaParceiros() {
 }
 
 /** Faixa de anúncio de parceiro, com espaço reservado (sem anúncio, convida a anunciar). */
-export async function BannerPatrocinado({ posicao, pagina }: { posicao: Posicao; pagina: string }) {
+export async function BannerPatrocinado({
+  posicao,
+  pagina,
+  coluna = false,
+}: {
+  posicao: Posicao;
+  pagina: string;
+  /** Versão alta para a coluna lateral dos artigos. */
+  coluna?: boolean;
+}) {
   const banner = await bannerPara(posicao);
+  if (coluna) return <BannerColuna banner={banner} pagina={pagina} />;
   if (!banner) {
     return (
       <Link
@@ -80,6 +90,45 @@ export async function BannerPatrocinado({ posicao, pagina }: { posicao: Posicao;
         {banner.texto && <span className="text-sm text-texto2">{banner.texto}</span>}
       </span>
       <span className="relative z-10 hidden text-sm font-semibold text-ciano sm:block">Ver na loja →</span>
+    </a>
+  );
+}
+
+function BannerColuna({ banner, pagina }: { banner: Banner | null; pagina: string }) {
+  if (!banner) {
+    return (
+      <Link
+        href="/parceiros#anuncie"
+        className="flex aspect-[3/4] flex-col items-center justify-center gap-3 rounded-md bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] p-6 text-center text-cinza no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+      >
+        <span className="titulo text-3xl text-gelo">Sua loja aqui</span>
+        <span className="text-sm">Anuncie para quem joga Magic toda semana</span>
+        <span className="text-sm font-semibold text-ciano">Conheça os planos →</span>
+      </Link>
+    );
+  }
+  return (
+    <a
+      href={linkRastreado({ parceiro: banner.parceiro_id, banner: banner.id, origem: "banner", pagina })}
+      rel="sponsored noopener"
+      target="_blank"
+      className="group relative isolate flex aspect-[3/4] flex-col items-center justify-end gap-3 overflow-hidden rounded-md bg-grafite p-5 text-center text-gelo no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+    >
+      {banner.imagem_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={banner.imagem_url} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+      )}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/60 to-transparent" />
+      <span className="absolute right-2 top-2 rounded bg-preto/70 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cinza">
+        Patrocinado
+      </span>
+      {banner.parceiro?.logo_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={banner.parceiro.logo_url} alt={banner.parceiro.nome} className="h-10 w-auto max-w-36 object-contain" />
+      )}
+      <span className="text-lg font-bold leading-tight">{banner.titulo}</span>
+      {banner.texto && <span className="text-sm text-texto2">{banner.texto}</span>}
+      <span className="rounded bg-white px-4 py-2 text-sm font-semibold text-preto">Ver na loja</span>
     </a>
   );
 }
