@@ -61,7 +61,10 @@ export async function criarPedidoPix(dados: {
   cpf?: string | null;
 }): Promise<PedidoPix> {
   const valor = (dados.valorCentavos / 100).toFixed(2);
-  const [primeiro, ...resto] = (dados.nome ?? "").trim().split(/\s+/);
+  // Modo de teste (credenciais de teste): o nome "APRO" faz o Mercado Pago aprovar o Pix sozinho,
+  // o que dispara o aviso (webhook) sem precisar pagar. Liga com MERCADO_PAGO_TESTE_APROVAR=1.
+  const aprovarTeste = process.env.MERCADO_PAGO_TESTE_APROVAR === "1";
+  const [primeiro, ...resto] = (aprovarTeste ? "APRO" : (dados.nome ?? "")).trim().split(/\s+/);
   const corpo = {
     type: "online",
     external_reference: dados.referencia,
