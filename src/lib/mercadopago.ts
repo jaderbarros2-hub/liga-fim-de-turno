@@ -131,7 +131,7 @@ export async function buscarPedido(idExterno: string): Promise<PedidoPix | null>
  * consulta o pedido direto na API antes de mudar qualquer coisa.
  */
 export function assinaturaValida(cabecalhoAssinatura: string | null, requestId: string | null, dataId: string) {
-  const segredo = process.env.MERCADO_PAGO_WEBHOOK_SECRET;
+  const segredo = process.env.MERCADO_PAGO_WEBHOOK_SECRET?.trim();
   if (!segredo) return true;
   if (!cabecalhoAssinatura) return false;
   const partes = Object.fromEntries(
