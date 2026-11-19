@@ -2,7 +2,12 @@ import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { reais } from "@/lib/formato";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
-import { cancelarMovimento, concluirMovimento, consultarPix } from "./actions";
+import {
+  cancelarMovimento,
+  concluirMovimento,
+  consultarPix,
+  reenviarEmailLoja,
+} from "./actions";
 
 type Pendente = {
   id: string;
@@ -55,6 +60,8 @@ const CONFIRMACOES: Record<string, string> = {
   envio_loja:
     "Pix para a loja confirmado. A loja recebeu por e-mail o pedido para gerar o crédito do jogador.",
   cancelado: "Pedido cancelado. O valor voltou para a Carteira do jogador.",
+  reenviado:
+    "Pedido reenviado para a loja. Confira o resultado em Painel → E-mails.",
 };
 
 export default async function Financeiro({
@@ -425,6 +432,17 @@ export default async function Financeiro({
                       : "Pix enviado à loja"
                     : "Cancelado"}
                 </span>
+                {r.tipo === "envio_loja" && r.status === "concluido" && (
+                  <form action={reenviarEmailLoja}>
+                    <input type="hidden" name="id" value={r.id} />
+                    <BotaoEnviar
+                      className={botao("secundario")}
+                      pendente="Reenviando…"
+                    >
+                      Reenviar e-mail à loja
+                    </BotaoEnviar>
+                  </form>
+                )}
               </li>
             ))}
           </ul>

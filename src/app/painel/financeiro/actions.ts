@@ -106,3 +106,11 @@ export async function consultarPix(form: FormData) {
   await sincronizarPagamento(pag.id);
   revalidatePath("/painel/financeiro");
 }
+
+/** Reenvia à loja o pedido para gerar o crédito (ex.: e-mail perdido ou falha no envio). */
+export async function reenviarEmailLoja(form: FormData) {
+  await exigirOrganizador();
+  const id = String(form.get("id"));
+  await emailResgateParaLoja(id);
+  redirect("/painel/financeiro?ok=reenviado");
+}
