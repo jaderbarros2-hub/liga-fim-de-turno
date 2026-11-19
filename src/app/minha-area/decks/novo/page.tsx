@@ -20,7 +20,9 @@ export default async function NovoDeck() {
     .eq("ativo", true)
     .order("nome");
   // "Outro" sempre por último
-  const lista = (arquetipos ?? []).sort((a, b) => (a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0));
+  const lista = (arquetipos ?? []).sort((a, b) =>
+    a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0,
+  );
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">

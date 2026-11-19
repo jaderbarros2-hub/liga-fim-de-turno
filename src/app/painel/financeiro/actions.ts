@@ -49,15 +49,14 @@ export async function concluirMovimento(form: FormData) {
   after(() =>
     m.tipo === "saque" ? emailSaquePago(id) : emailResgateParaLoja(id),
   );
-  await db
-    .from("registro_atividades")
-    .insert({
-      ator_id: ator,
-      acao: `${m.tipo}_concluido`,
-      entidade: "carteira_movimentos",
-      entidade_id: id,
-    });
+  await db.from("registro_atividades").insert({
+    ator_id: ator,
+    acao: `${m.tipo}_concluido`,
+    entidade: "carteira_movimentos",
+    entidade_id: id,
+  });
   revalidatePath("/painel/financeiro");
+  redirect(`/painel/financeiro?ok=${m.tipo}`);
 }
 
 /** Cancela o pedido: o valor volta para a Carteira do jogador. */
@@ -70,16 +69,15 @@ export async function cancelarMovimento(form: FormData) {
     .update({ status: "cancelado" })
     .eq("id", id)
     .eq("status", "pendente");
-  await db
-    .from("registro_atividades")
-    .insert({
-      ator_id: ator,
-      acao: "movimento_cancelado",
-      entidade: "carteira_movimentos",
-      entidade_id: id,
-      detalhes: { motivo: String(form.get("motivo") ?? "") },
-    });
+  await db.from("registro_atividades").insert({
+    ator_id: ator,
+    acao: "movimento_cancelado",
+    entidade: "carteira_movimentos",
+    entidade_id: id,
+    detalhes: { motivo: String(form.get("motivo") ?? "") },
+  });
   revalidatePath("/painel/financeiro");
+  redirect("/painel/financeiro?ok=cancelado");
 }
 
 /** Consulta o pedido no Mercado Pago agora (diagnóstico) e confirma se já estiver pago. */

@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -131,7 +132,10 @@ export default async function EditarEvento({
                   <form action={confirmarManual}>
                     <input type="hidden" name="inscricao_id" value={i.id} />
                     <input type="hidden" name="evento_id" value={evento.id} />
-                    <BotaoEnviar className="font-semibold text-ciano hover:text-gelo">
+                    <BotaoEnviar
+                      className={botao("secundario")}
+                      pendente="Confirmando…"
+                    >
                       Confirmar manualmente
                     </BotaoEnviar>
                   </form>

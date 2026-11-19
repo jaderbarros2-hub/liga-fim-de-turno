@@ -293,7 +293,13 @@ export const emailSaqueSolicitado = (movId: string) =>
     });
     await avisarOrganizacao(
       `Saque pendente: ${reais(valor)} · ${nomeDe(m.jogador)}`,
+      "Novo saque para pagar",
       "Há um saque esperando o Pix no Financeiro.",
+      [
+        ["Jogador", nomeDe(m.jogador)],
+        ["Valor", reais(valor)],
+        ["Tipo", m.automatico ? "Automático (30 dias)" : "Pedido pelo jogador"],
+      ],
     );
   });
 
@@ -375,7 +381,15 @@ export const emailResgateSolicitado = (movId: string) =>
     });
     await avisarOrganizacao(
       `Resgate em loja: ${reais(valor)} · ${m.parceiro.nome}`,
-      `${nomeDe(m.jogador)} pediu crédito na ${m.parceiro.nome}. Faça o Pix para a loja no Financeiro em até 1 dia útil.`,
+      "Novo resgate em loja",
+      "Faça o Pix para a loja e confirme no Financeiro em até 1 dia útil: o jogador foi avisado de 2 dias úteis.",
+      [
+        ["Jogador", nomeDe(m.jogador)],
+        ["Loja", m.parceiro.nome],
+        ["Pix para a loja", reais(valor)],
+        ["Crédito a gerar", reais(credito)],
+        ["Código", m.codigo_loja ?? "—"],
+      ],
     );
   });
 
@@ -428,7 +442,12 @@ export const emailResgateParaLoja = (movId: string) =>
     });
   });
 
-async function avisarOrganizacao(assunto: string, texto: string) {
+async function avisarOrganizacao(
+  assunto: string,
+  titulo: string,
+  texto: string,
+  detalhes?: [string, string][],
+) {
   const para = organizacao();
   if (!para) return;
   await enviarEmail({
@@ -436,8 +455,9 @@ async function avisarOrganizacao(assunto: string, texto: string) {
     tipo: "organizacao",
     assunto,
     conteudo: {
-      titulo: assunto,
+      titulo,
       paragrafos: [texto],
+      detalhes,
       botao: { texto: "Abrir o Financeiro", url: `${SITE}/painel/financeiro` },
     },
   });

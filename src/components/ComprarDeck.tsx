@@ -1,5 +1,7 @@
 "use client";
 
+import { botao } from "@/components/Botao";
+
 import { useState } from "react";
 
 /**
@@ -39,7 +41,9 @@ export function ComprarDeck({
         Comprar este deck na {loja.nome}
       </button>
       <span className="text-xs text-cinza">
-        {copiado && !loja.aceitaLista ? "Lista copiada: cole na busca por lista da loja." : "Loja parceira · link patrocinado"}
+        {copiado && !loja.aceitaLista
+          ? "Lista copiada: cole na busca por lista da loja."
+          : "Loja parceira · link patrocinado"}
       </span>
     </div>
   );
@@ -49,10 +53,10 @@ export function ComprarDeck({
 export function AcoesLista({ lista, nome }: { lista: string; nome: string }) {
   const [copiado, setCopiado] = useState(false);
   return (
-    <div className="flex flex-wrap gap-4 text-sm font-semibold">
+    <div className="flex flex-wrap gap-2">
       <button
         type="button"
-        className="text-ciano hover:text-gelo"
+        className={botao("secundario")}
         onClick={async () => {
           await navigator.clipboard.writeText(lista);
           setCopiado(true);
@@ -62,7 +66,7 @@ export function AcoesLista({ lista, nome }: { lista: string; nome: string }) {
         {copiado ? "Lista copiada ✓" : "Copiar lista"}
       </button>
       <a
-        className="text-ciano hover:text-gelo"
+        className={botao("secundario")}
         download={`${nome.replace(/[^\w\- ]+/g, "")}.txt`}
         href={`data:text/plain;charset=utf-8,${encodeURIComponent(lista)}`}
       >

@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { alternarBanner, salvarBanner } from "./actions";
@@ -199,8 +200,8 @@ export default async function PainelParceiros({
               <form action={alternarBanner}>
                 <input type="hidden" name="id" value={b.id} />
                 <input type="hidden" name="ativo" value={String(b.ativo)} />
-                <BotaoEnviar className="font-semibold text-ciano">
-                  {b.ativo ? "Pausar" : "Reativar"}
+                <BotaoEnviar className={botao("secundario")}>
+                  {b.ativo ? "Pausar banner" : "Reativar banner"}
                 </BotaoEnviar>
               </form>
             </li>

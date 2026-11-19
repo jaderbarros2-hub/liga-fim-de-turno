@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -134,8 +135,8 @@ export default async function Deck({
           </Link>
           <form action={apagarDeck}>
             <input type="hidden" name="id" value={id} />
-            <BotaoEnviar className="text-sm font-semibold text-cinza hover:text-erro">
-              Apagar
+            <BotaoEnviar className={botao("perigo")} pendente="Apagando…">
+              Apagar deck
             </BotaoEnviar>
           </form>
         </>

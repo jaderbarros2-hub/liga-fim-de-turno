@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -41,7 +42,7 @@ export default async function EditarArtigo({
       />
       <form action={apagarArtigo} className="border-t border-borda pt-6">
         <input type="hidden" name="id" value={artigo.id} />
-        <BotaoEnviar className="text-sm font-semibold text-red-400 hover:text-red-300">
+        <BotaoEnviar className={botao("perigo")} pendente="Apagando…">
           Apagar artigo (não dá para desfazer)
         </BotaoEnviar>
       </form>

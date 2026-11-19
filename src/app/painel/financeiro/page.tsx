@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { reais } from "@/lib/formato";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -48,42 +49,69 @@ const NOME_TIPO: Record<string, string> = {
   aleatoria: "Aleatória",
 };
 
-export default async function Financeiro() {
+const CONFIRMACOES: Record<string, string> = {
+  saque:
+    "Saque confirmado. O jogador recebeu um e-mail avisando que o Pix foi feito.",
+  envio_loja:
+    "Pix para a loja confirmado. A loja recebeu por e-mail o pedido para gerar o crédito do jogador.",
+  cancelado: "Pedido cancelado. O valor voltou para a Carteira do jogador.",
+};
+
+export default async function Financeiro({
+  searchParams,
+}: {
+  searchParams: Promise<{ ok?: string }>;
+}) {
+  const { ok } = await searchParams;
   const db = criarClienteAdmin();
-  const [{ data }, { data: saldos }, { data: avisos }, { data: pixPendentes }] =
-    await Promise.all([
-      db
-        .from("carteira_movimentos")
-        .select(
-          "id, tipo, valor_centavos, descricao, automatico, chave_pix, criado_em, jogador:jogadores(nick_endstep, nome, chave_pix, pix_tipo, pix_verificado_em, responsavel_nome), parceiro:parceiros(id, nome, bonus_credito_pct, credito:lojas_credito(pix_tipo, pix_chave, pix_titular, email_pedidos)), credito_centavos, conta_loja, codigo_loja",
-        )
-        .eq("status", "pendente")
-        .order("criado_em"),
-      db
-        .from("carteira_movimentos")
-        .select("valor_centavos")
-        .neq("status", "cancelado"),
-      db
-        .from("registro_atividades")
-        .select("id, acao, detalhes, criado_em")
-        .in("acao", [
-          "webhook_recebido",
-          "webhook_assinatura_invalida",
-          "pagamento_confirmado",
-          "mercadopago_status",
-        ])
-        .order("criado_em", { ascending: false })
-        .limit(10),
-      db
-        .from("pagamentos")
-        .select(
-          "id, id_externo, valor_centavos, criado_em, expira_em, inscricao:inscricoes(jogador:jogadores(nick_endstep), evento:eventos(titulo))",
-        )
-        .eq("status", "pendente")
-        .eq("provedor", "mercadopago")
-        .order("criado_em", { ascending: false })
-        .limit(10),
-    ]);
+  const [
+    { data },
+    { data: saldos },
+    { data: avisos },
+    { data: pixPendentes },
+    { data: recentes },
+  ] = await Promise.all([
+    db
+      .from("carteira_movimentos")
+      .select(
+        "id, tipo, valor_centavos, descricao, automatico, chave_pix, criado_em, jogador:jogadores(nick_endstep, nome, chave_pix, pix_tipo, pix_verificado_em, responsavel_nome), parceiro:parceiros(id, nome, bonus_credito_pct, credito:lojas_credito(pix_tipo, pix_chave, pix_titular, email_pedidos)), credito_centavos, conta_loja, codigo_loja",
+      )
+      .eq("status", "pendente")
+      .order("criado_em"),
+    db
+      .from("carteira_movimentos")
+      .select("valor_centavos")
+      .neq("status", "cancelado"),
+    db
+      .from("registro_atividades")
+      .select("id, acao, detalhes, criado_em")
+      .in("acao", [
+        "webhook_recebido",
+        "webhook_assinatura_invalida",
+        "pagamento_confirmado",
+        "mercadopago_status",
+      ])
+      .order("criado_em", { ascending: false })
+      .limit(10),
+    db
+      .from("pagamentos")
+      .select(
+        "id, id_externo, valor_centavos, criado_em, expira_em, inscricao:inscricoes(jogador:jogadores(nick_endstep), evento:eventos(titulo))",
+      )
+      .eq("status", "pendente")
+      .eq("provedor", "mercadopago")
+      .order("criado_em", { ascending: false })
+      .limit(10),
+    db
+      .from("carteira_movimentos")
+      .select(
+        "id, tipo, status, valor_centavos, credito_centavos, codigo_loja, concluido_em, criado_em, jogador:jogadores(nick_endstep, nome), parceiro:parceiros(nome)",
+      )
+      .in("tipo", ["saque", "envio_loja"])
+      .neq("status", "pendente")
+      .order("criado_em", { ascending: false })
+      .limit(8),
+  ]);
   const pendentes = (data as unknown as Pendente[]) ?? [];
   const saques = pendentes.filter((p) => p.tipo === "saque");
   const envios = pendentes.filter((p) => p.tipo === "envio_loja");
@@ -103,6 +131,25 @@ export default async function Financeiro() {
           Saques por Pix, envios para lojas parceiras e o total guardado nas
           Carteiras.
         </p>
+        {ok && CONFIRMACOES[ok] && (
+          <p
+            role="status"
+            className="flex items-center gap-2 rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              aria-hidden="true"
+            >
+              <path d="m5 12 5 5L20 7" />
+            </svg>
+            {CONFIRMACOES[ok]}
+          </p>
+        )}
       </div>
 
       <dl className="grid gap-3 sm:grid-cols-3">
@@ -200,8 +247,11 @@ export default async function Financeiro() {
                           Conferi o nome do titular
                         </label>
                       )}
-                      <BotaoEnviar className="min-h-9 rounded-lg bg-azul px-4 font-semibold text-white">
-                        Marcar como pago
+                      <BotaoEnviar
+                        className={botao("primario")}
+                        pendente="Registrando…"
+                      >
+                        Confirmar Pix enviado
                       </BotaoEnviar>
                     </form>
                     <form action={cancelarMovimento}>
@@ -212,7 +262,7 @@ export default async function Financeiro() {
                         value="Chave Pix com problema"
                       />
                       <BotaoEnviar
-                        className="font-semibold text-cinza hover:text-erro"
+                        className={botao("perigo")}
                         title="Devolve o valor para a Carteira do jogador"
                       >
                         Devolver à Carteira
@@ -230,7 +280,8 @@ export default async function Financeiro() {
         <h2 className="titulo text-3xl">Resgates em lojas parceiras</h2>
         <p className="text-sm text-cinza">
           Faça o Pix do valor para a chave da loja (o bônus é por conta da loja)
-          e clique em <strong className="text-gelo">Pix enviado</strong>: a loja
+          e clique em{" "}
+          <strong className="text-gelo">Confirmar Pix enviado</strong>: a loja
           recebe por e-mail o pedido para gerar o crédito em até 2 dias úteis. O
           jogador já recebeu o código quando pediu.
         </p>
@@ -298,14 +349,20 @@ export default async function Financeiro() {
                       <span className="text-cinza">{quando(e.criado_em)}</span>
                       <form action={concluirMovimento}>
                         <input type="hidden" name="id" value={e.id} />
-                        <BotaoEnviar className="font-semibold text-ciano">
-                          Pix enviado
+                        <BotaoEnviar
+                          className={botao("primario")}
+                          pendente="Registrando…"
+                        >
+                          Confirmar Pix enviado
                         </BotaoEnviar>
                       </form>
                       <form action={cancelarMovimento}>
                         <input type="hidden" name="id" value={e.id} />
-                        <BotaoEnviar className="text-cinza hover:text-erro">
-                          Cancelar
+                        <BotaoEnviar
+                          className={botao("perigo")}
+                          title="Cancela o pedido e devolve o valor para a Carteira do jogador"
+                        >
+                          Cancelar e devolver
                         </BotaoEnviar>
                       </form>
                     </li>
@@ -314,6 +371,63 @@ export default async function Financeiro() {
               </div>
             );
           })
+        )}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="titulo text-3xl">Concluídos recentemente</h2>
+        {(recentes ?? []).length === 0 ? (
+          <p className="text-texto2">Nada concluído ainda.</p>
+        ) : (
+          <ul className="flex flex-col divide-y divide-borda rounded-xl border border-borda text-sm">
+            {(
+              recentes as unknown as {
+                id: string;
+                tipo: string;
+                status: string;
+                valor_centavos: number;
+                credito_centavos: number | null;
+                codigo_loja: string | null;
+                concluido_em: string | null;
+                criado_em: string;
+                jogador: {
+                  nick_endstep: string | null;
+                  nome: string | null;
+                } | null;
+                parceiro: { nome: string } | null;
+              }[]
+            ).map((r) => (
+              <li
+                key={r.id}
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-3"
+              >
+                <span className="w-32 text-cinza">
+                  {quando(r.concluido_em ?? r.criado_em)}
+                </span>
+                <span className="min-w-40 flex-1">
+                  <strong>{r.jogador?.nick_endstep || r.jogador?.nome}</strong>
+                  <span className="text-texto2">
+                    {" "}
+                    ·{" "}
+                    {r.tipo === "saque"
+                      ? "Saque por Pix"
+                      : `Resgate na ${r.parceiro?.nome ?? "loja"}`}
+                    {r.codigo_loja ? ` · ${r.codigo_loja}` : ""}
+                  </span>
+                </span>
+                <span>{reais(Math.abs(r.valor_centavos))}</span>
+                <span
+                  className={`rounded px-2 py-0.5 text-xs font-bold ${r.status === "concluido" ? "bg-ciano/15 text-ciano" : "bg-erro/15 text-erro"}`}
+                >
+                  {r.status === "concluido"
+                    ? r.tipo === "saque"
+                      ? "Pago"
+                      : "Pix enviado à loja"
+                    : "Cancelado"}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
@@ -350,7 +464,10 @@ export default async function Financeiro() {
                 </span>
                 <form action={consultarPix}>
                   <input type="hidden" name="id" value={p.id} />
-                  <BotaoEnviar className="font-semibold text-ciano">
+                  <BotaoEnviar
+                    className={botao("secundario")}
+                    pendente="Consultando…"
+                  >
                     Consultar no Mercado Pago
                   </BotaoEnviar>
                 </form>

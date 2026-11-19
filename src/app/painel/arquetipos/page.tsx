@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { adicionarArquetipo, alternarArquetipo } from "./actions";
@@ -42,7 +43,7 @@ export default async function Arquetipos() {
             <form action={alternarArquetipo}>
               <input type="hidden" name="id" value={a.id} />
               <input type="hidden" name="ativo" value={String(a.ativo)} />
-              <BotaoEnviar className="font-semibold text-ciano hover:text-gelo">
+              <BotaoEnviar className={botao(a.ativo ? "perigo" : "secundario")}>
                 {a.ativo ? "Desativar" : "Reativar"}
               </BotaoEnviar>
             </form>

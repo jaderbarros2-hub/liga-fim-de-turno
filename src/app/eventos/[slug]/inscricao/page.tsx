@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { enderecoLinha, linkMapa } from "@/lib/lojas";
 import type { Metadata } from "next";
@@ -278,7 +279,10 @@ export default async function Inscricao({
                 <form key={destino} action={cancelarInscricao}>
                   <input type="hidden" name="slug" value={slug} />
                   <input type="hidden" name="destino" value={destino} />
-                  <BotaoEnviar className="min-h-10 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-erro">
+                  <BotaoEnviar
+                    className={botao("perigo")}
+                    pendente="Cancelando…"
+                  >
                     {rotulo}
                   </BotaoEnviar>
                 </form>
@@ -318,7 +322,7 @@ export default async function Inscricao({
         </ol>
         <form action={cancelarInscricao}>
           <input type="hidden" name="slug" value={slug} />
-          <BotaoEnviar className="text-sm font-semibold text-cinza hover:text-gelo">
+          <BotaoEnviar className={botao("perigo")} pendente="Liberando…">
             Desistir e liberar a vaga
           </BotaoEnviar>
         </form>

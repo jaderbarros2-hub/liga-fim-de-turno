@@ -1,5 +1,7 @@
 "use client";
 
+import { botao } from "@/components/Botao";
+
 import { useState, useTransition } from "react";
 import { artesDaColecao, buscarColecoes, previsualizarCubo } from "./actions";
 
@@ -158,7 +160,7 @@ export function CamposLimited({
           <button
             type="button"
             onClick={() => setColecao(null)}
-            className="text-sm font-semibold text-ciano"
+            className={botao("secundario")}
           >
             Trocar
           </button>

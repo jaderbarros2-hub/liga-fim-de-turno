@@ -13,7 +13,11 @@ export default async function PainelBlog() {
   const agora = new Date().toISOString();
 
   const situacao = (a: Artigo) =>
-    a.status === "rascunho" ? "Rascunho" : a.publicado_em && a.publicado_em > agora ? `Agendado · ${dataPublicacao(a.publicado_em)}` : "Publicado";
+    a.status === "rascunho"
+      ? "Rascunho"
+      : a.publicado_em && a.publicado_em > agora
+        ? `Agendado · ${dataPublicacao(a.publicado_em)}`
+        : "Publicado";
 
   return (
     <div className="flex flex-col gap-6">
@@ -31,13 +35,29 @@ export default async function PainelBlog() {
       ) : (
         <ul className="flex flex-col border-t border-borda">
           {artigos.map((a) => (
-            <li key={a.id} className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-borda py-3 text-sm">
-              <Link href={`/painel/blog/${a.id}`} className="min-w-60 flex-1 text-base font-semibold text-gelo">
+            <li
+              key={a.id}
+              className="flex flex-wrap items-center gap-x-6 gap-y-1 border-b border-borda py-3 text-sm"
+            >
+              <Link
+                href={`/painel/blog/${a.id}`}
+                className="min-w-60 flex-1 text-base font-semibold text-gelo"
+              >
                 {a.titulo}
               </Link>
-              <span className="text-cinza">{CATEGORIAS[a.categoria] ?? a.categoria}</span>
-              <span className={a.status === "publicado" ? "text-ciano" : "text-cinza"}>{situacao(a)}</span>
-              <span className="text-cinza">editado {dataPublicacao(a.atualizado_em)}</span>
+              <span className="text-cinza">
+                {CATEGORIAS[a.categoria] ?? a.categoria}
+              </span>
+              <span
+                className={
+                  a.status === "publicado" ? "text-ciano" : "text-cinza"
+                }
+              >
+                {situacao(a)}
+              </span>
+              <span className="text-cinza">
+                editado {dataPublicacao(a.atualizado_em)}
+              </span>
             </li>
           ))}
         </ul>

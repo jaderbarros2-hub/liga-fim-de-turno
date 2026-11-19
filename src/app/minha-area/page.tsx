@@ -4,7 +4,7 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { linkMapa } from "@/lib/lojas";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BotaoLink, Etiqueta } from "@/components/Botao";
+import { BotaoLink, Etiqueta, botao } from "@/components/Botao";
 import { CartaoEvento, EtiquetaLiga } from "@/components/Eventos";
 import { FotoJogador } from "@/components/Jogador";
 import { cartaDestaque } from "@/components/PaginaDeck";
@@ -701,7 +701,10 @@ export default async function MinhaArea({
                                     value={destino}
                                   />
                                 )}
-                                <BotaoEnviar className="text-sm font-semibold text-cinza hover:text-erro">
+                                <BotaoEnviar
+                                  className={botao("perigo")}
+                                  pendente="Cancelando…"
+                                >
                                   {rotulo}
                                 </BotaoEnviar>
                               </form>

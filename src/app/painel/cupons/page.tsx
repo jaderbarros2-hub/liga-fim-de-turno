@@ -1,3 +1,4 @@
+import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { contarUsos, descreverCupom, type Cupom } from "@/lib/cupons";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -125,7 +126,9 @@ export default async function Cupons() {
                         name="ativo"
                         value={String(c.ativo)}
                       />
-                      <BotaoEnviar className="font-semibold text-ciano">
+                      <BotaoEnviar
+                        className={botao(c.ativo ? "perigo" : "secundario")}
+                      >
                         {c.ativo ? "Desativar" : "Reativar"}
                       </BotaoEnviar>
                     </form>

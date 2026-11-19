@@ -1,5 +1,7 @@
 "use client";
 
+import { botao } from "@/components/Botao";
+
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
 import {
@@ -209,7 +211,7 @@ export function Checkout({
             <button
               type="button"
               onClick={() => setNovo(true)}
-              className="self-start text-sm font-semibold text-ciano"
+              className={`${botao("secundario")} self-start`}
             >
               + Cadastrar outro deck
             </button>
@@ -264,7 +266,7 @@ export function Checkout({
                   <button
                     type="button"
                     onClick={() => setNovo(false)}
-                    className="text-sm text-cinza"
+                    className={botao("secundario")}
                   >
                     Cancelar
                   </button>

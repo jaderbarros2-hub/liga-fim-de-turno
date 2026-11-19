@@ -11,9 +11,17 @@ export function FormularioDeck({
   valores,
 }: {
   arquetipos: { id: number; nome: string }[];
-  valores?: { id: string; nome: string; arquetipo_id: number | null; lista: string };
+  valores?: {
+    id: string;
+    nome: string;
+    arquetipo_id: number | null;
+    lista: string;
+  };
 }) {
-  const [estado, acao, enviando] = useActionState<EstadoDeck, FormData>(salvarDeck, {});
+  const [estado, acao, enviando] = useActionState<EstadoDeck, FormData>(
+    salvarDeck,
+    {},
+  );
   const [lista, setLista] = useState(valores?.lista ?? "");
   const [nome, setNome] = useState(valores?.nome ?? "");
 
@@ -35,11 +43,23 @@ export function FormularioDeck({
       {valores?.id && <input type="hidden" name="id" value={valores.id} />}
       <label className="flex flex-col gap-2 text-sm font-semibold">
         Nome do deck
-        <input name="nome" value={nome} onChange={(e) => setNome(e.target.value)} required placeholder="Ex.: Faeries do Jader" className={campo} />
+        <input
+          name="nome"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          required
+          placeholder="Ex.: Faeries do Jader"
+          className={campo}
+        />
       </label>
       <label className="flex flex-col gap-2 text-sm font-semibold">
         Arquétipo
-        <select name="arquetipo_id" defaultValue={valores?.arquetipo_id ?? ""} required className={campo}>
+        <select
+          name="arquetipo_id"
+          defaultValue={valores?.arquetipo_id ?? ""}
+          required
+          className={campo}
+        >
           <option value="">Escolha…</option>
           {arquetipos.map((a) => (
             <option key={a.id} value={a.id}>
@@ -51,8 +71,11 @@ export function FormularioDeck({
       <div className="flex flex-col gap-2 md:col-span-2">
         <span className="text-sm font-semibold">Lista</span>
         <p className="text-sm text-cinza">
-          No Endstep, abra o deck → <strong className="text-texto2">Import / Export → Export</strong> → <strong className="text-texto2">Copy</strong> e cole
-          aqui, ou clique em <strong className="text-texto2">Download</strong> e envie o arquivo .txt.
+          No Endstep, abra o deck →{" "}
+          <strong className="text-texto2">Import / Export → Export</strong> →{" "}
+          <strong className="text-texto2">Copy</strong> e cole aqui, ou clique
+          em <strong className="text-texto2">Download</strong> e envie o arquivo
+          .txt.
         </p>
         <textarea
           name="lista"
@@ -60,12 +83,19 @@ export function FormularioDeck({
           onChange={(e) => setLista(e.target.value)}
           rows={16}
           required
-          placeholder={"4 Ninja of the Deep Hours\n4 Spellstutter Sprite\n...\n\nSideboard\n4 Hydroblast\n..."}
+          placeholder={
+            "4 Ninja of the Deep Hours\n4 Spellstutter Sprite\n...\n\nSideboard\n4 Hydroblast\n..."
+          }
           className={`${campo} py-2 font-mono text-sm`}
         />
         <label className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-lg border border-borda-forte px-5 text-sm font-semibold hover:border-ciano">
           Enviar arquivo .txt
-          <input type="file" accept=".txt,text/plain" onChange={lerArquivo} className="sr-only" />
+          <input
+            type="file"
+            accept=".txt,text/plain"
+            onChange={lerArquivo}
+            className="sr-only"
+          />
         </label>
       </div>
       <div className="flex flex-col gap-3 md:col-span-2">
@@ -77,7 +107,10 @@ export function FormularioDeck({
           {enviando ? "Conferindo cartas…" : "Salvar deck"}
         </button>
         {estado.erro && (
-          <p role="alert" className="rounded-lg border border-erro px-4 py-3 text-sm font-semibold text-erro">
+          <p
+            role="alert"
+            className="rounded-lg border border-erro px-4 py-3 text-sm font-semibold text-erro"
+          >
             {estado.erro}
           </p>
         )}
