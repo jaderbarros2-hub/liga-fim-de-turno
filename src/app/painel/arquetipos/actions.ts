@@ -8,7 +8,8 @@ export async function adicionarArquetipo(form: FormData) {
   const nome = String(form.get("nome") ?? "").trim();
   if (!nome) return;
   const supabase = await criarClienteServidor();
-  await supabase.from("arquetipos").insert({ formato: "pauper", nome });
+  const formato = form.get("formato") === "premodern" ? "premodern" : "pauper";
+  await supabase.from("arquetipos").insert({ formato, nome });
   revalidatePath("/painel/arquetipos");
 }
 

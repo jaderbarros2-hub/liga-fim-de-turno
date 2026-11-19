@@ -3,40 +3,66 @@ import { BotaoLink } from "@/components/Botao";
 import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
 import { BannerPatrocinado, FaixaParceiros } from "@/components/Parceiros";
-import { CARTAS_FAIXA, cartaInteira, creditoArte, sortearArtes, srcArte, type ArteBanco } from "@/lib/artes";
+import {
+  CARTAS_FAIXA,
+  cartaInteira,
+  creditoArte,
+  sortearArtes,
+  srcArte,
+  type ArteBanco,
+} from "@/lib/artes";
 import { SecaoArtigos } from "@/components/Artigos";
 import { listarArtigos } from "@/lib/blog";
-import { listarEventosEncerrados, listarInscritos, listarProximosEventos } from "@/lib/dados";
+import {
+  listarEventosEncerrados,
+  listarInscritos,
+  listarProximosEventos,
+} from "@/lib/dados";
 import { dataCurta, dataLonga, hora } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
 
 const PASSOS = [
-  { titulo: "Entre com o Discord", texto: "Informe seu nick do Endstep e sua chave Pix para prêmios." },
-  { titulo: "Pague a inscrição no Pix", texto: "A confirmação é automática e libera o link privado do evento." },
-  { titulo: "Jogue no Endstep", texto: "Direto no navegador, sem precisar ter as cartas. O resultado sai aqui." },
+  {
+    titulo: "Entre com o Discord",
+    texto: "Informe seu nick do Endstep e sua chave Pix para prêmios.",
+  },
+  {
+    titulo: "Pague a inscrição no Pix",
+    texto: "A confirmação é automática e libera o link privado do evento.",
+  },
+  {
+    titulo: "Jogue no Endstep",
+    texto:
+      "Direto no navegador, sem precisar ter as cartas. O resultado sai aqui.",
+  },
 ];
 
 const POR_QUE = [
   {
     titulo: "Sem precisar ter as cartas",
-    texto: "Jogue no Endstep, de graça e no navegador. Teste qualquer deck sem gastar com cartas.",
+    texto:
+      "Jogue no Endstep, de graça e no navegador. Teste qualquer deck sem gastar com cartas.",
     icone: "M4 6h11v14H4zM9 4h11v14",
   },
   {
     titulo: "80% da inscrição vira prêmio",
-    texto: "O prêmio cai na sua Carteira: saque por Pix, use em ingressos ou envie para lojas parceiras.",
+    texto:
+      "O prêmio cai na sua Carteira: saque por Pix, use em ingressos ou envie para lojas parceiras.",
     icone: "M12 3v18M17 7H9.5a2.5 2.5 0 000 5h5a2.5 2.5 0 010 5H7",
   },
   {
     titulo: "Decks e resultados públicos",
-    texto: "Classificação, arquétipos e as listas do top 8 ficam no portal para todo mundo estudar.",
+    texto:
+      "Classificação, arquétipos e as listas do top 8 ficam no portal para todo mundo estudar.",
     icone: "M4 20V10M10 20V4M16 20v-7M22 20H2",
   },
   {
     titulo: "Temporada com ranking",
-    texto: "Pontos por resultado e por participação, finais trimestrais e Top 8 anual a partir de 2027.",
-    icone: "M7 4h10v4a5 5 0 01-10 0zM12 13v4M8 21h8M7 6H4a3 3 0 003 3M17 6h3a3 3 0 01-3 3",
+    texto:
+      "Pontos por resultado e por participação, finais trimestrais e Top 8 anual a partir de 2027.",
+    icone:
+      "M7 4h10v4a5 5 0 01-10 0zM12 13v4M8 21h8M7 6H4a3 3 0 003 3M17 6h3a3 3 0 01-3 3",
   },
 ];
 
@@ -50,11 +76,27 @@ export default async function Inicio() {
   const inscritos = destaque ? await listarInscritos(destaque.id) : [];
 
   // Artes sorteadas a cada visita (topo: só imagens grandes)
-  const [aEvento] = sortearArtes(destaque?.formato === "pauper" ? "pauper" : "geral", 1, true);
-  const [a1, a2, a3] = sortearArtes("geral", 3, true).map((a, i, arr) => (a.arquivo === aEvento.arquivo ? arr[(i + 1) % arr.length] : a));
+  const [aEvento] = sortearArtes(
+    destaque?.formato === "pauper" ? "pauper" : "geral",
+    1,
+    true,
+  );
+  const [a1, a2, a3] = sortearArtes("geral", 3, true).map((a, i, arr) =>
+    a.arquivo === aEvento.arquivo ? arr[(i + 1) % arr.length] : a,
+  );
   const [artePauper] = sortearArtes("pauper", 1);
-  const [arteLimited] = sortearArtes("limited", 1).map((a) => (a.arquivo === artePauper.arquivo ? sortearArtes("geral", 1)[0] : a));
-  const img = (a: ArteBanco) => ({ imagem: srcArte(a), credito: creditoArte(a), posicaoImagem: a.foco });
+  const [arteLimited] = sortearArtes("limited", 1).map((a) =>
+    a.arquivo === artePauper.arquivo ? sortearArtes("geral", 1)[0] : a,
+  );
+  const [artePremodern] = sortearArtes("geral", 3).filter(
+    (a) =>
+      a.arquivo !== artePauper.arquivo && a.arquivo !== arteLimited.arquivo,
+  );
+  const img = (a: ArteBanco) => ({
+    imagem: srcArte(a),
+    credito: creditoArte(a),
+    posicaoImagem: a.foco,
+  });
 
   const destaques: Destaque[] = [
     destaque
@@ -79,10 +121,12 @@ export default async function Inicio() {
           ...img(aEvento),
           titulo: (
             <>
-              Pauper e Limited <span className="text-ciano">toda semana</span>
+              Pauper, Premodern e Limited{" "}
+              <span className="text-ciano">toda semana</span>
             </>
           ),
-          texto: "Etapas online no Endstep, inscrição pelo Pix e prêmio para as melhores campanhas. A próxima etapa é anunciada primeiro no Discord.",
+          texto:
+            "Etapas online no Endstep, inscrição pelo Pix e prêmio para as melhores campanhas. A próxima etapa é anunciada primeiro no Discord.",
           acao: { href: "/contato", rotulo: "Entrar no Discord" },
           acaoSecundaria: { href: "/como-jogar", rotulo: "Como funciona" },
         },
@@ -94,7 +138,8 @@ export default async function Inicio() {
           Jogue sem precisar <span className="text-ciano">ter as cartas</span>
         </>
       ),
-      texto: "As etapas acontecem no Endstep, gratuito e direto no navegador. Monte a lista, entre no evento e jogue.",
+      texto:
+        "As etapas acontecem no Endstep, gratuito e direto no navegador. Monte a lista, entre no evento e jogue.",
       acao: { href: "/como-jogar", rotulo: "Como jogar" },
       acaoSecundaria: { href: "/eventos", rotulo: "Ver agenda" },
     },
@@ -106,7 +151,8 @@ export default async function Inicio() {
           80% da inscrição <span className="text-ciano">vira prêmio</span>
         </>
       ),
-      texto: "O prêmio cai na sua Carteira da liga: saque por Pix, use no próximo ingresso ou envie para uma loja parceira. A classificação fica pública no portal.",
+      texto:
+        "O prêmio cai na sua Carteira da liga: saque por Pix, use no próximo ingresso ou envie para uma loja parceira. A classificação fica pública no portal.",
       acao: { href: "/regras", rotulo: "Ver as regras" },
       acaoSecundaria: { href: "/resultados", rotulo: "Resultados anteriores" },
     },
@@ -115,10 +161,12 @@ export default async function Inicio() {
       ...img(a3),
       titulo: (
         <>
-          Uma temporada <span className="text-ciano">inteira</span> para disputar
+          Uma temporada <span className="text-ciano">inteira</span> para
+          disputar
         </>
       ),
-      texto: "A partir de 2027: ranking por liga, pontos por participação, finais trimestrais e o Top 8 anual que define o jogador do ano.",
+      texto:
+        "A partir de 2027: ranking por liga, pontos por participação, finais trimestrais e o Top 8 anual que define o jogador do ano.",
       acao: { href: "/sobre", rotulo: "Conheça a liga" },
     },
   ];
@@ -166,13 +214,19 @@ export default async function Inicio() {
         <ListaEventos eventos={proximos} />
       </section>
 
-      {/* As duas ligas, cada uma com sua arte */}
-      <section className="mx-auto grid max-w-6xl gap-5 px-6 pb-16 md:grid-cols-2">
+      {/* As ligas, cada uma com sua arte */}
+      <section className="mx-auto grid max-w-6xl gap-5 px-6 pb-16 md:grid-cols-3">
         <Liga
           slug="pauper"
           nome="Liga Pauper"
           texto="Só cartas comuns, decks acessíveis e jogo competitivo toda semana. Rodadas suíças e prêmio por classificação."
           arte={artePauper}
+        />
+        <Liga
+          slug="premodern"
+          nome="Liga Premodern"
+          texto="O Magic clássico: cartas de Fourth Edition a Scourge, decks de 60 cartas e o metagame de 1995 a 2003."
+          arte={artePremodern ?? artePauper}
         />
         <Liga
           slug="limited"
@@ -192,8 +246,13 @@ export default async function Inicio() {
           <h2 className="titulo text-5xl">Do cadastro à mesa</h2>
           <ol className="grid gap-8 sm:grid-cols-3">
             {PASSOS.map((p, i) => (
-              <li key={p.titulo} className="flex flex-col gap-2 border-t-2 border-azul pt-4">
-                <span className="text-sm font-semibold text-cinza">Passo {i + 1}</span>
+              <li
+                key={p.titulo}
+                className="flex flex-col gap-2 border-t-2 border-azul pt-4"
+              >
+                <span className="text-sm font-semibold text-cinza">
+                  Passo {i + 1}
+                </span>
                 <span className="text-lg font-semibold">{p.titulo}</span>
                 <span className="text-texto2">{p.texto}</span>
               </li>
@@ -217,10 +276,16 @@ export default async function Inicio() {
                   href={`/eventos/${e.slug}?aba=resultados`}
                   className="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-borda py-4 text-gelo no-underline"
                 >
-                  <span className="w-20 text-sm font-semibold text-cinza">{dataCurta(e.inicio)}</span>
-                  <span className="min-w-56 flex-1 text-lg font-semibold group-hover:text-ciano">{e.titulo}</span>
+                  <span className="w-20 text-sm font-semibold text-cinza">
+                    {dataCurta(e.inicio)}
+                  </span>
+                  <span className="min-w-56 flex-1 text-lg font-semibold group-hover:text-ciano">
+                    {e.titulo}
+                  </span>
                   <EtiquetaLiga evento={e} />
-                  <span className="text-sm font-semibold text-ciano">Classificação →</span>
+                  <span className="text-sm font-semibold text-ciano">
+                    Classificação →
+                  </span>
                 </Link>
               </li>
             ))}
@@ -230,7 +295,11 @@ export default async function Inicio() {
 
       {artigos.length > 0 && (
         <div className="mx-auto max-w-6xl px-6 py-16">
-          <SecaoArtigos titulo="Últimos artigos" artigos={artigos} href="/blog" />
+          <SecaoArtigos
+            titulo="Últimos artigos"
+            artigos={artigos}
+            href="/blog"
+          />
         </div>
       )}
 
@@ -270,7 +339,17 @@ export default async function Inicio() {
   );
 }
 
-function Liga({ slug, nome, texto, arte }: { slug: string; nome: string; texto: string; arte: ArteBanco }) {
+function Liga({
+  slug,
+  nome,
+  texto,
+  arte,
+}: {
+  slug: string;
+  nome: string;
+  texto: string;
+  arte: ArteBanco;
+}) {
   return (
     <Link
       href={`/ligas/${slug}`}
@@ -285,10 +364,14 @@ function Liga({ slug, nome, texto, arte }: { slug: string; nome: string; texto: 
         className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/70 to-preto/10" />
-      <span className="absolute right-4 top-3 text-[11px] text-white/60">{creditoArte(arte)}</span>
+      <span className="absolute right-4 top-3 text-[11px] text-white/60">
+        {creditoArte(arte)}
+      </span>
       <h2 className="titulo text-5xl">{nome}</h2>
       <p className="mt-2 max-w-md text-texto2">{texto}</p>
-      <span className="mt-4 text-sm font-semibold text-ciano">Ver etapas e regras →</span>
+      <span className="mt-4 text-sm font-semibold text-ciano">
+        Ver etapas e regras →
+      </span>
     </Link>
   );
 }

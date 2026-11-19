@@ -58,6 +58,7 @@ function Bloco({
 export function Checkout({
   slug,
   pauper,
+  formato,
   presencial,
   valor,
   valorCentavos,
@@ -69,6 +70,7 @@ export function Checkout({
 }: {
   slug: string;
   pauper: boolean;
+  formato: string;
   presencial: string | null; // nome da loja, se o evento for presencial
   valor: string;
   valorCentavos: number;
@@ -199,7 +201,10 @@ export function Checkout({
                       <span
                         className={`text-xs ${d.legal ? "text-cinza" : "text-alerta"}`}
                       >
-                        {d.legal ? (d.arquetipo ?? "Pauper") : "Com pendências"}
+                        {d.legal
+                          ? (d.arquetipo ??
+                            (formato === "premodern" ? "Premodern" : "Pauper"))
+                          : "Com pendências"}
                       </span>
                     </span>
                   </label>
@@ -220,6 +225,7 @@ export function Checkout({
               action={acaoDeck}
               className="flex flex-col gap-3 rounded-md bg-grafite p-4 ring-1 ring-borda"
             >
+              <input type="hidden" name="formato" value={formato} />
               <div className="grid gap-3 sm:grid-cols-2">
                 <input
                   name="nome"

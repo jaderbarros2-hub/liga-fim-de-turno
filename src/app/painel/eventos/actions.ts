@@ -1,5 +1,7 @@
 "use server";
 
+import { ehConstruido, ligaDoFormato } from "@/lib/formatos";
+
 import { lerPerguntas } from "@/lib/eventoInfo";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -19,7 +21,7 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type EstadoEvento = { erro?: string; ok?: string };
 
-const FORMATOS = ["pauper", "draft", "selado", "cubo"];
+const FORMATOS = ["pauper", "premodern", "draft", "selado", "cubo"];
 const STATUS = [
   "rascunho",
   "aberto",
@@ -62,7 +64,7 @@ export async function salvarEvento(
   const { data: liga } = await supabase
     .from("ligas")
     .select("id")
-    .eq("slug", formato === "pauper" ? "pauper" : "limited")
+    .eq("slug", ligaDoFormato(formato))
     .maybeSingle();
   const ligaId = liga?.id as number | undefined;
   const inicio = t("inicio");
@@ -160,7 +162,7 @@ export async function salvarEvento(
     tipo: ["final_trimestre", "player_of_the_year"].includes(t("tipo"))
       ? t("tipo")
       : "etapa",
-    colecao: formato === "pauper" ? null : nomeLimited,
+    colecao: ehConstruido(formato) ? null : nomeLimited,
     colecao_codigo: colecaoCodigo,
     cubo_id: cuboId,
     pacotes,
@@ -204,13 +206,11 @@ export async function salvarEvento(
     await congelarCubo(eventoId, cuboId, form.get("atualizar_lista") === "on");
 
   if (link) {
-    const { error } = await supabase
-      .from("evento_links")
-      .upsert({
-        evento_id: eventoId,
-        link_endstep: link,
-        atualizado_em: new Date().toISOString(),
-      });
+    const { error } = await supabase.from("evento_links").upsert({
+      evento_id: eventoId,
+      link_endstep: link,
+      atualizado_em: new Date().toISOString(),
+    });
     if (error)
       return { erro: `Evento salvo, mas o link não: ${error.message}` };
   } else if (id) {

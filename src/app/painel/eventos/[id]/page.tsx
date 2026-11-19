@@ -1,3 +1,4 @@
+import { ehConstruido } from "@/lib/formatos";
 import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
@@ -110,7 +111,7 @@ export default async function EditarEvento({
                   {i.jogador?.nick_endstep || i.jogador?.nome}
                 </span>
                 <span className="text-cinza">{i.jogador?.discord_nome}</span>
-                {evento.formato === "pauper" &&
+                {ehConstruido(evento.formato) &&
                   (i.deck_nome ? (
                     <Link
                       href={`/painel/eventos/${evento.id}/deck/${i.id}`}

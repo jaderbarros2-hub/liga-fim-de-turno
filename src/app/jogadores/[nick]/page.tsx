@@ -1,3 +1,4 @@
+import { ehConstruido } from "@/lib/formatos";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -236,7 +237,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                         </Link>
                       ) : (
                         (r.arquetipo ??
-                        (r.evento.formato === "pauper"
+                        (ehConstruido(r.evento.formato)
                           ? "—"
                           : (r.evento.colecao ?? "Limited")))
                       )}

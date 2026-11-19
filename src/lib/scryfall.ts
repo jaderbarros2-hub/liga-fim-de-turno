@@ -16,13 +16,23 @@ type CartaScryfall = {
   oracle_text?: string;
   legalities?: Record<string, string>;
   image_uris?: { small?: string; normal?: string };
-  card_faces?: { name: string; type_line?: string; mana_cost?: string; colors?: string[]; oracle_text?: string; image_uris?: { small?: string; normal?: string } }[];
+  card_faces?: {
+    name: string;
+    type_line?: string;
+    mana_cost?: string;
+    colors?: string[];
+    oracle_text?: string;
+    image_uris?: { small?: string; normal?: string };
+  }[];
 };
 
 function converter(c: CartaScryfall): Carta {
   const face = c.card_faces?.[0];
   const imagens = c.image_uris ?? face?.image_uris;
-  const texto = c.oracle_text ?? c.card_faces?.map((f) => f.oracle_text ?? "").join("\n") ?? "";
+  const texto =
+    c.oracle_text ??
+    c.card_faces?.map((f) => f.oracle_text ?? "").join("\n") ??
+    "";
   return {
     chave: chaveCarta(c.name),
     nome: c.name,
@@ -33,21 +43,36 @@ function converter(c: CartaScryfall): Carta {
     imagem: imagens?.small ?? null,
     imagem_grande: imagens?.normal ?? null,
     legal_pauper: c.legalities?.pauper === "legal",
-    qualquer_quantidade: /a deck can have any number of cards named/i.test(texto),
+    legal_premodern: c.legalities?.premodern === "legal",
+    qualquer_quantidade: /a deck can have any number of cards named/i.test(
+      texto,
+    ),
   };
 }
 
 /** Devolve um mapa chave → carta. Busca no Scryfall só o que ainda não está guardado. */
-export async function buscarCartas(nomes: string[]): Promise<Map<string, Carta>> {
+export async function buscarCartas(
+  nomes: string[],
+): Promise<Map<string, Carta>> {
   const db = criarClienteAdmin();
   const chaves = [...new Set(nomes.map(chaveCarta))];
   const mapa = new Map<string, Carta>();
   if (!chaves.length) return mapa;
 
-  const { data: guardadas } = await db.from("cartas").select("*").in("chave", chaves);
-  for (const c of (guardadas as Carta[] | null) ?? []) mapa.set(c.chave, c);
+  const { data: guardadas } = await db
+    .from("cartas")
+    .select("*")
+    .in("chave", chaves);
+  // Cartas guardadas antes do Premodern (sem a legalidade dele) são buscadas de novo
+  for (const c of (guardadas as Carta[] | null) ?? [])
+    if (c.legal_premodern !== null && c.legal_premodern !== undefined)
+      mapa.set(c.chave, c);
 
-  const faltando = nomes.filter((n, i, arr) => !mapa.has(chaveCarta(n)) && arr.findIndex((x) => chaveCarta(x) === chaveCarta(n)) === i);
+  const faltando = nomes.filter(
+    (n, i, arr) =>
+      !mapa.has(chaveCarta(n)) &&
+      arr.findIndex((x) => chaveCarta(x) === chaveCarta(n)) === i,
+  );
   for (let i = 0; i < faltando.length; i += 75) {
     const lote = faltando.slice(i, i + 75);
     // Nome de carta dupla ("A // B"): o Scryfall encontra pelo nome da primeira face
@@ -75,7 +100,8 @@ export async function buscarCartas(nomes: string[]): Promise<Map<string, Carta>>
         const primeira = chaveCarta(c.nome.split(" // ")[0]);
         if (primeira !== c.chave) mapa.set(primeira, c);
       }
-      if (novas.length) await db.from("cartas").upsert(novas, { onConflict: "chave" });
+      if (novas.length)
+        await db.from("cartas").upsert(novas, { onConflict: "chave" });
     } catch (e) {
       console.error("Scryfall indisponível:", e);
     }

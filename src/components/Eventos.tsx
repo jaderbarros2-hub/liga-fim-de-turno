@@ -3,12 +3,13 @@ import { Etiqueta } from "@/components/Botao";
 import { capaDoEvento } from "@/lib/artes";
 import type { Evento } from "@/lib/dados";
 import { dataCurta, hora, NOMES_FORMATO } from "@/lib/formato";
+import { ehConstruido } from "@/lib/formatos";
 
 export function EtiquetaLiga({ evento }: { evento: Evento }) {
   return (
-    <Etiqueta tipo={evento.formato === "pauper" ? "azul" : "ciano"}>
-      {evento.formato === "pauper"
-        ? "Pauper"
+    <Etiqueta tipo={ehConstruido(evento.formato) ? "azul" : "ciano"}>
+      {ehConstruido(evento.formato)
+        ? NOMES_FORMATO[evento.formato]
         : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}`}
     </Etiqueta>
   );

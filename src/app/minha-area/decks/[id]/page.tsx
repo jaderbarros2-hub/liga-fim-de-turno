@@ -41,7 +41,7 @@ export default async function Deck({
   const { data: deck } = await supabase
     .from("decks")
     .select(
-      "id, jogador_id, nome, arquetipo_id, principal, sideboard, legal, problemas, arquetipo:arquetipos(nome)",
+      "id, jogador_id, nome, formato, arquetipo_id, principal, sideboard, legal, problemas, arquetipo:arquetipos(nome)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -55,7 +55,7 @@ export default async function Deck({
   if (editar) {
     const { data: arquetipos } = await supabase
       .from("arquetipos")
-      .select("id, nome")
+      .select("id, nome, formato")
       .eq("ativo", true)
       .order("nome");
     return (
@@ -72,6 +72,7 @@ export default async function Deck({
             id: deck.id,
             nome: deck.nome,
             arquetipo_id: deck.arquetipo_id,
+            formato: deck.formato,
             lista: paraTexto(principal, sideboard),
           }}
         />

@@ -1,3 +1,4 @@
+import { NOME_LIGA } from "@/lib/formatos";
 import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { contarUsos, descreverCupom, type Cupom } from "@/lib/cupons";
@@ -104,9 +105,7 @@ export default async function Cupons() {
                   {c.evento_id
                     ? (nomeEvento.get(c.evento_id) ?? "Evento")
                     : c.formato
-                      ? c.formato === "pauper"
-                        ? "Pauper"
-                        : "Limited"
+                      ? (NOME_LIGA[c.formato] ?? c.formato)
                       : "Qualquer evento"}
                 </td>
                 <td className="p-3 text-texto2">

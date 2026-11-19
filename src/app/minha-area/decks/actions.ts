@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { conferirPauper, lerLista, total } from "@/lib/decklist";
+import { conferirDeck, lerLista, total } from "@/lib/decklist";
 import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -28,6 +28,7 @@ export async function salvarDeck(
   const nome = String(form.get("nome") ?? "").trim();
   const arquetipoId = Number(form.get("arquetipo_id")) || null;
   const texto = String(form.get("lista") ?? "");
+  const formato = form.get("formato") === "premodern" ? "premodern" : "pauper";
 
   if (!nome) return { erro: "Dê um nome ao deck." };
   if (!arquetipoId) return { erro: "Escolha o arquétipo." };
@@ -44,12 +45,12 @@ export async function salvarDeck(
     return {
       erro: "Não foi possível consultar as cartas agora. Tente de novo em instantes.",
     };
-  const problemas = conferirPauper(lista, cartas);
+  const problemas = conferirDeck(lista, cartas, formato);
 
   const dados = {
     jogador_id: jogadorId,
     nome,
-    formato: "pauper",
+    formato,
     arquetipo_id: arquetipoId,
     principal: lista.principal,
     sideboard: lista.sideboard,
@@ -103,7 +104,7 @@ export async function escolherDeckDoEvento(form: FormData) {
 
   const { data: evento } = await db
     .from("eventos")
-    .select("id, inicio")
+    .select("id, inicio, formato")
     .eq("slug", slug)
     .single();
   if (!evento || new Date(evento.inicio).getTime() <= Date.now())
@@ -111,11 +112,12 @@ export async function escolherDeckDoEvento(form: FormData) {
 
   const { data: deck } = await db
     .from("decks")
-    .select("id, nome, arquetipo_id, principal, sideboard, legal")
+    .select("id, nome, formato, arquetipo_id, principal, sideboard, legal")
     .eq("id", deckId)
     .eq("jogador_id", jogadorId)
     .single();
-  if (!deck?.legal) redirect(`/eventos/${slug}?aviso=deck-invalido`);
+  if (!deck?.legal || deck.formato !== evento.formato)
+    redirect(`/eventos/${slug}?aviso=deck-invalido`);
 
   await db
     .from("inscricoes")

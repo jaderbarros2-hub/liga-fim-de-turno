@@ -1,3 +1,4 @@
+import { ehConstruido } from "@/lib/formatos";
 import { botao } from "@/components/Botao";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { enderecoLinha, linkMapa } from "@/lib/lojas";
@@ -70,7 +71,8 @@ export default async function Inscricao({
   }
 
   const capa = capaDoEvento(evento);
-  const pauper = evento.formato === "pauper";
+  // "pauper" aqui = formato construído com deck obrigatório (Pauper ou Premodern)
+  const pauper = ehConstruido(evento.formato);
   const nick =
     jogador.nick_endstep || jogador.discord_nome || jogador.nome || "Jogador";
   const confirmada = inscricao?.status === "confirmada";
@@ -345,6 +347,7 @@ export default async function Inscricao({
           .from("decks")
           .select("id, nome, legal, arquetipo:arquetipos(nome)")
           .eq("jogador_id", jogador.id)
+          .eq("formato", evento.formato)
           .order("atualizado_em", { ascending: false })
       : Promise.resolve({ data: [] }),
     pauper
@@ -352,6 +355,7 @@ export default async function Inscricao({
           .from("arquetipos")
           .select("id, nome")
           .eq("ativo", true)
+          .eq("formato", evento.formato)
           .order("nome")
       : Promise.resolve({ data: [] }),
     saldoDeCredito(jogador.id),
@@ -363,6 +367,7 @@ export default async function Inscricao({
     <Checkout
       slug={slug}
       pauper={pauper}
+      formato={evento.formato}
       presencial={
         evento.modalidade === "presencial"
           ? (evento.loja?.nome ?? evento.local ?? "a loja")

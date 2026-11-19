@@ -109,6 +109,7 @@ export function FormularioEvento({
           className={campo}
         >
           <option value="pauper">Pauper</option>
+          <option value="premodern">Premodern</option>
           <option value="draft">Draft</option>
           <option value="selado">Selado</option>
           <option value="cubo">Cube Draft</option>

@@ -6,7 +6,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { saldoDaCarteira } from "@/lib/carteira";
 import { descreverCupom, validarCupom } from "@/lib/cupons";
-import { conferirPauper, lerLista, total } from "@/lib/decklist";
+import { conferirDeck, lerLista, total } from "@/lib/decklist";
+import { ehConstruido, NOME_LIGA } from "@/lib/formatos";
 import { reais } from "@/lib/formato";
 import { criarPedidoPix, MINUTOS_PIX } from "@/lib/mercadopago";
 import { confirmarPagamento, sincronizarPagamento } from "@/lib/pagamentos";
@@ -23,19 +24,27 @@ export type EstadoDeckRapido = {
 
 const HORAS_CANCELAMENTO = 24;
 
-/** Deck obrigatório no Pauper: confere dono e legalidade e devolve a cópia que vai para a inscrição. */
-async function deckParaInscricao(jogadorId: string, deckId: string) {
+/** Deck obrigatório nos construídos: confere dono, formato e legalidade e devolve a cópia que vai para a inscrição. */
+async function deckParaInscricao(
+  jogadorId: string,
+  deckId: string,
+  formato: string,
+) {
   if (!deckId) return { erro: "Escolha o deck que você vai jogar." };
   const { data: deck } = await criarClienteAdmin()
     .from("decks")
-    .select("id, nome, arquetipo_id, principal, sideboard, legal")
+    .select("id, nome, formato, arquetipo_id, principal, sideboard, legal")
     .eq("id", deckId)
     .eq("jogador_id", jogadorId)
     .maybeSingle();
   if (!deck) return { erro: "Deck não encontrado." };
+  if (deck.formato !== formato)
+    return {
+      erro: `Esse deck é de ${NOME_LIGA[deck.formato] ?? deck.formato}. Escolha um deck de ${NOME_LIGA[formato] ?? formato}.`,
+    };
   if (!deck.legal)
     return {
-      erro: "Esse deck tem cartas fora da lista do Pauper. Corrija antes de continuar.",
+      erro: `Esse deck tem cartas fora da lista do ${NOME_LIGA[formato] ?? formato}. Corrija antes de continuar.`,
     };
   return {
     dados: {
@@ -61,6 +70,7 @@ export async function salvarDeckRapido(
   if (!user) return { erro: "Sua sessão expirou. Entre de novo." };
   const nome = String(form.get("nome") ?? "").trim();
   const arquetipoId = Number(form.get("arquetipo_id")) || null;
+  const formato = form.get("formato") === "premodern" ? "premodern" : "pauper";
   const lista = lerLista(String(form.get("lista") ?? ""));
   if (!nome) return { erro: "Dê um nome ao deck." };
   if (!arquetipoId) return { erro: "Escolha o arquétipo." };
@@ -75,13 +85,13 @@ export async function salvarDeckRapido(
     return {
       erro: "Não foi possível consultar as cartas agora. Tente de novo em instantes.",
     };
-  const problemas = conferirPauper(lista, cartas);
+  const problemas = conferirDeck(lista, cartas, formato);
   const { data, error } = await criarClienteAdmin()
     .from("decks")
     .insert({
       jogador_id: user.id,
       nome,
-      formato: "pauper",
+      formato,
       arquetipo_id: arquetipoId,
       principal: lista.principal,
       sideboard: lista.sideboard,
@@ -134,10 +144,11 @@ export async function gerarPix(
   if (form.get("aceite") !== "on")
     return { erro: "Confirme que leu as regras do ingresso." };
   let deck: Record<string, unknown> = {};
-  if (evento.formato === "pauper") {
+  if (ehConstruido(evento.formato)) {
     const r = await deckParaInscricao(
       jogador.id,
       String(form.get("deck_id") ?? ""),
+      evento.formato,
     );
     if (r.erro) return { erro: r.erro };
     deck = r.dados!;
@@ -423,10 +434,11 @@ export async function pagarComCredito(
       return { erro: "As vagas deste evento esgotaram." };
   }
   let deck: Record<string, unknown> = {};
-  if (evento.formato === "pauper") {
+  if (ehConstruido(evento.formato)) {
     const r = await deckParaInscricao(
       user.id,
       String(form.get("deck_id") ?? ""),
+      evento.formato,
     );
     if (r.erro) return { erro: r.erro };
     deck = r.dados!;

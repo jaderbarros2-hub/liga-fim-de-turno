@@ -9,12 +9,20 @@ export const dynamic = "force-dynamic";
 const FILTROS = [
   { valor: undefined, rotulo: "Todos" },
   { valor: "pauper", rotulo: "Pauper" },
+  { valor: "premodern", rotulo: "Premodern" },
   { valor: "limited", rotulo: "Limited" },
 ];
 
-export default async function Agenda({ searchParams }: { searchParams: Promise<{ liga?: string }> }) {
+export default async function Agenda({
+  searchParams,
+}: {
+  searchParams: Promise<{ liga?: string }>;
+}) {
   const { liga } = await searchParams;
-  const ligaValida = liga === "pauper" || liga === "limited" ? liga : undefined;
+  const ligaValida =
+    liga === "pauper" || liga === "premodern" || liga === "limited"
+      ? liga
+      : undefined;
   const eventos = await listarProximosEventos(50, ligaValida);
 
   return (
@@ -28,7 +36,9 @@ export default async function Agenda({ searchParams }: { searchParams: Promise<{
               key={f.rotulo}
               href={f.valor ? `/eventos?liga=${f.valor}` : "/eventos"}
               className={`inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold no-underline ${
-                ativo ? "bg-azul text-white" : "border border-borda-forte text-gelo"
+                ativo
+                  ? "bg-azul text-white"
+                  : "border border-borda-forte text-gelo"
               }`}
               aria-current={ativo ? "page" : undefined}
             >

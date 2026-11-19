@@ -9,15 +9,20 @@ const campo =
 export function FormularioDeck({
   arquetipos,
   valores,
+  formatoInicial = "pauper",
 }: {
-  arquetipos: { id: number; nome: string }[];
+  arquetipos: { id: number; nome: string; formato: string }[];
   valores?: {
     id: string;
     nome: string;
     arquetipo_id: number | null;
+    formato?: string;
     lista: string;
   };
+  formatoInicial?: string;
 }) {
+  const [formato, setFormato] = useState(valores?.formato ?? formatoInicial);
+  const opcoes = arquetipos.filter((a) => a.formato === formato);
   const [estado, acao, enviando] = useActionState<EstadoDeck, FormData>(
     salvarDeck,
     {},
@@ -52,16 +57,43 @@ export function FormularioDeck({
           className={campo}
         />
       </label>
+      <fieldset className="flex flex-col gap-2 md:col-span-2">
+        <legend className="mb-2 text-sm font-semibold">Formato</legend>
+        <div className="flex flex-wrap gap-2">
+          {[
+            ["pauper", "Pauper"],
+            ["premodern", "Premodern"],
+          ].map(([v, r]) => (
+            <label
+              key={v}
+              className={`inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-4 text-sm font-semibold ring-1 ${formato === v ? "bg-azul/15 text-gelo ring-azul" : "bg-grafite text-texto2 ring-borda-forte hover:ring-ciano"}`}
+            >
+              <input
+                type="radio"
+                name="formato"
+                value={v}
+                checked={formato === v}
+                onChange={() => setFormato(v)}
+                className="sr-only"
+              />
+              {r}
+            </label>
+          ))}
+        </div>
+      </fieldset>
       <label className="flex flex-col gap-2 text-sm font-semibold">
         Arquétipo
         <select
+          key={formato}
           name="arquetipo_id"
-          defaultValue={valores?.arquetipo_id ?? ""}
+          defaultValue={
+            valores?.formato === formato ? (valores?.arquetipo_id ?? "") : ""
+          }
           required
           className={campo}
         >
           <option value="">Escolha…</option>
-          {arquetipos.map((a) => (
+          {opcoes.map((a) => (
             <option key={a.id} value={a.id}>
               {a.nome}
             </option>

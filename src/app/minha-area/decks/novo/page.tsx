@@ -7,7 +7,12 @@ import { FormularioDeck } from "../FormularioDeck";
 export const metadata: Metadata = { title: "Novo deck" };
 export const dynamic = "force-dynamic";
 
-export default async function NovoDeck() {
+export default async function NovoDeck({
+  searchParams,
+}: {
+  searchParams: Promise<{ formato?: string }>;
+}) {
+  const { formato } = await searchParams;
   const supabase = await criarClienteServidor();
   const {
     data: { user },
@@ -15,8 +20,7 @@ export default async function NovoDeck() {
   if (!user) redirect("/entrar?voltar=/minha-area/decks/novo");
   const { data: arquetipos } = await supabase
     .from("arquetipos")
-    .select("id, nome")
-    .eq("formato", "pauper")
+    .select("id, nome, formato")
     .eq("ativo", true)
     .order("nome");
   // "Outro" sempre por último
@@ -30,7 +34,10 @@ export default async function NovoDeck() {
         ← Meus decks
       </Link>
       <h1 className="titulo text-5xl">Novo deck</h1>
-      <FormularioDeck arquetipos={lista} />
+      <FormularioDeck
+        arquetipos={lista}
+        formatoInicial={formato === "premodern" ? "premodern" : "pauper"}
+      />
     </div>
   );
 }

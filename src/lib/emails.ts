@@ -1,4 +1,5 @@
 import "server-only";
+import { ehConstruido } from "@/lib/formatos";
 import { DIAS_SAQUE_AUTOMATICO, SAQUE_MINIMO } from "@/lib/carteira";
 import {
   EMAIL_CONTATO,
@@ -104,7 +105,8 @@ export const emailIngressoConfirmado = (inscricaoId: string) =>
     };
     const presencial = e.modalidade === "presencial";
     const semDeck =
-      e.formato === "pauper" && !(i.deck_principal as unknown[] | null)?.length;
+      ehConstruido(e.formato) &&
+      !(i.deck_principal as unknown[] | null)?.length;
     await enviarEmail({
       para: j.email,
       tipo: "ingresso_confirmado",

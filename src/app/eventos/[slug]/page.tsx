@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FaixaLoja } from "@/components/Loja";
+import { ehConstruido, NOME_LIGA } from "@/lib/formatos";
 import {
   cronograma,
   duracaoTexto,
@@ -63,7 +64,11 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const temResultado = resultados.length > 0;
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
   const deckPorPosicao = new Map(decks.map((d) => [d.posicao, d]));
-  const pauper = evento.formato === "pauper";
+  // "pauper" aqui = formato construído (Pauper ou Premodern): deck registrado, rodadas suíças, prêmio por classificação
+  const pauper = ehConstruido(evento.formato);
+  const nomeLiga =
+    NOME_LIGA[evento.liga.slug] ??
+    (pauper ? NOMES_FORMATO[evento.formato] : "Limited");
   const presencial = evento.modalidade === "presencial";
   const capa = capaDoEvento(evento);
   const colecao = evento.colecao_info;
@@ -143,9 +148,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             >
               <Link href="/eventos">Agenda</Link>
               <span>/</span>
-              <Link href={`/ligas/${evento.liga.slug}`}>
-                {pauper ? "Pauper" : "Limited"}
-              </Link>
+              <Link href={`/ligas/${evento.liga.slug}`}>{nomeLiga}</Link>
             </nav>
             <div className="flex flex-wrap gap-2 pt-8">
               <EtiquetaLiga evento={evento} />
@@ -590,11 +593,13 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
 
               <Secao titulo="Formato e deck">
                 <p className="text-texto2">
-                  {pauper
-                    ? `Pauper, só com cartas comuns. Partidas melhor de 3 com sideboard, em rodadas suíças com todos os inscritos: 3 rodadas com até 8 jogadores, 4 com 9 ou mais.`
-                    : evento.formato === "selado"
-                      ? `Selado de ${colecao?.nome ?? evento.colecao ?? "Limited"}: cada jogador abre ${evento.pacotes ?? 6} boosters e monta um deck de no mínimo 40 cartas, com terrenos básicos à vontade. Pods de 6 a 8 jogadores e 3 rodadas suíças melhor de 3 dentro do pod.`
-                      : `${cubo ? `Draft do cubo ${cubo.nome}` : `Draft de ${colecao?.nome ?? evento.colecao ?? "Limited"}`}: cada jogador abre ${evento.pacotes ?? 3} pacotes e escolhe as cartas passando os pacotes na mesa. Deck de no mínimo 40 cartas, com terrenos básicos à vontade. Pods de 6 a 8 jogadores e 3 rodadas suíças melhor de 3 dentro do pod.`}
+                  {evento.formato === "premodern"
+                    ? `Premodern, com cartas de Fourth Edition a Scourge (1995 a 2003) e lista de banidas própria. Deck de 60 cartas e sideboard de até 15, partidas melhor de 3 em rodadas suíças com todos os inscritos: 3 rodadas com até 8 jogadores, 4 com 9 ou mais.`
+                    : pauper
+                      ? `Pauper, só com cartas comuns. Partidas melhor de 3 com sideboard, em rodadas suíças com todos os inscritos: 3 rodadas com até 8 jogadores, 4 com 9 ou mais.`
+                      : evento.formato === "selado"
+                        ? `Selado de ${colecao?.nome ?? evento.colecao ?? "Limited"}: cada jogador abre ${evento.pacotes ?? 6} boosters e monta um deck de no mínimo 40 cartas, com terrenos básicos à vontade. Pods de 6 a 8 jogadores e 3 rodadas suíças melhor de 3 dentro do pod.`
+                        : `${cubo ? `Draft do cubo ${cubo.nome}` : `Draft de ${colecao?.nome ?? evento.colecao ?? "Limited"}`}: cada jogador abre ${evento.pacotes ?? 3} pacotes e escolhe as cartas passando os pacotes na mesa. Deck de no mínimo 40 cartas, com terrenos básicos à vontade. Pods de 6 a 8 jogadores e 3 rodadas suíças melhor de 3 dentro do pod.`}
                 </p>
                 {pauper && (
                   <p className="text-texto2">
@@ -697,7 +702,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   </Link>
                   <Link href="/regras">Regulamento completo →</Link>
                   <Link href={`/ranking?liga=${evento.liga.slug}`}>
-                    Ranking {pauper ? "Pauper" : "Limited"} →
+                    Ranking {nomeLiga} →
                   </Link>
                   {process.env.NEXT_PUBLIC_DISCORD_CONVITE && (
                     <a
@@ -746,9 +751,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               </section>
             )}
             <section className="flex flex-col gap-2 rounded-md bg-grafite p-5 ring-1 ring-borda">
-              <span className="font-semibold">
-                Ranking {pauper ? "Pauper" : "Limited"}
-              </span>
+              <span className="font-semibold">Ranking {nomeLiga}</span>
               <span className="text-sm text-texto2">
                 Veja quem lidera o trimestre e a corrida para o Player of the
                 Year.

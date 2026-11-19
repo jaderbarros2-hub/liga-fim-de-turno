@@ -1,3 +1,4 @@
+import { ligaDoFormato, NOME_LIGA } from "@/lib/formatos";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,18 +21,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug, posicao } = await params;
   const evento = await buscarEvento(slug);
   if (!evento) return { title: "Deck" };
-  const deck = (await decksDaClassificacao(evento.id)).find((d) => d.posicao === Number(posicao));
-  return { title: `${deck?.arquetipo ?? deck?.deckNome ?? "Deck"} · ${deck?.nick ?? ""} · ${evento.titulo}` };
+  const deck = (await decksDaClassificacao(evento.id)).find(
+    (d) => d.posicao === Number(posicao),
+  );
+  return {
+    title: `${deck?.arquetipo ?? deck?.deckNome ?? "Deck"} · ${deck?.nick ?? ""} · ${evento.titulo}`,
+  };
 }
 
-const etiqueta = "rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide";
+const etiqueta =
+  "rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide";
 
 /** Lista pública de um deck do top 8, depois do resultado publicado. */
 export default async function DeckPublico({ params }: Props) {
   const { slug, posicao } = await params;
   const pos = Number(posicao);
   const evento = await buscarEvento(slug);
-  if (!evento || !Number.isInteger(pos) || pos < 1 || pos > TOP_PUBLICO) notFound();
+  if (!evento || !Number.isInteger(pos) || pos < 1 || pos > TOP_PUBLICO)
+    notFound();
 
   const todos = await decksDaClassificacao(evento.id, true);
   const deck = todos.find((d) => d.posicao === pos);
@@ -41,7 +48,12 @@ export default async function DeckPublico({ params }: Props) {
   const [cartas, loja, { data: res }] = await Promise.all([
     buscarCartas([...deck.principal, ...sideboard].map((i) => i.nome)),
     lojaParaDeck(),
-    criarClienteAdmin().from("resultados").select("vitorias, derrotas, empates").eq("evento_id", evento.id).eq("posicao", pos).maybeSingle(),
+    criarClienteAdmin()
+      .from("resultados")
+      .select("vitorias, derrotas, empates")
+      .eq("evento_id", evento.id)
+      .eq("posicao", pos)
+      .maybeSingle(),
   ]);
   const pagina = `/eventos/${slug}/deck/${pos}`;
   const top = todos.filter((d) => d.posicao <= TOP_PUBLICO && d.temLista);
@@ -54,12 +66,22 @@ export default async function DeckPublico({ params }: Props) {
       titulo={deck.arquetipo ?? deck.deckNome ?? "Deck"}
       pagina={pagina}
       arteReserva={arteDoEvento(evento)}
-      loja={loja ? { id: loja.id, nome: loja.nome, aceitaLista: !!loja.url_compra_lista } : null}
+      loja={
+        loja
+          ? {
+              id: loja.id,
+              nome: loja.nome,
+              aceitaLista: !!loja.url_compra_lista,
+            }
+          : null
+      }
       autor={{ nick: deck.nick, avatar: null }}
       detalhe={dataLonga(evento.inicio)}
       caminho={
         <>
-          <Link href={`/ligas/${evento.formato === "pauper" ? "pauper" : "limited"}`}>{evento.formato === "pauper" ? "Pauper" : "Limited"}</Link>
+          <Link href={`/ligas/${ligaDoFormato(evento.formato)}`}>
+            {NOME_LIGA[ligaDoFormato(evento.formato)]}
+          </Link>
           <span>/</span>
           <Link href={`/eventos/${slug}?aba=resultados`}>{evento.titulo}</Link>
         </>
@@ -67,9 +89,15 @@ export default async function DeckPublico({ params }: Props) {
       etiquetas={
         <>
           <span className={`${etiqueta} bg-azul text-white`}>{pos}º lugar</span>
-          {evento.tipo !== "etapa" && <span className={`${etiqueta} bg-ciano/20 text-ciano`}>{NOMES_TIPO[evento.tipo]}</span>}
+          {evento.tipo !== "etapa" && (
+            <span className={`${etiqueta} bg-ciano/20 text-ciano`}>
+              {NOMES_TIPO[evento.tipo]}
+            </span>
+          )}
           {res && (
-            <span className={`${etiqueta} bg-preto/60 text-gelo ring-1 ring-borda`}>
+            <span
+              className={`${etiqueta} bg-preto/60 text-gelo ring-1 ring-borda`}
+            >
               {res.vitorias}-{res.derrotas}
               {res.empates ? `-${res.empates}` : ""}
             </span>
@@ -89,13 +117,21 @@ export default async function DeckPublico({ params }: Props) {
                       href={`/eventos/${slug}/deck/${d.posicao}`}
                       aria-current={d.posicao === pos ? "page" : undefined}
                       className={`flex items-center gap-3 rounded-md p-3 text-gelo no-underline ring-1 hover:text-gelo hover:ring-ciano ${
-                        d.posicao === pos ? "bg-azul/15 ring-azul" : "bg-grafite ring-borda"
+                        d.posicao === pos
+                          ? "bg-azul/15 ring-azul"
+                          : "bg-grafite ring-borda"
                       }`}
                     >
-                      <span className="titulo w-8 text-2xl text-cinza">{d.posicao}º</span>
+                      <span className="titulo w-8 text-2xl text-cinza">
+                        {d.posicao}º
+                      </span>
                       <span className="flex min-w-0 flex-col">
-                        <span className="truncate font-semibold">{d.arquetipo ?? d.deckNome ?? "Deck"}</span>
-                        <span className="truncate text-xs text-texto2">{d.nick}</span>
+                        <span className="truncate font-semibold">
+                          {d.arquetipo ?? d.deckNome ?? "Deck"}
+                        </span>
+                        <span className="truncate text-xs text-texto2">
+                          {d.nick}
+                        </span>
                       </span>
                     </Link>
                   </li>

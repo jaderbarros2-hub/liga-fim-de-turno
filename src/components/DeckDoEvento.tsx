@@ -2,6 +2,7 @@ import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { escolherDeckDoEvento } from "@/app/minha-area/decks/actions";
 import type { Evento } from "@/lib/dados";
+import { ehConstruido } from "@/lib/formatos";
 import {
   criarClienteServidor,
   supabaseConfigurado,
@@ -9,7 +10,7 @@ import {
 
 /** Bloco da página do evento: o inscrito escolhe o deck (Pauper) até o início. */
 export async function DeckDoEvento({ evento }: { evento: Evento }) {
-  if (evento.formato !== "pauper" || !supabaseConfigurado()) return null;
+  if (!ehConstruido(evento.formato) || !supabaseConfigurado()) return null;
   const supabase = await criarClienteServidor();
   const {
     data: { user },
@@ -49,6 +50,7 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
     .from("decks")
     .select("id, nome, legal")
     .eq("jogador_id", user.id)
+    .eq("formato", evento.formato)
     .order("atualizado_em", { ascending: false });
   const legais = (decks ?? []).filter((d) => d.legal);
 
@@ -82,7 +84,10 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
           </BotaoEnviar>
         </form>
       ) : null}
-      <Link href="/minha-area/decks/novo" className="font-semibold">
+      <Link
+        href={`/minha-area/decks/novo?formato=${evento.formato}`}
+        className="font-semibold"
+      >
         {legais.length ? "Importar outro deck" : "Importar meu deck do Endstep"}
       </Link>
     </div>

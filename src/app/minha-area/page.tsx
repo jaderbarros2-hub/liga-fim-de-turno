@@ -1,3 +1,4 @@
+import { ehConstruido, NOME_LIGA } from "@/lib/formatos";
 import { BotaoEnviar } from "@/components/BotaoEnviar";
 import type { Metadata } from "next";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -72,6 +73,7 @@ type Inscricao = {
 type Deck = {
   id: string;
   nome: string;
+  formato: string;
   legal: boolean;
   qtd_principal: number;
   qtd_sideboard: number;
@@ -145,6 +147,8 @@ export default async function MinhaArea({
     rankL,
     potyP,
     potyL,
+    rankPM,
+    potyPM,
     dCred,
   ] = await Promise.all([
     supabase
@@ -157,7 +161,7 @@ export default async function MinhaArea({
     supabase
       .from("decks")
       .select(
-        "id, nome, legal, qtd_principal, qtd_sideboard, principal, atualizado_em, arquetipo:arquetipos(nome)",
+        "id, nome, formato, legal, qtd_principal, qtd_sideboard, principal, atualizado_em, arquetipo:arquetipos(nome)",
       )
       .eq("jogador_id", user.id)
       .order("atualizado_em", { ascending: false }),
@@ -172,6 +176,8 @@ export default async function MinhaArea({
     ranking("limited", per.temporada, per.trimestre),
     classificadosPOTY("pauper", per.temporada),
     classificadosPOTY("limited", per.temporada),
+    ranking("premodern", per.temporada, per.trimestre),
+    classificadosPOTY("premodern", per.temporada),
     movimentosDaCarteira(user.id),
   ]);
   const movimentos = dCred;
@@ -251,6 +257,7 @@ export default async function MinhaArea({
   // Circuito: posição no trimestre e vaga no Player of the Year, por formato
   const temporada = [
     { slug: "pauper", nome: "Pauper", rank: rankP, poty: potyP },
+    { slug: "premodern", nome: "Premodern", rank: rankPM, poty: potyPM },
     { slug: "limited", nome: "Limited", rank: rankL, poty: potyL },
   ]
     .map((f) => ({
@@ -287,7 +294,7 @@ export default async function MinhaArea({
   const deckProblema = decks.find((d) => !d.legal);
   const semDeck =
     confirmada &&
-    confirmada.evento.formato === "pauper" &&
+    ehConstruido(confirmada.evento.formato) &&
     !confirmada.deck_nome;
   const pendencias = [
     !jogador.chave_pix && {
@@ -315,7 +322,7 @@ export default async function MinhaArea({
       acao: "Acompanhar",
     },
     deckProblema && {
-      texto: `O deck "${deckProblema.nome}" tem cartas fora da lista do Pauper.`,
+      texto: `O deck "${deckProblema.nome}" tem cartas fora da lista do ${NOME_LIGA[deckProblema.formato] ?? "formato"}.`,
       href: `/minha-area/decks/${deckProblema.id}`,
       acao: "Revisar",
     },
@@ -585,7 +592,7 @@ export default async function MinhaArea({
                             {r.empates ? `-${r.empates}` : ""}
                           </span>
                         </span>
-                        {r.posicao <= 8 && r.evento.formato === "pauper" && (
+                        {r.posicao <= 8 && ehConstruido(r.evento.formato) && (
                           <Link
                             href={`/eventos/${r.evento.slug}/deck/${r.posicao}`}
                             className="text-sm font-semibold"
@@ -738,7 +745,7 @@ export default async function MinhaArea({
             {decks.length === 0 ? (
               <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
                 Importe a lista que você montou no Endstep para usar nas etapas
-                de Pauper.
+                de Pauper e Premodern.
               </p>
             ) : (
               <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -763,13 +770,17 @@ export default async function MinhaArea({
                           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-grafite to-transparent" />
                           <span className="absolute bottom-2.5 left-3">
                             <Etiqueta tipo={d.legal ? "ciano" : "alerta"}>
-                              {d.legal ? "Legal no Pauper" : "Com pendências"}
+                              {d.legal
+                                ? `Legal no ${NOME_LIGA[d.formato] ?? "formato"}`
+                                : "Com pendências"}
                             </Etiqueta>
                           </span>
                         </div>
                         <div className="flex flex-col gap-1 px-4 pb-4 pt-3">
                           <span className="text-[11px] font-bold uppercase tracking-wider text-azul">
-                            {d.arquetipo?.nome ?? "Pauper"}
+                            {d.arquetipo?.nome ??
+                              NOME_LIGA[d.formato] ??
+                              "Deck"}
                           </span>
                           <span className="truncate text-lg font-bold group-hover:text-ciano">
                             {d.nome}
@@ -1005,7 +1016,7 @@ function ProximaMesa({
           <span className="text-texto2">
             {dataLonga(e.inicio)} · {hora(e.inicio)} (horário de Brasília)
             {e.modalidade === "presencial" && e.loja ? ` · ${e.loja.nome}` : ""}
-            {!pendente && e.formato === "pauper" && (
+            {!pendente && ehConstruido(e.formato) && (
               <>
                 {" "}
                 · Deck:{" "}

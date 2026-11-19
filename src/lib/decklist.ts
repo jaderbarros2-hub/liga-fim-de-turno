@@ -6,7 +6,11 @@
  */
 
 export type ItemLista = { qtd: number; nome: string };
-export type Lista = { principal: ItemLista[]; sideboard: ItemLista[]; ignoradas: string[] };
+export type Lista = {
+  principal: ItemLista[];
+  sideboard: ItemLista[];
+  ignoradas: string[];
+};
 
 /** Dados de carta usados na conferência e na visualização (vêm do Scryfall, guardados no banco). */
 export type Carta = {
@@ -19,10 +23,12 @@ export type Carta = {
   imagem: string | null;
   imagem_grande: string | null;
   legal_pauper: boolean;
+  legal_premodern?: boolean | null; // null = ainda não consultada
   qualquer_quantidade: boolean;
 };
 
-export const chaveCarta = (nome: string) => nome.normalize("NFC").trim().toLowerCase();
+export const chaveCarta = (nome: string) =>
+  nome.normalize("NFC").trim().toLowerCase();
 
 function somar(itens: ItemLista[]): ItemLista[] {
   const mapa = new Map<string, ItemLista>();
@@ -47,7 +53,9 @@ function limparNome(bruto: string) {
 
 export function lerLista(texto: string): Lista {
   const linhas = texto.replace(/\r/g, "").split("\n");
-  const temCabecalhoSide = linhas.some((l) => /^\s*(sideboard|side ?board:?)\s*$/i.test(l));
+  const temCabecalhoSide = linhas.some((l) =>
+    /^\s*(sideboard|side ?board:?)\s*$/i.test(l),
+  );
   const principal: ItemLista[] = [];
   const sideboard: ItemLista[] = [];
   const ignoradas: string[] = [];
@@ -66,7 +74,13 @@ export function lerLista(texto: string): Lista {
       noSide = true;
       continue;
     }
-    if (/^(companion|commander|about|name\s.*|maybeboard|tokens?)\s*:?$/i.test(linha) || linha.startsWith("//")) continue;
+    if (
+      /^(companion|commander|about|name\s.*|maybeboard|tokens?)\s*:?$/i.test(
+        linha,
+      ) ||
+      linha.startsWith("//")
+    )
+      continue;
 
     let alvo = noSide;
     let resto = linha;
@@ -87,17 +101,32 @@ export function lerLista(texto: string): Lista {
     (alvo ? sideboard : principal).push({ qtd: Number(m[1]), nome });
     jaTemCartas = true;
   }
-  return { principal: somar(principal), sideboard: somar(sideboard), ignoradas };
+  return {
+    principal: somar(principal),
+    sideboard: somar(sideboard),
+    ignoradas,
+  };
 }
 
-export const total = (itens: ItemLista[]) => itens.reduce((a, i) => a + i.qtd, 0);
+export const total = (itens: ItemLista[]) =>
+  itens.reduce((a, i) => a + i.qtd, 0);
 
-/** Problemas de um deck de Pauper. Lista vazia = deck legal. */
-export function conferirPauper(lista: Lista, cartas: Map<string, Carta>): string[] {
+const NOME_FORMATO_DECK: Record<string, string> = {
+  pauper: "Pauper",
+  premodern: "Premodern",
+};
+
+/** Problemas de um deck construído (Pauper ou Premodern). Lista vazia = deck legal. */
+export function conferirDeck(
+  lista: Lista,
+  cartas: Map<string, Carta>,
+  formato: "pauper" | "premodern" = "pauper",
+): string[] {
   const problemas: string[] = [];
   const qp = total(lista.principal);
   const qs = total(lista.sideboard);
-  if (qp < 60) problemas.push(`O deck principal tem ${qp} cartas; o mínimo é 60.`);
+  if (qp < 60)
+    problemas.push(`O deck principal tem ${qp} cartas; o mínimo é 60.`);
   if (qs > 15) problemas.push(`O sideboard tem ${qs} cartas; o máximo é 15.`);
 
   const copias = new Map<string, { nome: string; qtd: number }>();
@@ -109,13 +138,22 @@ export function conferirPauper(lista: Lista, cartas: Map<string, Carta>): string
   for (const [k, { nome, qtd }] of copias) {
     const carta = cartas.get(k);
     if (!carta) {
-      problemas.push(`Carta não encontrada: "${nome}". Confira a grafia (nome em inglês).`);
+      problemas.push(
+        `Carta não encontrada: "${nome}". Confira a grafia (nome em inglês).`,
+      );
       continue;
     }
-    if (!carta.legal_pauper) problemas.push(`${carta.nome} não é legal no Pauper.`);
+    const legal =
+      formato === "premodern" ? carta.legal_premodern : carta.legal_pauper;
+    if (!legal)
+      problemas.push(
+        `${carta.nome} não é legal no ${NOME_FORMATO_DECK[formato]}.`,
+      );
     const basico = /\bBasic\b/.test(carta.tipo);
     if (qtd > 4 && !basico && !carta.qualquer_quantidade)
-      problemas.push(`${carta.nome}: ${qtd} cópias (máximo 4 somando deck e sideboard).`);
+      problemas.push(
+        `${carta.nome}: ${qtd} cópias (máximo 4 somando deck e sideboard).`,
+      );
   }
   return problemas;
 }
@@ -140,3 +178,7 @@ export const ORDEM_GRUPOS = [
   "Outros",
   "Terrenos",
 ];
+
+/** Compatibilidade: conferência de Pauper. */
+export const conferirPauper = (lista: Lista, cartas: Map<string, Carta>) =>
+  conferirDeck(lista, cartas, "pauper");

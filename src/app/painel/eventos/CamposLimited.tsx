@@ -1,5 +1,7 @@
 "use client";
 
+import { ehConstruido } from "@/lib/formatos";
+
 import { botao } from "@/components/Botao";
 
 import { useState, useTransition } from "react";
@@ -61,7 +63,7 @@ export function CamposLimited({
   } | null>(null);
   const [carregando, iniciar] = useTransition();
 
-  if (formato === "pauper") return null;
+  if (ehConstruido(formato)) return null;
 
   if (formato === "cubo") {
     return (

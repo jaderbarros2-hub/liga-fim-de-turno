@@ -35,13 +35,16 @@ export function cotasLimited(l: Pick<LinhaResultado, "vitorias">): number {
   return 0;
 }
 
-export const ehLimited = (formato: string) => formato !== "pauper";
+export const ehLimited = (formato: string) =>
+  formato !== "pauper" && formato !== "premodern";
 
-const pct = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+const pct = (n: number) =>
+  n.toLocaleString("pt-BR", { maximumFractionDigits: 2 });
 
 /** Texto curto da regra aplicada, para mostrar no Painel. */
 export function descreverRegra(formato: string, jogadores: number): string {
-  if (ehLimited(formato)) return "Limited, por campanha: 3-0 vale 3 cotas, 2-1 vale 1 cota";
+  if (ehLimited(formato))
+    return "Limited, por campanha: 3-0 vale 3 cotas, 2-1 vale 1 cota";
   return `Pauper, ${jogadores} jogadores: ${regraPauper(jogadores).map(pct).join("/")}%`;
 }
 
@@ -87,7 +90,12 @@ function acharInscrito(linha: string, inscritos: Inscrito[]) {
   let melhor: Inscrito | null = null;
   for (const i of inscritos) {
     const n = normalizar(i.nick);
-    if (n && alvo.includes(n) && (!melhor || n.length > normalizar(melhor.nick).length)) melhor = i;
+    if (
+      n &&
+      alvo.includes(n) &&
+      (!melhor || n.length > normalizar(melhor.nick).length)
+    )
+      melhor = i;
   }
   return melhor;
 }
@@ -98,13 +106,18 @@ function acharInscrito(linha: string, inscritos: Inscrito[]) {
  * Sem número de posição, vale a ordem das linhas. Linhas sem nick reconhecível
  * e sem campanha (cabeçalhos) são ignoradas.
  */
-export function lerClassificacao(texto: string, inscritos: Inscrito[]): LinhaResultado[] {
+export function lerClassificacao(
+  texto: string,
+  inscritos: Inscrito[],
+): LinhaResultado[] {
   const linhas: LinhaResultado[] = [];
   for (const bruta of texto.split(/\r?\n/)) {
     const linha = bruta.replace(/\t/g, "  ").trim();
     if (!linha) continue;
 
-    const campanha = linha.match(/(\d{1,2})\s*[-–/x]\s*(\d{1,2})(?:\s*[-–/x]\s*(\d{1,2}))?/i);
+    const campanha = linha.match(
+      /(\d{1,2})\s*[-–/x]\s*(\d{1,2})(?:\s*[-–/x]\s*(\d{1,2}))?/i,
+    );
     const inscrito = acharInscrito(linha, inscritos);
     if (!inscrito && !campanha) continue;
 
@@ -116,7 +129,9 @@ export function lerClassificacao(texto: string, inscritos: Inscrito[]): LinhaRes
     // Pontos: número depois da campanha (ex.: "9" ou "9 pts"); se não houver, 3 por vitória + 1 por empate
     let pontos = vitorias * 3 + empates;
     if (campanha) {
-      const depois = linha.slice((campanha.index ?? 0) + campanha[0].length).match(/(\d{1,3})/);
+      const depois = linha
+        .slice((campanha.index ?? 0) + campanha[0].length)
+        .match(/(\d{1,3})/);
       if (depois) pontos = Number(depois[1]);
     }
 
@@ -125,7 +140,12 @@ export function lerClassificacao(texto: string, inscritos: Inscrito[]): LinhaRes
       // Sem cadastro reconhecido: usa o trecho de texto entre a posição e a campanha
       const inicio = pos ? pos[0].length : 0;
       const fim = campanha?.index ?? linha.length;
-      nick = linha.slice(inicio, fim).replace(/[|()\[\]]/g, " ").trim().split(/\s{2,}/)[0] ?? "";
+      nick =
+        linha
+          .slice(inicio, fim)
+          .replace(/[|()\[\]]/g, " ")
+          .trim()
+          .split(/\s{2,}/)[0] ?? "";
     }
     if (!nick) continue;
 
@@ -154,7 +174,8 @@ export function lerDistribuicao(texto: string): number[] | null | "invalida" {
     .map((p) => p.trim())
     .filter(Boolean)
     .map(Number);
-  if (!partes.length || partes.some((n) => !Number.isFinite(n) || n < 0)) return "invalida";
+  if (!partes.length || partes.some((n) => !Number.isFinite(n) || n < 0))
+    return "invalida";
   const soma = partes.reduce((a, b) => a + b, 0);
   if (Math.abs(soma - 100) > 0.01) return "invalida";
   return partes;
@@ -167,7 +188,11 @@ export function lerDistribuicao(texto: string): number[] | null | "invalida" {
  * Se houver menos jogadores que posições premiadas, a parte das posições
  * vazias é redistribuída proporcionalmente entre as ocupadas.
  */
-export function calcularPremios(totalCentavos: number, distribuicao: number[], jogadores: number): number[] {
+export function calcularPremios(
+  totalCentavos: number,
+  distribuicao: number[],
+  jogadores: number,
+): number[] {
   const usadas = distribuicao.slice(0, Math.max(0, jogadores));
   const soma = usadas.reduce((a, b) => a + b, 0);
   if (!usadas.length || soma <= 0 || totalCentavos <= 0) return [];

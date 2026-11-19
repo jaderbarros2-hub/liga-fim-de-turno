@@ -3,6 +3,7 @@
  * Textos padrão por formato e modalidade; o organizador acrescenta perguntas próprias em cada evento.
  * Pontos ainda a confirmar com a organização estão marcados com PROVISÓRIO.
  */
+import { ehConstruido } from "@/lib/formatos";
 import { hora } from "@/lib/formato";
 
 export const MINUTOS_RODADA = 50;
@@ -24,7 +25,7 @@ const mais = (iso: string, min: number) =>
 
 /** Rodadas: Pauper 3 com até 8 jogadores, 4 com 9 ou mais; Limited 3 (dentro do pod). */
 export function rodadas(e: Base, jogadores: number) {
-  return e.formato === "pauper"
+  return ehConstruido(e.formato)
     ? Math.max(e.minimo, jogadores) <= 8
       ? 3
       : 4
@@ -92,7 +93,7 @@ export function cronograma(
 
 export function oQueLevar(e: Base): string[] {
   if (presencial(e)) {
-    return e.formato === "pauper"
+    return ehConstruido(e.formato)
       ? [
           "Seu deck físico, com sleeves, igual à lista enviada no ingresso.",
           "Dados, marcadores e algo para anotar os pontos de vida.",
@@ -107,7 +108,7 @@ export function oQueLevar(e: Base): string[] {
   }
   return [
     "Conta no Endstep com o mesmo nick do seu cadastro na liga.",
-    e.formato === "pauper"
+    ehConstruido(e.formato)
       ? "O deck montado no Endstep, igual à lista enviada no ingresso."
       : "Só a conta: o draft ou o selado acontece dentro do Endstep.",
     "Computador com internet estável (o Endstep roda no navegador).",
@@ -140,7 +141,7 @@ export function perguntasPadrao(e: Base): Pergunta[] {
       r: "O prêmio cai na sua Carteira assim que o resultado é publicado. Você saca por Pix, usa em ingressos ou resgata em uma loja parceira.",
     },
   ];
-  if (e.formato === "pauper")
+  if (ehConstruido(e.formato))
     lista.push({
       p: "Posso trocar de deck depois da inscrição?",
       r: "Sim, até o início do evento, pela página do seu ingresso. Vale a última lista registrada.",
