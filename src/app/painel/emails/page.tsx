@@ -1,4 +1,5 @@
 import { BotaoEnviar } from "@/components/BotaoEnviar";
+import { destinoDeTeste } from "@/lib/email";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { enviarTeste } from "./actions";
 
@@ -99,6 +100,12 @@ export default async function Emails({
             <dt className="text-cinza">Remetente</dt>
             <dd className="font-mono text-texto2">{remetente}</dd>
           </div>
+          {destinoDeTeste() && (
+            <p className="rounded-md border border-alerta/50 bg-alerta/10 p-2 text-xs text-alerta">
+              Modo de teste: e-mails para lojas e outros jogadores são desviados
+              para {destinoDeTeste()}, com uma faixa dizendo para quem iriam.
+            </p>
+          )}
           {remetente.includes("resend.dev") && (
             <p className="text-xs text-cinza">
               Sem domínio verificado, o Resend só entrega para o e-mail dono da

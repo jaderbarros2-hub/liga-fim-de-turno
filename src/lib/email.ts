@@ -16,6 +16,19 @@ export const EMAIL_CONTATO =
 const REMETENTE =
   process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
 
+/**
+ * Modo de teste: enquanto não houver domínio verificado no Resend (remetente @resend.dev) ou com
+ * EMAIL_TESTE_PARA definido, todo e-mail para outra pessoa (lojas, outros jogadores) é desviado para
+ * esse endereço, com uma faixa no topo dizendo para quem ele iria. Assim nada chega a terceiros durante os testes.
+ */
+export function destinoDeTeste(): string | null {
+  const explicito = process.env.EMAIL_TESTE_PARA?.trim();
+  if (explicito) return explicito;
+  if (REMETENTE.includes("resend.dev"))
+    return EMAIL_CONTATO || process.env.EMAIL_ORGANIZACAO || null;
+  return null;
+}
+
 export type Imagem = { url: string; credito?: string | null };
 
 export type Conteudo = {
@@ -83,7 +96,10 @@ const FONTE = "Inter,'Segoe UI',Helvetica,Arial,sans-serif";
 const TITULO = "'Barlow Condensed','Arial Narrow',Arial,sans-serif";
 
 /** HTML com o visual da liga: arte no topo, título, número em destaque, detalhes e um botão. */
-export function montarEmail(c: Conteudo): { html: string; texto: string } {
+export function montarEmail(
+  c: Conteudo,
+  desviadoDe?: string,
+): { html: string; texto: string } {
   const imagem = c.imagem
     ? `<tr><td style="padding:0;line-height:0"><img src="${escapar(c.imagem.url)}" width="560" alt="" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px 12px 0 0"></td></tr>`
     : "";
@@ -134,6 +150,7 @@ export function montarEmail(c: Conteudo): { html: string; texto: string } {
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapar(c.previa ?? c.titulo)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.fundo}"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+${desviadoDe ? `<tr><td style="padding:0 0 16px"><div style="padding:12px 14px;border:1px dashed ${C.alerta};border-radius:10px;font:13px/1.5 ${FONTE};color:${C.alerta}"><strong>Modo de teste.</strong> Este e-mail iria para <strong>${escapar(desviadoDe)}</strong> e foi desviado para você. Nada foi enviado a essa pessoa.</div></td></tr>` : ""}
 <tr><td style="padding:0 4px 18px"><a href="${SITE}" style="text-decoration:none"><img src="${SITE}/email/logo.png" width="32" height="32" alt="" style="vertical-align:middle;border:0"><span style="margin-left:10px;vertical-align:middle;font:700 20px ${TITULO};letter-spacing:.5px;color:${C.texto}">LIGA FIM DE TURNO</span></a></td></tr>
 <tr><td style="background:${C.cartao};border:1px solid ${C.borda};border-radius:12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${imagem}
@@ -170,7 +187,14 @@ export async function enviarEmail(e: {
   referencia?: string | null;
 }) {
   if (!e.para) return { ok: false as const, erro: "sem destinatário" };
-  const { html, texto } = montarEmail(e.conteudo);
+  const teste = destinoDeTeste();
+  const desviar =
+    teste && e.para.trim().toLowerCase() !== teste.toLowerCase()
+      ? e.para
+      : undefined;
+  const para = desviar ? teste! : e.para;
+  const assunto = desviar ? `[Teste para ${desviar}] ${e.assunto}` : e.assunto;
+  const { html, texto } = montarEmail(e.conteudo, desviar);
   // Remove espaços, quebras de linha e aspas que costumam vir junto ao colar a chave na Vercel
   const chave = process.env.RESEND_API_KEY?.trim().replace(/^["']|["']$/g, "");
   let status: "enviado" | "falhou" | "simulado" = "simulado";
@@ -187,8 +211,8 @@ export async function enviarEmail(e: {
         },
         body: JSON.stringify({
           from: REMETENTE,
-          to: [e.para],
-          subject: e.assunto,
+          to: [para],
+          subject: assunto,
           html,
           text: texto,
           ...(EMAIL_CONTATO ? { reply_to: EMAIL_CONTATO } : {}),
@@ -214,7 +238,7 @@ export async function enviarEmail(e: {
   await criarClienteAdmin()
     .from("emails")
     .insert({
-      para: e.para,
+      para: desviar ? `${e.para} → ${para} (teste)` : e.para,
       assunto: e.assunto,
       tipo: e.tipo,
       status,
