@@ -470,6 +470,10 @@ export const emailResgateParaLoja = (movId: string) =>
       referencia: movId,
       assunto: `Novo crédito para gerar: ${reais(credito)} · pedido ${m.codigo_loja ?? ""}`,
       conteudo: {
+        imagem: m.parceiro.foto_url
+          ? { url: m.parceiro.foto_url }
+          : imagemFixa(`loja-${m.parceiro.id}`),
+        motivo: `Você recebe este e-mail porque a ${m.parceiro.nome} é loja parceira da Liga Fim de Turno`,
         selo: { texto: `Gerar em até ${PRAZO_LOJA}`, tom: "alerta" },
         titulo: "Gere o crédito deste cliente",
         destaque: {
@@ -523,6 +527,7 @@ async function avisarOrganizacao(
     assunto: `Painel · ${assunto}`,
     conteudo: {
       selo: { texto: "Ação pendente", tom: "alerta" },
+      motivo: "Aviso interno do painel da organização",
       titulo,
       paragrafos: [texto],
       detalhes,

@@ -42,6 +42,7 @@ export type Conteudo = {
   codigo?: { rotulo: string; valor: string };
   botao?: { texto: string; url: string };
   aviso?: string; // regra ou prazo importante
+  motivo?: string; // linha do rodapé: por que a pessoa recebe este e-mail
 };
 
 /** Arte do banco da liga em versão leve para e-mail (sempre a mesma para a mesma chave). */
@@ -159,7 +160,7 @@ ${selo}<h1 style="margin:0 0 16px;font:700 28px/1.2 ${FONTE};letter-spacing:-.3p
 ${destaque}${p}${detalhes}${codigo}${aviso}${botao}${credito}
 </td></tr></table>
 </td></tr>
-<tr><td style="padding:20px 6px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>Você recebe este e-mail porque tem cadastro na Liga Fim de Turno · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
+<tr><td style="padding:20px 6px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>${escapar(c.motivo ?? "Você recebe este e-mail porque tem cadastro na Liga Fim de Turno")} · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const texto = [
