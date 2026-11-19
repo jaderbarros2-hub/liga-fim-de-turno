@@ -10,8 +10,13 @@ async function exigirOrganizador() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Não autenticado.");
-  const { data } = await supabase.from("jogadores").select("papel").eq("id", user.id).maybeSingle();
-  if (data?.papel !== "organizador") throw new Error("Apenas o organizador pode fazer isso.");
+  const { data } = await supabase
+    .from("jogadores")
+    .select("papel")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (data?.papel !== "organizador")
+    throw new Error("Apenas o organizador pode fazer isso.");
   return user.id;
 }
 
@@ -22,9 +27,17 @@ export async function confirmarManual(form: FormData) {
   const eventoId = String(form.get("evento_id"));
   const db = criarClienteAdmin();
 
-  const { data: evento } = await db.from("eventos").select("valor_centavos").eq("id", eventoId).single();
+  const { data: evento } = await db
+    .from("eventos")
+    .select("valor_centavos")
+    .eq("id", eventoId)
+    .single();
   const agora = new Date().toISOString();
-  await db.from("pagamentos").update({ status: "cancelado" }).eq("inscricao_id", inscricaoId).eq("status", "pendente");
+  await db
+    .from("pagamentos")
+    .update({ status: "cancelado" })
+    .eq("inscricao_id", inscricaoId)
+    .eq("status", "pendente");
   await db.from("pagamentos").insert({
     inscricao_id: inscricaoId,
     provedor: "manual",

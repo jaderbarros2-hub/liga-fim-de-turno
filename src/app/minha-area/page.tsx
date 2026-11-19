@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
+import { linkMapa } from "@/lib/lojas";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
@@ -40,6 +41,17 @@ type Evento = {
   status: string;
   formato: string;
   colecao?: string | null;
+  modalidade?: string;
+  loja?: {
+    nome: string;
+    logradouro: string | null;
+    numero: string | null;
+    bairro: string | null;
+    cidade: string | null;
+    uf: string | null;
+    cep: string | null;
+    mapa_url: string | null;
+  } | null;
   liga: { slug: string };
   colecao_info?: {
     arte_url: string | null;
@@ -137,7 +149,7 @@ export default async function MinhaArea({
     supabase
       .from("inscricoes")
       .select(
-        "id, status, deck_nome, evento:eventos(id, slug, titulo, inicio, status, formato, colecao, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito))",
+        "id, status, deck_nome, evento:eventos(id, slug, titulo, inicio, status, formato, colecao, modalidade, loja:parceiros(nome, logradouro, numero, bairro, cidade, uf, cep, mapa_url), liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito))",
       )
       .eq("jogador_id", user.id)
       .order("criado_em", { ascending: false }),
@@ -199,11 +211,28 @@ export default async function MinhaArea({
   const admin = criarClienteAdmin();
   const { data: dLojas } = await admin
     .from("parceiros")
-    .select("id, nome, slug, logo_url, cidade, uf, instrucoes_credito, bonus_credito_pct, credito:lojas_credito!inner(url_cadastro, identificacao, pix_chave, email_pedidos)")
+    .select(
+      "id, nome, slug, logo_url, cidade, uf, instrucoes_credito, bonus_credito_pct, credito:lojas_credito!inner(url_cadastro, identificacao, pix_chave, email_pedidos)",
+    )
     .eq("ativo", true)
     .eq("aceita_credito", true)
     .order("nome");
-  type LojaCred = { id: string; nome: string; slug: string | null; logo_url: string | null; cidade: string | null; uf: string | null; instrucoes_credito: string | null; bonus_credito_pct: number; credito: { url_cadastro: string | null; identificacao: string; pix_chave: string | null; email_pedidos: string | null } };
+  type LojaCred = {
+    id: string;
+    nome: string;
+    slug: string | null;
+    logo_url: string | null;
+    cidade: string | null;
+    uf: string | null;
+    instrucoes_credito: string | null;
+    bonus_credito_pct: number;
+    credito: {
+      url_cadastro: string | null;
+      identificacao: string;
+      pix_chave: string | null;
+      email_pedidos: string | null;
+    };
+  };
   const lojasCredito = ((dLojas as unknown as LojaCred[] | null) ?? [])
     .filter((l) => l.credito?.pix_chave && l.credito.email_pedidos)
     .map((l) => ({
@@ -588,7 +617,9 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Em processamento
                 </dt>
-                <dd className="titulo text-3xl">{reais(Math.abs(totalProcessamento))}</dd>
+                <dd className="titulo text-3xl">
+                  {reais(Math.abs(totalProcessamento))}
+                </dd>
                 <span className="text-sm text-texto2">
                   Saques e reembolsos são pagos por Pix em até 48 horas.
                 </span>
@@ -834,10 +865,19 @@ export default async function MinhaArea({
                             </>
                           )}
                           {m.tipo === "envio_loja" && m.credito_centavos ? (
-                            <> · {reais(m.credito_centavos)} de crédito na loja</>
+                            <>
+                              {" "}
+                              · {reais(m.credito_centavos)} de crédito na loja
+                            </>
                           ) : null}
-                          {m.tipo === "envio_loja" && m.status === "concluido" && m.concluido_em ? (
-                            <> · Pix enviado à loja em {dataCurta(m.concluido_em)}</>
+                          {m.tipo === "envio_loja" &&
+                          m.status === "concluido" &&
+                          m.concluido_em ? (
+                            <>
+                              {" "}
+                              · Pix enviado à loja em{" "}
+                              {dataCurta(m.concluido_em)}
+                            </>
                           ) : null}
                         </span>
                       </span>
@@ -963,6 +1003,7 @@ function ProximaMesa({
           <span className="titulo text-4xl sm:text-5xl">{e.titulo}</span>
           <span className="text-texto2">
             {dataLonga(e.inicio)} · {hora(e.inicio)} (horário de Brasília)
+            {e.modalidade === "presencial" && e.loja ? ` · ${e.loja.nome}` : ""}
             {!pendente && e.formato === "pauper" && (
               <>
                 {" "}
@@ -979,6 +1020,15 @@ function ProximaMesa({
             <BotaoLink href={`/eventos/${e.slug}/inscricao`}>
               Pagar com Pix
             </BotaoLink>
+          ) : e.modalidade === "presencial" && e.loja ? (
+            <a
+              href={linkMapa(e.loja)}
+              target="_blank"
+              rel="noopener"
+              className="corte inline-flex min-h-12 items-center bg-azul px-7 font-semibold uppercase tracking-wide text-white no-underline hover:bg-azul-escuro hover:text-white"
+            >
+              Como chegar ↗
+            </a>
           ) : link ? (
             <a
               href={link}

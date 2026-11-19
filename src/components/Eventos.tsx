@@ -7,7 +7,9 @@ import { dataCurta, hora, NOMES_FORMATO } from "@/lib/formato";
 export function EtiquetaLiga({ evento }: { evento: Evento }) {
   return (
     <Etiqueta tipo={evento.formato === "pauper" ? "azul" : "ciano"}>
-      {evento.formato === "pauper" ? "Pauper" : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}`}
+      {evento.formato === "pauper"
+        ? "Pauper"
+        : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}`}
     </Etiqueta>
   );
 }
@@ -33,12 +35,19 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
         <span className="absolute bottom-3 left-4">
           <EtiquetaLiga evento={evento} />
         </span>
-        <span className="absolute right-3 top-2 text-[10px] text-white/60" title={capa.credito}>
+        <span
+          className="absolute right-3 top-2 text-[10px] text-white/60"
+          title={capa.credito}
+        >
           {capa.artista}
         </span>
         {(evento.colecao_info?.icone_svg || evento.cubo_info) && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={evento.colecao_info?.icone_svg ?? "/icone-cubo.svg"} alt="" className="absolute bottom-3 right-4 h-7 w-7 invert drop-shadow" />
+          <img
+            src={evento.colecao_info?.icone_svg ?? "/icone-cubo.svg"}
+            alt=""
+            className="absolute bottom-3 right-4 h-7 w-7 invert drop-shadow"
+          />
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 px-4 pb-5 pt-3">
@@ -46,9 +55,16 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
           {dataCurta(evento.inicio)} · {hora(evento.inicio)}
         </span>
         <span className="titulo text-3xl">{evento.titulo}</span>
-        <span className="mt-auto flex items-center justify-between pt-3 text-sm text-texto2">
-          <span>{evento.modalidade === "online" ? "Online · Endstep" : evento.loja ? `${evento.loja.nome}${evento.loja.cidade ? ` · ${evento.loja.cidade}` : ""}` : (evento.local ?? "Presencial")}</span>
-          <span className="font-semibold text-gelo group-hover:text-ciano">
+        <span className="mt-auto flex items-center justify-between gap-3 pt-3 text-sm text-texto2">
+          <span
+            className="min-w-0 truncate"
+            title={evento.loja?.nome ?? undefined}
+          >
+            {evento.modalidade === "online"
+              ? "Online · Endstep"
+              : `Presencial${evento.loja?.cidade ? ` · ${evento.loja.cidade}` : ""}`}
+          </span>
+          <span className="shrink-0 whitespace-nowrap font-semibold text-gelo group-hover:text-ciano">
             {evento.status === "aberto" ? "Inscrever-se →" : "Ver evento →"}
           </span>
         </span>
@@ -57,11 +73,18 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
   );
 }
 
-export function ListaEventos({ eventos, vazio }: { eventos: Evento[]; vazio?: string }) {
+export function ListaEventos({
+  eventos,
+  vazio,
+}: {
+  eventos: Evento[];
+  vazio?: string;
+}) {
   if (eventos.length === 0) {
     return (
       <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
-        {vazio ?? "A próxima etapa ainda não foi aberta. Os avisos saem primeiro no Discord da liga."}
+        {vazio ??
+          "A próxima etapa ainda não foi aberta. Os avisos saem primeiro no Discord da liga."}
       </p>
     );
   }

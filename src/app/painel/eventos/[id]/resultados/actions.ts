@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { lerDistribuicao, premiosDoEvento, type LinhaResultado } from "@/lib/resultados";
+import {
+  lerDistribuicao,
+  premiosDoEvento,
+  type LinhaResultado,
+} from "@/lib/resultados";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -13,13 +17,21 @@ async function exigirOrganizador() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Não autenticado.");
-  const { data } = await supabase.from("jogadores").select("papel").eq("id", user.id).maybeSingle();
-  if (data?.papel !== "organizador") throw new Error("Apenas o organizador pode fazer isso.");
+  const { data } = await supabase
+    .from("jogadores")
+    .select("papel")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (data?.papel !== "organizador")
+    throw new Error("Apenas o organizador pode fazer isso.");
   return user.id;
 }
 
 /** Grava a classificação, recalcula os prêmios e (opcionalmente) publica. */
-export async function salvarResultados(_: EstadoResultados, form: FormData): Promise<EstadoResultados> {
+export async function salvarResultados(
+  _: EstadoResultados,
+  form: FormData,
+): Promise<EstadoResultados> {
   let ator: string;
   try {
     ator = await exigirOrganizador();
@@ -31,7 +43,9 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
   const publicar = form.get("publicar") === "sim";
   const distribuicao = lerDistribuicao(String(form.get("distribuicao") ?? ""));
   if (distribuicao === "invalida")
-    return { erro: "A divisão personalizada precisa somar 100%. Ex.: 50/30/20. Deixe vazio para usar a regra da liga." };
+    return {
+      erro: "A divisão personalizada precisa somar 100%. Ex.: 50/30/20. Deixe vazio para usar a regra da liga.",
+    };
 
   let linhas: LinhaResultado[];
   try {
@@ -55,7 +69,10 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
     .select("id", { count: "exact", head: true })
     .eq("evento_id", eventoId)
     .eq("status", "pago");
-  if (pagos) return { erro: "Há prêmios já marcados como pagos neste evento; a classificação não pode mais ser alterada." };
+  if (pagos)
+    return {
+      erro: "Há prêmios já marcados como pagos neste evento; a classificação não pode mais ser alterada.",
+    };
 
   const { count: confirmados } = await db
     .from("inscricoes")
@@ -63,7 +80,12 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
     .eq("evento_id", eventoId)
     .eq("status", "confirmada");
 
-  const total = Math.floor(((evento.valor_centavos ?? 0) * (confirmados ?? 0) * evento.percentual_premio) / 100);
+  const total = Math.floor(
+    ((evento.valor_centavos ?? 0) *
+      (confirmados ?? 0) *
+      evento.percentual_premio) /
+      100,
+  );
   const valores = premiosDoEvento(evento.formato, total, linhas, distribuicao);
 
   // Posições premiadas precisam estar ligadas a um jogador cadastrado (para saber a chave Pix)
@@ -73,7 +95,8 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
       erro: `Associe um jogador cadastrado às posições premiadas: ${semCadastro.map((l) => `${l.posicao}º ${l.nick}`).join(", ")}.`,
     };
   const ids = linhas.map((l) => l.jogadorId).filter(Boolean);
-  if (new Set(ids).size !== ids.length) return { erro: "O mesmo jogador aparece em mais de uma posição." };
+  if (new Set(ids).size !== ids.length)
+    return { erro: "O mesmo jogador aparece em mais de uma posição." };
 
   await db.from("resultados").delete().eq("evento_id", eventoId);
   const { error: erroRes } = await db.from("resultados").insert(
@@ -88,15 +111,26 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
       derrotas: l.derrotas,
     })),
   );
-  if (erroRes) return { erro: `Não foi possível gravar a classificação: ${erroRes.message}` };
+  if (erroRes)
+    return {
+      erro: `Não foi possível gravar a classificação: ${erroRes.message}`,
+    };
 
   await db.from("premios").delete().eq("evento_id", eventoId);
   const premios = valores
-    .map((v, i) => ({ evento_id: eventoId, jogador_id: linhas[i].jogadorId, posicao: i + 1, valor_centavos: v }))
+    .map((v, i) => ({
+      evento_id: eventoId,
+      jogador_id: linhas[i].jogadorId,
+      posicao: i + 1,
+      valor_centavos: v,
+    }))
     .filter((p) => p.valor_centavos > 0);
   if (premios.length) {
     const { error } = await db.from("premios").insert(premios);
-    if (error) return { erro: `Classificação salva, mas os prêmios não: ${error.message}` };
+    if (error)
+      return {
+        erro: `Classificação salva, mas os prêmios não: ${error.message}`,
+      };
   }
 
   await db
@@ -119,7 +153,11 @@ export async function salvarResultados(_: EstadoResultados, form: FormData): Pro
   revalidatePath(`/painel/eventos/${eventoId}/resultados`);
   revalidatePath(`/eventos/${evento.slug}`);
   revalidatePath("/resultados");
-  return { ok: publicar ? "Resultados publicados no site." : "Classificação salva (ainda não publicada)." };
+  return {
+    ok: publicar
+      ? "Resultados publicados no site."
+      : "Classificação salva (ainda não publicada).",
+  };
 }
 
 /** Marca um prêmio como pago (Pix feito pelo organizador). */
@@ -147,9 +185,21 @@ export async function liberarPremiosNaCarteira(form: FormData) {
   const ator = await exigirOrganizador();
   const eventoId = String(form.get("evento_id"));
   const db = criarClienteAdmin();
-  const { data: evento } = await db.from("eventos").select("titulo").eq("id", eventoId).single();
+  const { data: evento } = await db
+    .from("eventos")
+    .select("titulo")
+    .eq("id", eventoId)
+    .single();
   const { liberarPremios } = await import("@/lib/carteira");
   const n = await liberarPremios(eventoId, evento?.titulo ?? "Etapa");
-  await db.from("registro_atividades").insert({ ator_id: ator, acao: "premios_liberados", entidade: "eventos", entidade_id: eventoId, detalhes: { premios: n } });
+  await db
+    .from("registro_atividades")
+    .insert({
+      ator_id: ator,
+      acao: "premios_liberados",
+      entidade: "eventos",
+      entidade_id: eventoId,
+      detalhes: { premios: n },
+    });
   revalidatePath(`/painel/eventos/${eventoId}/resultados`);
 }

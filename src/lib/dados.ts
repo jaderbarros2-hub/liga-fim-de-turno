@@ -52,6 +52,7 @@ export type Evento = {
     total_cartas: number | null;
   } | null;
   loja_id: string | null;
+  perguntas: { p: string; r: string }[] | null;
   loja: LojaEvento | null;
   cubo_info: {
     cubecobra_id: string;

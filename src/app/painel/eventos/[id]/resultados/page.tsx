@@ -14,44 +14,67 @@ type Premio = {
   valor_centavos: number;
   status: string;
   pago_em: string | null;
-  jogador: { nick_endstep: string | null; nome: string | null; chave_pix: string | null; responsavel_nome: string | null } | null;
+  jogador: {
+    nick_endstep: string | null;
+    nome: string | null;
+    chave_pix: string | null;
+    responsavel_nome: string | null;
+  } | null;
 };
 
-export default async function ResultadosEvento({ params }: { params: Promise<{ id: string }> }) {
+export default async function ResultadosEvento({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const supabase = await criarClienteServidor();
 
   const { data: evento } = await supabase
     .from("eventos")
-    .select("id, slug, titulo, formato, status, valor_centavos, percentual_premio, distribuicao_premio")
+    .select(
+      "id, slug, titulo, formato, status, valor_centavos, percentual_premio, distribuicao_premio",
+    )
     .eq("id", id)
     .maybeSingle();
   if (!evento) notFound();
 
-  const [{ data: inscricoes }, { data: resultados }, { data: premios }] = await Promise.all([
-    supabase
-      .from("inscricoes")
-      .select("jogador_id, jogador:jogadores(nick_endstep, nome)")
-      .eq("evento_id", id)
-      .eq("status", "confirmada"),
-    supabase
-      .from("resultados")
-      .select("posicao, nick_endstep, jogador_id, pontos, vitorias, empates, derrotas")
-      .eq("evento_id", id)
-      .order("posicao"),
-    supabase
-      .from("premios")
-      .select("id, posicao, valor_centavos, status, pago_em, jogador:jogadores(nick_endstep, nome, chave_pix, responsavel_nome)")
-      .eq("evento_id", id)
-      .order("posicao"),
-  ]);
+  const [{ data: inscricoes }, { data: resultados }, { data: premios }] =
+    await Promise.all([
+      supabase
+        .from("inscricoes")
+        .select("jogador_id, jogador:jogadores(nick_endstep, nome)")
+        .eq("evento_id", id)
+        .eq("status", "confirmada"),
+      supabase
+        .from("resultados")
+        .select(
+          "posicao, nick_endstep, jogador_id, pontos, vitorias, empates, derrotas",
+        )
+        .eq("evento_id", id)
+        .order("posicao"),
+      supabase
+        .from("premios")
+        .select(
+          "id, posicao, valor_centavos, status, pago_em, jogador:jogadores(nick_endstep, nome, chave_pix, responsavel_nome)",
+        )
+        .eq("evento_id", id)
+        .order("posicao"),
+    ]);
 
-  type InscricaoLinha = { jogador_id: string; jogador: { nick_endstep: string | null; nome: string | null } | null };
-  const inscritos: Inscrito[] = ((inscricoes as unknown as InscricaoLinha[]) ?? []).map((i) => ({
+  type InscricaoLinha = {
+    jogador_id: string;
+    jogador: { nick_endstep: string | null; nome: string | null } | null;
+  };
+  const inscritos: Inscrito[] = (
+    (inscricoes as unknown as InscricaoLinha[]) ?? []
+  ).map((i) => ({
     jogadorId: i.jogador_id,
     nick: i.jogador?.nick_endstep || i.jogador?.nome || "?",
   }));
-  const premioTotal = Math.floor((evento.valor_centavos * inscritos.length * evento.percentual_premio) / 100);
+  const premioTotal = Math.floor(
+    (evento.valor_centavos * inscritos.length * evento.percentual_premio) / 100,
+  );
   const linhasIniciais: LinhaResultado[] = (resultados ?? []).map((r) => ({
     posicao: r.posicao,
     nick: r.nick_endstep,
@@ -89,17 +112,31 @@ export default async function ResultadosEvento({ params }: { params: Promise<{ i
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <h2 className="titulo text-2xl">3 · Liberar prêmios na Carteira</h2>
         {lista.length === 0 ? (
-          <p className="text-sm text-texto2">Os prêmios aparecem aqui depois de salvar a classificação.</p>
+          <p className="text-sm text-texto2">
+            Os prêmios aparecem aqui depois de salvar a classificação.
+          </p>
         ) : (
           <>
             <ul className="flex flex-col border-t border-borda text-sm">
               {lista.map((p) => (
-                <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-borda py-3">
-                  <span className="w-8 font-semibold text-ciano">{p.posicao}º</span>
-                  <span className="min-w-36 flex-1 font-semibold">{p.jogador?.nick_endstep || p.jogador?.nome}</span>
+                <li
+                  key={p.id}
+                  className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-borda py-3"
+                >
+                  <span className="w-8 font-semibold text-ciano">
+                    {p.posicao}º
+                  </span>
+                  <span className="min-w-36 flex-1 font-semibold">
+                    {p.jogador?.nick_endstep || p.jogador?.nome}
+                  </span>
                   <span className="text-ciano">{reais(p.valor_centavos)}</span>
                   {p.status === "pago" ? (
-                    <span className="text-ciano">✓ Na Carteira {p.pago_em ? new Date(p.pago_em).toLocaleDateString("pt-BR") : ""}</span>
+                    <span className="text-ciano">
+                      ✓ Na Carteira{" "}
+                      {p.pago_em
+                        ? new Date(p.pago_em).toLocaleDateString("pt-BR")
+                        : ""}
+                    </span>
                   ) : (
                     <span className="text-alerta">Aguardando liberação</span>
                   )}
@@ -107,12 +144,21 @@ export default async function ResultadosEvento({ params }: { params: Promise<{ i
               ))}
             </ul>
             {lista.some((p) => p.status !== "pago") && (
-              <form action={liberarPremiosNaCarteira} className="flex flex-wrap items-center gap-4">
+              <form
+                action={liberarPremiosNaCarteira}
+                className="flex flex-wrap items-center gap-4"
+              >
                 <input type="hidden" name="evento_id" value={id} />
-                <button type="submit" className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
+                <button
+                  type="submit"
+                  className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white"
+                >
                   Liberar prêmios na Carteira
                 </button>
-                <span className="text-xs text-cinza">Depois de liberar, a classificação fica travada. Saques aparecem em Painel → Financeiro.</span>
+                <span className="text-xs text-cinza">
+                  Depois de liberar, a classificação fica travada. Saques
+                  aparecem em Painel → Financeiro.
+                </span>
               </form>
             )}
           </>

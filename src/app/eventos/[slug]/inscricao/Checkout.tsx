@@ -56,6 +56,7 @@ function Bloco({
 export function Checkout({
   slug,
   pauper,
+  presencial,
   valor,
   valorCentavos,
   saldo,
@@ -66,6 +67,7 @@ export function Checkout({
 }: {
   slug: string;
   pauper: boolean;
+  presencial: string | null; // nome da loja, se o evento for presencial
   valor: string;
   valorCentavos: number;
   saldo: { centavos: number; texto: string; cobre: boolean };
@@ -297,9 +299,10 @@ export function Checkout({
             jogadores que o mínimo): reembolso ou valor na Carteira para todos.
           </li>
           <li>
-            <strong className="text-gelo">No dia:</strong> o link do Endstep
-            aparece na página do evento e na sua Minha área. Faça o check-in até
-            10 minutos antes.
+            <strong className="text-gelo">No dia:</strong>{" "}
+            {presencial
+              ? `o evento é presencial, em ${presencial}. Chegue 15 minutos antes para o check-in; endereço e mapa estão na página do evento.`
+              : "o link do Endstep aparece na página do evento e na sua Minha área. Faça o check-in até 10 minutos antes."}
           </li>
           {pauper && (
             <li>
@@ -503,15 +506,17 @@ export function Checkout({
               <form action={acaoCred} className="flex flex-col gap-3">
                 {ocultos}
                 <p className="text-sm text-texto2">
-                  O valor do ingresso ({finalTexto}) sai do saldo da sua Carteira
-                  ({saldo.texto}). A confirmação é imediata.
+                  O valor do ingresso ({finalTexto}) sai do saldo da sua
+                  Carteira ({saldo.texto}). A confirmação é imediata.
                 </p>
                 <button
                   type="submit"
                   disabled={!pronto || usando}
                   className="corte inline-flex min-h-14 items-center justify-center bg-azul px-8 font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {usando ? "Emitindo…" : "Pagar com a Carteira e emitir ingresso"}
+                  {usando
+                    ? "Emitindo…"
+                    : "Pagar com a Carteira e emitir ingresso"}
                 </button>
                 {estadoCred.erro && (
                   <p role="alert" className="text-sm text-erro">

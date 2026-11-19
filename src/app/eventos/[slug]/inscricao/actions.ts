@@ -15,7 +15,11 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
 export type EstadoInscricao = { erro?: string };
-export type EstadoDeckRapido = { erro?: string; problemas?: string[]; deck?: { id: string; nome: string } };
+export type EstadoDeckRapido = {
+  erro?: string;
+  problemas?: string[];
+  deck?: { id: string; nome: string };
+};
 
 const HORAS_CANCELAMENTO = 24;
 
@@ -29,7 +33,10 @@ async function deckParaInscricao(jogadorId: string, deckId: string) {
     .eq("jogador_id", jogadorId)
     .maybeSingle();
   if (!deck) return { erro: "Deck não encontrado." };
-  if (!deck.legal) return { erro: "Esse deck tem cartas fora da lista do Pauper. Corrija antes de continuar." };
+  if (!deck.legal)
+    return {
+      erro: "Esse deck tem cartas fora da lista do Pauper. Corrija antes de continuar.",
+    };
   return {
     dados: {
       deck_id: deck.id,
@@ -43,7 +50,10 @@ async function deckParaInscricao(jogadorId: string, deckId: string) {
 }
 
 /** Cadastra um deck colado na própria tela do ingresso (sem sair do checkout). */
-export async function salvarDeckRapido(_: EstadoDeckRapido, form: FormData): Promise<EstadoDeckRapido> {
+export async function salvarDeckRapido(
+  _: EstadoDeckRapido,
+  form: FormData,
+): Promise<EstadoDeckRapido> {
   const supabase = await criarClienteServidor();
   const {
     data: { user },
@@ -54,9 +64,17 @@ export async function salvarDeckRapido(_: EstadoDeckRapido, form: FormData): Pro
   const lista = lerLista(String(form.get("lista") ?? ""));
   if (!nome) return { erro: "Dê um nome ao deck." };
   if (!arquetipoId) return { erro: "Escolha o arquétipo." };
-  if (!lista.principal.length) return { erro: "Não encontrei cartas na lista. Cole o texto exportado do Endstep." };
-  const cartas = await buscarCartas([...lista.principal, ...lista.sideboard].map((i) => i.nome));
-  if (!cartas.size) return { erro: "Não foi possível consultar as cartas agora. Tente de novo em instantes." };
+  if (!lista.principal.length)
+    return {
+      erro: "Não encontrei cartas na lista. Cole o texto exportado do Endstep.",
+    };
+  const cartas = await buscarCartas(
+    [...lista.principal, ...lista.sideboard].map((i) => i.nome),
+  );
+  if (!cartas.size)
+    return {
+      erro: "Não foi possível consultar as cartas agora. Tente de novo em instantes.",
+    };
   const problemas = conferirPauper(lista, cartas);
   const { data, error } = await criarClienteAdmin()
     .from("decks")
@@ -75,12 +93,16 @@ export async function salvarDeckRapido(_: EstadoDeckRapido, form: FormData): Pro
     .select("id, nome")
     .single();
   if (error || !data) return { erro: "Não foi possível salvar o deck." };
-  if (problemas.length) return { erro: "O deck foi salvo, mas tem pendências:", problemas };
+  if (problemas.length)
+    return { erro: "O deck foi salvo, mas tem pendências:", problemas };
   return { deck: data };
 }
 
 /** Cria (ou reabre) a inscrição e gera um Pix novo. */
-export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<EstadoInscricao> {
+export async function gerarPix(
+  _: EstadoInscricao,
+  form: FormData,
+): Promise<EstadoInscricao> {
   const slug = String(form.get("slug") ?? "");
   const caminho = `/eventos/${slug}/inscricao`;
 
@@ -96,23 +118,34 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
     .select("id, nome, email, cpf, aceite_termos_em")
     .eq("id", user.id)
     .maybeSingle();
-  if (!jogador?.aceite_termos_em) redirect(`/cadastro?voltar=${encodeURIComponent(caminho)}`);
+  if (!jogador?.aceite_termos_em)
+    redirect(`/cadastro?voltar=${encodeURIComponent(caminho)}`);
 
   const { data: evento } = await db
     .from("eventos")
-    .select("id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate")
+    .select(
+      "id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate",
+    )
     .eq("slug", slug)
     .maybeSingle();
   if (!evento) return { erro: "Evento não encontrado." };
-  if (evento.status !== "aberto") return { erro: "As inscrições deste evento não estão abertas." };
-  if (form.get("aceite") !== "on") return { erro: "Confirme que leu as regras do ingresso." };
+  if (evento.status !== "aberto")
+    return { erro: "As inscrições deste evento não estão abertas." };
+  if (form.get("aceite") !== "on")
+    return { erro: "Confirme que leu as regras do ingresso." };
   let deck: Record<string, unknown> = {};
   if (evento.formato === "pauper") {
-    const r = await deckParaInscricao(jogador.id, String(form.get("deck_id") ?? ""));
+    const r = await deckParaInscricao(
+      jogador.id,
+      String(form.get("deck_id") ?? ""),
+    );
     if (r.erro) return { erro: r.erro };
     deck = r.dados!;
   }
-  if (evento.inscricoes_ate && new Date(evento.inscricoes_ate).getTime() < Date.now())
+  if (
+    evento.inscricoes_ate &&
+    new Date(evento.inscricoes_ate).getTime() < Date.now()
+  )
     return { erro: "O prazo de inscrição deste evento já terminou." };
 
   // Cupom: desconto ou ingresso gratuito
@@ -132,7 +165,8 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
       .select("id", { count: "exact", head: true })
       .eq("evento_id", evento.id)
       .eq("status", "confirmada");
-    if ((count ?? 0) >= evento.vagas) return { erro: "As vagas deste evento esgotaram." };
+    if ((count ?? 0) >= evento.vagas)
+      return { erro: "As vagas deste evento esgotaram." };
   }
 
   // Inscrição: reaproveita a existente (expirada ou cancelada volta a aguardar pagamento)
@@ -157,17 +191,26 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
       .eq("inscricao_id", inscricaoId)
       .eq("status", "pendente");
     for (const p of pendentes ?? []) {
-      if ((await sincronizarPagamento(p.id)) === "aprovado") redirect(`/eventos/${slug}`);
-      await db.from("pagamentos").update({ status: "cancelado" }).eq("id", p.id).eq("status", "pendente");
+      if ((await sincronizarPagamento(p.id)) === "aprovado")
+        redirect(`/eventos/${slug}`);
+      await db
+        .from("pagamentos")
+        .update({ status: "cancelado" })
+        .eq("id", p.id)
+        .eq("status", "pendente");
     }
-    await db.from("inscricoes").update({ status: "aguardando_pagamento" }).eq("id", inscricaoId);
+    await db
+      .from("inscricoes")
+      .update({ status: "aguardando_pagamento" })
+      .eq("id", inscricaoId);
   } else {
     const { data: nova, error } = await db
       .from("inscricoes")
       .insert({ evento_id: evento.id, jogador_id: jogador.id, ...deck })
       .select("id")
       .single();
-    if (error || !nova) return { erro: "Não foi possível registrar a inscrição. Tente de novo." };
+    if (error || !nova)
+      return { erro: "Não foi possível registrar a inscrição. Tente de novo." };
     inscricaoId = nova.id;
   }
 
@@ -175,7 +218,13 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
   if (valor === 0 && cupom) {
     const { data: gratis } = await db
       .from("pagamentos")
-      .insert({ inscricao_id: inscricaoId, provedor: "cupom", valor_centavos: 0, cupom_id: cupom.id, desconto_centavos: cupom.desconto })
+      .insert({
+        inscricao_id: inscricaoId,
+        provedor: "cupom",
+        valor_centavos: 0,
+        cupom_id: cupom.id,
+        desconto_centavos: cupom.desconto,
+      })
       .select("id")
       .single();
     if (!gratis) return { erro: "Não foi possível emitir o ingresso." };
@@ -195,7 +244,8 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
     })
     .select("id")
     .single();
-  if (erroPag || !pagamento) return { erro: "Não foi possível iniciar o pagamento. Tente de novo." };
+  if (erroPag || !pagamento)
+    return { erro: "Não foi possível iniciar o pagamento. Tente de novo." };
 
   try {
     const pedido = await criarPedidoPix({
@@ -216,7 +266,10 @@ export async function gerarPix(_: EstadoInscricao, form: FormData): Promise<Esta
       })
       .eq("id", pagamento.id);
   } catch (e) {
-    await db.from("pagamentos").update({ status: "cancelado" }).eq("id", pagamento.id);
+    await db
+      .from("pagamentos")
+      .update({ status: "cancelado" })
+      .eq("id", pagamento.id);
     return { erro: e instanceof Error ? e.message : "Falha ao gerar o Pix." };
   }
 
@@ -234,7 +287,11 @@ export async function cancelarInscricao(form: FormData) {
   if (!user) redirect("/entrar");
 
   const db = criarClienteAdmin();
-  const { data: evento } = await db.from("eventos").select("id, inicio").eq("slug", slug).maybeSingle();
+  const { data: evento } = await db
+    .from("eventos")
+    .select("id, inicio")
+    .eq("slug", slug)
+    .maybeSingle();
   if (!evento) redirect("/minha-area");
 
   const { data: insc } = await db
@@ -247,10 +304,18 @@ export async function cancelarInscricao(form: FormData) {
 
   const agora = new Date().toISOString();
   if (insc.status === "aguardando_pagamento") {
-    await db.from("pagamentos").update({ status: "cancelado" }).eq("inscricao_id", insc.id).eq("status", "pendente");
-    await db.from("inscricoes").update({ status: "cancelada", cancelado_em: agora }).eq("id", insc.id);
+    await db
+      .from("pagamentos")
+      .update({ status: "cancelado" })
+      .eq("inscricao_id", insc.id)
+      .eq("status", "pendente");
+    await db
+      .from("inscricoes")
+      .update({ status: "cancelada", cancelado_em: agora })
+      .eq("id", insc.id);
   } else if (insc.status === "confirmada") {
-    const limite = new Date(evento.inicio).getTime() - HORAS_CANCELAMENTO * 3600_000;
+    const limite =
+      new Date(evento.inicio).getTime() - HORAS_CANCELAMENTO * 3600_000;
     if (Date.now() > limite) redirect(`/eventos/${slug}?aviso=prazo`);
     const { data: pago } = await db
       .from("pagamentos")
@@ -258,10 +323,17 @@ export async function cancelarInscricao(form: FormData) {
       .eq("inscricao_id", insc.id)
       .eq("status", "aprovado")
       .maybeSingle();
-    await db.from("inscricoes").update({ status: "cancelada", cancelado_em: agora }).eq("id", insc.id);
+    await db
+      .from("inscricoes")
+      .update({ status: "cancelada", cancelado_em: agora })
+      .eq("id", insc.id);
     if (pago) {
       // O jogador escolhe: reembolso por Pix (a organização paga) ou crédito para outro ingresso
-      const { data: ev } = await db.from("eventos").select("titulo").eq("id", evento.id).single();
+      const { data: ev } = await db
+        .from("eventos")
+        .select("titulo")
+        .eq("id", evento.id)
+        .single();
       await db.from("carteira_movimentos").insert({
         jogador_id: user.id,
         tipo: "credito",
@@ -270,9 +342,19 @@ export async function cancelarInscricao(form: FormData) {
         inscricao_id: insc.id,
         concluido_em: agora,
       });
-      after(() => emailIngressoCancelado(insc.id, pago.valor_centavos, form.get("destino") === "credito" ? "credito" : "pix"));
+      after(() =>
+        emailIngressoCancelado(
+          insc.id,
+          pago.valor_centavos,
+          form.get("destino") === "credito" ? "credito" : "pix",
+        ),
+      );
       if (form.get("destino") !== "credito") {
-        const { data: j } = await db.from("jogadores").select("chave_pix").eq("id", user.id).single();
+        const { data: j } = await db
+          .from("jogadores")
+          .select("chave_pix")
+          .eq("id", user.id)
+          .single();
         await db.from("carteira_movimentos").insert({
           jogador_id: user.id,
           tipo: "saque",
@@ -302,7 +384,10 @@ export async function saldoDeCredito(jogadorId: string) {
 }
 
 /** Paga o ingresso com crédito (sem Pix): confirma na hora. */
-export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promise<EstadoInscricao> {
+export async function pagarComCredito(
+  _: EstadoInscricao,
+  form: FormData,
+): Promise<EstadoInscricao> {
   const slug = String(form.get("slug") ?? "");
   const caminho = `/eventos/${slug}/inscricao`;
   const supabase = await criarClienteServidor();
@@ -310,23 +395,39 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect(`/entrar?voltar=${encodeURIComponent(caminho)}`);
-  if (form.get("aceite") !== "on") return { erro: "Confirme que leu as regras do ingresso." };
+  if (form.get("aceite") !== "on")
+    return { erro: "Confirme que leu as regras do ingresso." };
 
   const db = criarClienteAdmin();
   const { data: evento } = await db
     .from("eventos")
-    .select("id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate")
+    .select(
+      "id, titulo, status, formato, valor_centavos, vagas, inscricoes_ate",
+    )
     .eq("slug", slug)
     .maybeSingle();
-  if (!evento || evento.status !== "aberto") return { erro: "As inscrições deste evento não estão abertas." };
-  if (evento.inscricoes_ate && new Date(evento.inscricoes_ate).getTime() < Date.now()) return { erro: "O prazo de inscrição terminou." };
+  if (!evento || evento.status !== "aberto")
+    return { erro: "As inscrições deste evento não estão abertas." };
+  if (
+    evento.inscricoes_ate &&
+    new Date(evento.inscricoes_ate).getTime() < Date.now()
+  )
+    return { erro: "O prazo de inscrição terminou." };
   if (evento.vagas) {
-    const { count } = await db.from("inscricoes").select("id", { count: "exact", head: true }).eq("evento_id", evento.id).eq("status", "confirmada");
-    if ((count ?? 0) >= evento.vagas) return { erro: "As vagas deste evento esgotaram." };
+    const { count } = await db
+      .from("inscricoes")
+      .select("id", { count: "exact", head: true })
+      .eq("evento_id", evento.id)
+      .eq("status", "confirmada");
+    if ((count ?? 0) >= evento.vagas)
+      return { erro: "As vagas deste evento esgotaram." };
   }
   let deck: Record<string, unknown> = {};
   if (evento.formato === "pauper") {
-    const r = await deckParaInscricao(user.id, String(form.get("deck_id") ?? ""));
+    const r = await deckParaInscricao(
+      user.id,
+      String(form.get("deck_id") ?? ""),
+    );
     if (r.erro) return { erro: r.erro };
     deck = r.dados!;
   }
@@ -341,16 +442,33 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
     valor = v.final;
   }
   const { total: saldo } = await saldoDeCredito(user.id);
-  if (saldo < valor) return { erro: "O saldo da sua Carteira não cobre este ingresso." };
+  if (saldo < valor)
+    return { erro: "O saldo da sua Carteira não cobre este ingresso." };
 
-  const { data: existente } = await db.from("inscricoes").select("id, status").eq("evento_id", evento.id).eq("jogador_id", user.id).maybeSingle();
+  const { data: existente } = await db
+    .from("inscricoes")
+    .select("id, status")
+    .eq("evento_id", evento.id)
+    .eq("jogador_id", user.id)
+    .maybeSingle();
   if (existente?.status === "confirmada") redirect(caminho);
   let inscricaoId = existente?.id as string | undefined;
   if (inscricaoId) {
-    await db.from("pagamentos").update({ status: "cancelado" }).eq("inscricao_id", inscricaoId).eq("status", "pendente");
-    await db.from("inscricoes").update({ status: "aguardando_pagamento", cancelado_em: null, ...deck }).eq("id", inscricaoId);
+    await db
+      .from("pagamentos")
+      .update({ status: "cancelado" })
+      .eq("inscricao_id", inscricaoId)
+      .eq("status", "pendente");
+    await db
+      .from("inscricoes")
+      .update({ status: "aguardando_pagamento", cancelado_em: null, ...deck })
+      .eq("id", inscricaoId);
   } else {
-    const { data: nova } = await db.from("inscricoes").insert({ evento_id: evento.id, jogador_id: user.id, ...deck }).select("id").single();
+    const { data: nova } = await db
+      .from("inscricoes")
+      .insert({ evento_id: evento.id, jogador_id: user.id, ...deck })
+      .select("id")
+      .single();
     inscricaoId = nova?.id;
   }
   if (!inscricaoId) return { erro: "Não foi possível registrar o ingresso." };
@@ -367,7 +485,14 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
     });
   const { data: pag } = await db
     .from("pagamentos")
-    .insert({ inscricao_id: inscricaoId, provedor: "credito", valor_centavos: valor, status: "pendente", cupom_id: cupom?.id ?? null, desconto_centavos: cupom?.desconto ?? 0 })
+    .insert({
+      inscricao_id: inscricaoId,
+      provedor: "credito",
+      valor_centavos: valor,
+      status: "pendente",
+      cupom_id: cupom?.id ?? null,
+      desconto_centavos: cupom?.desconto ?? 0,
+    })
     .select("id")
     .single();
   if (pag) await confirmarPagamento(pag.id, undefined, "credito");
@@ -375,18 +500,38 @@ export async function pagarComCredito(_: EstadoInscricao, form: FormData): Promi
   redirect(caminho);
 }
 
-export type ResultadoCupom = { erro?: string; codigo?: string; rotulo?: string; desconto?: string; final?: number; finalTexto?: string };
+export type ResultadoCupom = {
+  erro?: string;
+  codigo?: string;
+  rotulo?: string;
+  desconto?: string;
+  final?: number;
+  finalTexto?: string;
+};
 
 /** Confere o cupom no checkout e devolve o novo total (a validação vale de novo na hora de pagar). */
-export async function aplicarCupom(slug: string, codigo: string): Promise<ResultadoCupom> {
+export async function aplicarCupom(
+  slug: string,
+  codigo: string,
+): Promise<ResultadoCupom> {
   const supabase = await criarClienteServidor();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { erro: "Sua sessão expirou. Entre de novo." };
-  const { data: evento } = await criarClienteAdmin().from("eventos").select("id, formato, valor_centavos").eq("slug", slug).maybeSingle();
+  const { data: evento } = await criarClienteAdmin()
+    .from("eventos")
+    .select("id, formato, valor_centavos")
+    .eq("slug", slug)
+    .maybeSingle();
   if (!evento) return { erro: "Evento não encontrado." };
   const v = await validarCupom(codigo, evento, user.id);
   if ("erro" in v) return { erro: v.erro };
-  return { codigo: v.cupom.codigo, rotulo: descreverCupom(v.cupom), desconto: reais(v.desconto), final: v.final, finalTexto: reais(v.final) };
+  return {
+    codigo: v.cupom.codigo,
+    rotulo: descreverCupom(v.cupom),
+    desconto: reais(v.desconto),
+    final: v.final,
+    finalTexto: reais(v.final),
+  };
 }

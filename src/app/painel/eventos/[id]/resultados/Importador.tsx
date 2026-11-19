@@ -1,10 +1,18 @@
 "use client";
 
 import { startTransition, useActionState, useMemo, useState } from "react";
-import { descreverRegra, lerClassificacao, lerDistribuicao, premiosDoEvento, type Inscrito, type LinhaResultado } from "@/lib/resultados";
+import {
+  descreverRegra,
+  lerClassificacao,
+  lerDistribuicao,
+  premiosDoEvento,
+  type Inscrito,
+  type LinhaResultado,
+} from "@/lib/resultados";
 import { salvarResultados, type EstadoResultados } from "./actions";
 
-const reais = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const reais = (c: number) =>
+  (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const campo =
   "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
@@ -29,12 +37,18 @@ export function Importador({
   const [texto, setTexto] = useState("");
   const [linhas, setLinhas] = useState<LinhaResultado[]>(linhasIniciais);
   const [distribuicao, setDistribuicao] = useState(distribuicaoInicial);
-  const [estado, acao, enviando] = useActionState<EstadoResultados, FormData>(salvarResultados, {});
+  const [estado, acao, enviando] = useActionState<EstadoResultados, FormData>(
+    salvarResultados,
+    {},
+  );
 
   const dist = lerDistribuicao(distribuicao);
   const distValida = dist !== "invalida";
   const valores = useMemo(
-    () => (dist === "invalida" ? linhas.map(() => 0) : premiosDoEvento(formato, premioTotal, linhas, dist)),
+    () =>
+      dist === "invalida"
+        ? linhas.map(() => 0)
+        : premiosDoEvento(formato, premioTotal, linhas, dist),
     [dist, formato, premioTotal, linhas],
   );
 
@@ -45,7 +59,15 @@ export function Importador({
   function associar(indice: number, jogadorId: string) {
     const inscrito = inscritos.find((i) => i.jogadorId === jogadorId);
     setLinhas((ls) =>
-      ls.map((l, i) => (i === indice ? { ...l, jogadorId: jogadorId || null, nick: inscrito?.nick ?? l.nick } : l)),
+      ls.map((l, i) =>
+        i === indice
+          ? {
+              ...l,
+              jogadorId: jogadorId || null,
+              nick: inscrito?.nick ?? l.nick,
+            }
+          : l,
+      ),
     );
   }
 
@@ -60,7 +82,11 @@ export function Importador({
   }
 
   function remover(indice: number) {
-    setLinhas((ls) => ls.filter((_, i) => i !== indice).map((l, i) => ({ ...l, posicao: i + 1 })));
+    setLinhas((ls) =>
+      ls
+        .filter((_, i) => i !== indice)
+        .map((l, i) => ({ ...l, posicao: i + 1 })),
+    );
   }
 
   function enviar(publicar: boolean) {
@@ -78,14 +104,17 @@ export function Importador({
         <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
           <h2 className="titulo text-2xl">1 · Classificação do Endstep</h2>
           <p className="text-sm text-texto2">
-            No Endstep, abra a classificação final, selecione a tabela inteira, copie e cole aqui. Uma linha por jogador,
-            na ordem final. Os nicks são reconhecidos pelo cadastro dos inscritos.
+            No Endstep, abra a classificação final, selecione a tabela inteira,
+            copie e cole aqui. Uma linha por jogador, na ordem final. Os nicks
+            são reconhecidos pelo cadastro dos inscritos.
           </p>
           <textarea
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             rows={8}
-            placeholder={"1  nick_do_jogador  3-0  9\n2  outro_jogador  2-1  6\n..."}
+            placeholder={
+              "1  nick_do_jogador  3-0  9\n2  outro_jogador  2-1  6\n..."
+            }
             className={`${campo} py-2 font-mono text-sm`}
           />
           <button
@@ -118,16 +147,25 @@ export function Importador({
             ? `Regra aplicada: ${descreverRegra(formato, linhas.length)}.`
             : "Regra aplicada: divisão personalizada deste evento."}
         </p>
-        {!distValida && <p className="text-sm text-erro">A divisão personalizada precisa somar 100%. Ex.: 50/30/20</p>}
-        <p className="text-sm text-cinza">Prêmio total do evento: {reais(premioTotal)}</p>
+        {!distValida && (
+          <p className="text-sm text-erro">
+            A divisão personalizada precisa somar 100%. Ex.: 50/30/20
+          </p>
+        )}
+        <p className="text-sm text-cinza">
+          Prêmio total do evento: {reais(premioTotal)}
+        </p>
         {bloqueado && (
           <p className="text-sm text-alerta">
-            Classificação travada: já há prêmio marcado como pago neste evento, para evitar pagamento em dobro.
+            Classificação travada: já há prêmio marcado como pago neste evento,
+            para evitar pagamento em dobro.
           </p>
         )}
 
         {linhas.length === 0 ? (
-          <p className="text-sm text-texto2">Nenhuma classificação lida ainda.</p>
+          <p className="text-sm text-texto2">
+            Nenhuma classificação lida ainda.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
@@ -146,7 +184,10 @@ export function Importador({
                 {linhas.map((l, i) => {
                   const premiado = valores[i] > 0;
                   return (
-                    <tr key={`${l.nick}-${i}`} className="border-t border-borda">
+                    <tr
+                      key={`${l.nick}-${i}`}
+                      className="border-t border-borda"
+                    >
                       <td className="p-2 font-semibold text-ciano">{i + 1}</td>
                       <td className="p-2">{l.nick}</td>
                       <td className="p-2">
@@ -155,10 +196,16 @@ export function Importador({
                           onChange={(e) => associar(i, e.target.value)}
                           disabled={bloqueado}
                           className={`min-h-9 rounded-md border bg-fundo2 px-2 text-sm ${
-                            !l.jogadorId && premiado ? "border-erro text-erro" : "border-borda-forte text-gelo"
+                            !l.jogadorId && premiado
+                              ? "border-erro text-erro"
+                              : "border-borda-forte text-gelo"
                           }`}
                         >
-                          <option value="">{premiado ? "— escolha (obrigatório) —" : "— sem cadastro —"}</option>
+                          <option value="">
+                            {premiado
+                              ? "— escolha (obrigatório) —"
+                              : "— sem cadastro —"}
+                          </option>
                           {inscritos.map((ins) => (
                             <option key={ins.jogadorId} value={ins.jogadorId}>
                               {ins.nick}
@@ -171,16 +218,33 @@ export function Importador({
                         {l.empates ? `-${l.empates}` : ""}
                       </td>
                       <td className="p-2">{l.pontos}</td>
-                      <td className="p-2 text-ciano">{premiado ? reais(valores[i]) : ""}</td>
+                      <td className="p-2 text-ciano">
+                        {premiado ? reais(valores[i]) : ""}
+                      </td>
                       {!bloqueado && (
                         <td className="whitespace-nowrap p-2 text-cinza">
-                          <button type="button" onClick={() => mover(i, -1)} aria-label="Subir" className="px-1 hover:text-gelo">
+                          <button
+                            type="button"
+                            onClick={() => mover(i, -1)}
+                            aria-label="Subir"
+                            className="px-1 hover:text-gelo"
+                          >
                             ↑
                           </button>
-                          <button type="button" onClick={() => mover(i, 1)} aria-label="Descer" className="px-1 hover:text-gelo">
+                          <button
+                            type="button"
+                            onClick={() => mover(i, 1)}
+                            aria-label="Descer"
+                            className="px-1 hover:text-gelo"
+                          >
                             ↓
                           </button>
-                          <button type="button" onClick={() => remover(i)} aria-label="Remover" className="px-1 hover:text-erro">
+                          <button
+                            type="button"
+                            onClick={() => remover(i)}
+                            aria-label="Remover"
+                            className="px-1 hover:text-erro"
+                          >
                             ✕
                           </button>
                         </td>

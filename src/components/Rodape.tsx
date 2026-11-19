@@ -10,6 +10,7 @@ const COLUNAS = [
       { href: "/regras", rotulo: "Regras e políticas" },
       { href: "/parceiros", rotulo: "Parceiros" },
       { href: "/apoie", rotulo: "Seja apoiador" },
+      { href: "/como-funciona", rotulo: "Como funcionam os eventos" },
     ],
   },
   {

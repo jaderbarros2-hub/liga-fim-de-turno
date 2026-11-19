@@ -7,7 +7,9 @@ export default async function EventosPainel() {
   const supabase = await criarClienteServidor();
   const { data: eventos } = await supabase
     .from("eventos")
-    .select("id, slug, titulo, inicio, status, valor_centavos, liga:ligas(nome)")
+    .select(
+      "id, slug, titulo, inicio, status, valor_centavos, liga:ligas(nome)",
+    )
     .order("inicio", { ascending: false });
 
   return (
@@ -33,7 +35,9 @@ export default async function EventosPainel() {
                 <td className="p-3">
                   <Link href={`/painel/eventos/${e.id}`}>{e.titulo}</Link>
                 </td>
-                <td className="p-3">{(e.liga as unknown as { nome: string } | null)?.nome}</td>
+                <td className="p-3">
+                  {(e.liga as unknown as { nome: string } | null)?.nome}
+                </td>
                 <td className="p-3">
                   {dataCurta(e.inicio)} {hora(e.inicio)}
                 </td>

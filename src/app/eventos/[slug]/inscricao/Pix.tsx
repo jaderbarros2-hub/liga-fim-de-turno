@@ -25,7 +25,9 @@ export function Pix({
     const consultar = async () => {
       if (parar) return;
       try {
-        const r = await fetch(`/api/pagamentos/${pagamentoId}`, { cache: "no-store" });
+        const r = await fetch(`/api/pagamentos/${pagamentoId}`, {
+          cache: "no-store",
+        });
         if (r.ok) {
           const { status } = (await r.json()) as { status: string };
           if (status !== "pendente") {
@@ -47,9 +49,17 @@ export function Pix({
     };
   }, [pagamentoId, router]);
 
-  const restante = expiraEm ? Math.max(0, new Date(expiraEm).getTime() - agora) : null;
-  const mm = restante !== null ? String(Math.floor(restante / 60000)).padStart(2, "0") : null;
-  const ss = restante !== null ? String(Math.floor((restante % 60000) / 1000)).padStart(2, "0") : null;
+  const restante = expiraEm
+    ? Math.max(0, new Date(expiraEm).getTime() - agora)
+    : null;
+  const mm =
+    restante !== null
+      ? String(Math.floor(restante / 60000)).padStart(2, "0")
+      : null;
+  const ss =
+    restante !== null
+      ? String(Math.floor((restante % 60000) / 1000)).padStart(2, "0")
+      : null;
 
   async function copiar() {
     try {
@@ -76,7 +86,8 @@ export function Pix({
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <p className="font-semibold">Pague com o app do seu banco</p>
         <p className="text-sm text-texto2">
-          Escaneie o QR Code ou use o Pix copia e cola. A confirmação aparece aqui sozinha em poucos segundos.
+          Escaneie o QR Code ou use o Pix copia e cola. A confirmação aparece
+          aqui sozinha em poucos segundos.
         </p>
         <div className="break-all rounded-lg border border-borda bg-preto p-3 font-mono text-xs text-texto2">
           {copiaCola}
@@ -88,7 +99,10 @@ export function Pix({
         >
           {copiado ? "Copiado ✓" : "Copiar código Pix"}
         </button>
-        <p className="flex items-center gap-2 text-sm text-cinza" aria-live="polite">
+        <p
+          className="flex items-center gap-2 text-sm text-cinza"
+          aria-live="polite"
+        >
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ciano" />
           Aguardando pagamento{mm !== null && ` · expira em ${mm}:${ss}`}
         </p>

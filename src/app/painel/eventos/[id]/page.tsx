@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { FormularioEvento } from "../FormularioEvento";
+import { escreverPerguntas } from "@/lib/eventoInfo";
 import { confirmarManual } from "./inscritos";
 
 type Inscrito = {
@@ -9,7 +10,11 @@ type Inscrito = {
   status: string;
   deck_nome: string | null;
   arquetipo: { nome: string } | null;
-  jogador: { nome: string | null; nick_endstep: string | null; discord_nome: string | null } | null;
+  jogador: {
+    nome: string | null;
+    nick_endstep: string | null;
+    discord_nome: string | null;
+  } | null;
 };
 
 const NOMES_INSCRICAO: Record<string, string> = {
@@ -26,27 +31,47 @@ function paraCampo(iso: string) {
   return d.toISOString().slice(0, 16);
 }
 
-export default async function EditarEvento({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditarEvento({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const supabase = await criarClienteServidor();
-  const [{ data: evento }, { data: ligas }, { data: link }, { data: lojas }] = await Promise.all([
-    supabase
-      .from("eventos")
-      .select("*, colecao_info:colecoes(nome, icone_svg), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, total_cartas)")
-      .eq("id", id)
-      .maybeSingle(),
-    supabase.from("ligas").select("id, nome").order("id"),
-    supabase.from("evento_links").select("link_endstep").eq("evento_id", id).maybeSingle(),
-    supabase.from("parceiros").select("id, nome, cidade").eq("ativo", true).eq("sede_eventos", true).order("nome"),
-  ]);
+  const [{ data: evento }, { data: ligas }, { data: link }, { data: lojas }] =
+    await Promise.all([
+      supabase
+        .from("eventos")
+        .select(
+          "*, colecao_info:colecoes(nome, icone_svg), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, total_cartas)",
+        )
+        .eq("id", id)
+        .maybeSingle(),
+      supabase.from("ligas").select("id, nome").order("id"),
+      supabase
+        .from("evento_links")
+        .select("link_endstep")
+        .eq("evento_id", id)
+        .maybeSingle(),
+      supabase
+        .from("parceiros")
+        .select("id, nome, cidade")
+        .eq("ativo", true)
+        .eq("sede_eventos", true)
+        .order("nome"),
+    ]);
   if (!evento) notFound();
 
   const { data: inscricoes } = await supabase
     .from("inscricoes")
-    .select("id, status, deck_nome, arquetipo:arquetipos(nome), jogador:jogadores(nome, nick_endstep, discord_nome)")
+    .select(
+      "id, status, deck_nome, arquetipo:arquetipos(nome), jogador:jogadores(nome, nick_endstep, discord_nome)",
+    )
     .eq("evento_id", id)
     .order("criado_em");
-  const confirmadas = (inscricoes ?? []).filter((i) => i.status === "confirmada");
+  const confirmadas = (inscricoes ?? []).filter(
+    (i) => i.status === "confirmada",
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -56,7 +81,9 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="titulo text-5xl">{evento.titulo}</h1>
         <div className="flex flex-wrap gap-4 text-sm font-semibold">
-          <Link href={`/painel/eventos/${evento.id}/resultados`}>Resultados e prêmios</Link>
+          <Link href={`/painel/eventos/${evento.id}/resultados`}>
+            Resultados e prêmios
+          </Link>
           <Link href={`/eventos/${evento.slug}`}>Ver página pública</Link>
         </div>
       </div>
@@ -64,7 +91,8 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="titulo text-3xl">Inscritos</h2>
           <span className="text-sm text-cinza">
-            {confirmadas.length} confirmados · {(inscricoes ?? []).length - confirmadas.length} outros
+            {confirmadas.length} confirmados ·{" "}
+            {(inscricoes ?? []).length - confirmadas.length} outros
           </span>
         </div>
         {(inscricoes ?? []).length === 0 ? (
@@ -72,25 +100,40 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
         ) : (
           <ul className="flex flex-col border-t border-borda text-sm">
             {(inscricoes as unknown as Inscrito[]).map((i) => (
-              <li key={i.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 border-b border-borda py-2">
-                <span className="min-w-40 flex-1 font-semibold">{i.jogador?.nick_endstep || i.jogador?.nome}</span>
+              <li
+                key={i.id}
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 border-b border-borda py-2"
+              >
+                <span className="min-w-40 flex-1 font-semibold">
+                  {i.jogador?.nick_endstep || i.jogador?.nome}
+                </span>
                 <span className="text-cinza">{i.jogador?.discord_nome}</span>
                 {evento.formato === "pauper" &&
                   (i.deck_nome ? (
-                    <Link href={`/painel/eventos/${evento.id}/deck/${i.id}`} className="text-sm">
+                    <Link
+                      href={`/painel/eventos/${evento.id}/deck/${i.id}`}
+                      className="text-sm"
+                    >
                       {i.arquetipo?.nome ?? i.deck_nome}
                     </Link>
                   ) : (
                     <span className="text-sm text-cinza">sem deck</span>
                   ))}
-                <span className={i.status === "confirmada" ? "text-ciano" : "text-alerta"}>
+                <span
+                  className={
+                    i.status === "confirmada" ? "text-ciano" : "text-alerta"
+                  }
+                >
                   {NOMES_INSCRICAO[i.status] ?? i.status}
                 </span>
                 {i.status !== "confirmada" && i.status !== "reembolsada" && (
                   <form action={confirmarManual}>
                     <input type="hidden" name="inscricao_id" value={i.id} />
                     <input type="hidden" name="evento_id" value={evento.id} />
-                    <button type="submit" className="font-semibold text-ciano hover:text-gelo">
+                    <button
+                      type="submit"
+                      className="font-semibold text-ciano hover:text-gelo"
+                    >
                       Confirmar manualmente
                     </button>
                   </form>
@@ -120,12 +163,17 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
           minimo: String(evento.minimo),
           percentual_premio: String(evento.percentual_premio),
           detalhes: evento.detalhes ?? "",
+          perguntas: escreverPerguntas(
+            (evento.perguntas as { p: string; r: string }[] | null) ?? [],
+          ),
           status: evento.status,
           link_endstep: link?.link_endstep ?? "",
           colecao_codigo: evento.colecao_codigo ?? "",
           colecao_icone: evento.colecao_info?.icone_svg ?? null,
           pacotes: evento.pacotes ? String(evento.pacotes) : "",
-          cubo_link: evento.cubo_info ? `https://cubecobra.com/cube/list/${evento.cubo_info.cubecobra_id}` : "",
+          cubo_link: evento.cubo_info
+            ? `https://cubecobra.com/cube/list/${evento.cubo_info.cubecobra_id}`
+            : "",
           cubo: evento.cubo_info ?? null,
         }}
       />

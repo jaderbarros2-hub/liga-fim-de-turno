@@ -3,10 +3,22 @@
 import { useState, useTransition } from "react";
 import { artesDaColecao, buscarColecoes, previsualizarCubo } from "./actions";
 
-const campo = "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+const campo =
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
 
-type Colecao = { codigo: string; nome: string; icone_svg: string | null; lancamento: string | null };
-type Cubo = { cubecobra_id: string; nome: string; dono: string | null; imagem_url: string | null; total_cartas: number };
+type Colecao = {
+  codigo: string;
+  nome: string;
+  icone_svg: string | null;
+  lancamento: string | null;
+};
+type Cubo = {
+  cubecobra_id: string;
+  nome: string;
+  dono: string | null;
+  imagem_url: string | null;
+  total_cartas: number;
+};
 
 /** Campos do Limited: coleção (draft e selado, busca no Scryfall) ou cubo (link do Cube Cobra). */
 export function CamposLimited({
@@ -14,18 +26,37 @@ export function CamposLimited({
   inicial,
 }: {
   formato: string;
-  inicial: { colecao_codigo: string; colecao_nome: string; colecao_icone: string | null; pacotes: string; cubo_link: string; cubo: Cubo | null };
+  inicial: {
+    colecao_codigo: string;
+    colecao_nome: string;
+    colecao_icone: string | null;
+    pacotes: string;
+    cubo_link: string;
+    cubo: Cubo | null;
+  };
 }) {
   const [colecao, setColecao] = useState<Colecao | null>(
-    inicial.colecao_codigo ? { codigo: inicial.colecao_codigo, nome: inicial.colecao_nome, icone_svg: inicial.colecao_icone, lancamento: null } : null,
+    inicial.colecao_codigo
+      ? {
+          codigo: inicial.colecao_codigo,
+          nome: inicial.colecao_nome,
+          icone_svg: inicial.colecao_icone,
+          lancamento: null,
+        }
+      : null,
   );
   const [termo, setTermo] = useState("");
   const [opcoes, setOpcoes] = useState<Colecao[]>([]);
   const [cubo, setCubo] = useState<Cubo | null>(inicial.cubo);
   const [link, setLink] = useState(inicial.cubo_link);
   const [erro, setErro] = useState("");
-  const [artes, setArtes] = useState<{ url: string; credito: string; nome: string }[]>([]);
-  const [arteEscolhida, setArteEscolhida] = useState<{ url: string; credito: string } | null>(null);
+  const [artes, setArtes] = useState<
+    { url: string; credito: string; nome: string }[]
+  >([]);
+  const [arteEscolhida, setArteEscolhida] = useState<{
+    url: string;
+    credito: string;
+  } | null>(null);
   const [carregando, iniciar] = useTransition();
 
   if (formato === "pauper") return null;
@@ -65,24 +96,40 @@ export function CamposLimited({
           <div className="flex items-center gap-4 rounded-md bg-grafite p-3 ring-1 ring-borda">
             {cubo.imagem_url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={cubo.imagem_url} alt="" className="h-14 w-20 rounded object-cover" />
+              <img
+                src={cubo.imagem_url}
+                alt=""
+                className="h-14 w-20 rounded object-cover"
+              />
             )}
             <span className="flex flex-col text-sm">
               <strong>{cubo.nome}</strong>
               <span className="text-cinza">
-                {cubo.total_cartas} cartas{cubo.dono ? ` · curadoria de ${cubo.dono}` : ""}
+                {cubo.total_cartas} cartas
+                {cubo.dono ? ` · curadoria de ${cubo.dono}` : ""}
               </span>
             </span>
           </div>
         )}
         <label className="flex max-w-40 flex-col gap-1 text-sm font-semibold">
           Boosters por jogador
-          <input name="pacotes" type="number" min={1} max={12} defaultValue={inicial.pacotes || 3} className={campo} />
+          <input
+            name="pacotes"
+            type="number"
+            min={1}
+            max={12}
+            defaultValue={inicial.pacotes || 3}
+            className={campo}
+          />
         </label>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="atualizar_lista" /> Atualizar a lista congelada deste evento com a versão atual do Cube Cobra
+          <input type="checkbox" name="atualizar_lista" /> Atualizar a lista
+          congelada deste evento com a versão atual do Cube Cobra
         </label>
-        <span className="text-xs text-cinza">A lista é congelada na primeira vez que o evento é salvo, para o histórico mostrar o cubo que foi jogado.</span>
+        <span className="text-xs text-cinza">
+          A lista é congelada na primeira vez que o evento é salvo, para o
+          histórico mostrar o cubo que foi jogado.
+        </span>
         {erro && <span className="text-sm text-erro">{erro}</span>}
       </div>
     );
@@ -90,8 +137,14 @@ export function CamposLimited({
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-borda p-4 md:col-span-2">
-      <span className="text-sm font-semibold">Coleção do {formato === "draft" ? "draft" : "selado"}</span>
-      <input type="hidden" name="colecao_codigo" value={colecao?.codigo ?? ""} />
+      <span className="text-sm font-semibold">
+        Coleção do {formato === "draft" ? "draft" : "selado"}
+      </span>
+      <input
+        type="hidden"
+        name="colecao_codigo"
+        value={colecao?.codigo ?? ""}
+      />
       {colecao ? (
         <div className="flex items-center gap-3 rounded-md bg-grafite p-3 ring-1 ring-borda">
           {colecao.icone_svg && (
@@ -102,7 +155,11 @@ export function CamposLimited({
             <strong>{colecao.nome}</strong>
             <span className="uppercase text-cinza">{colecao.codigo}</span>
           </span>
-          <button type="button" onClick={() => setColecao(null)} className="text-sm font-semibold text-ciano">
+          <button
+            type="button"
+            onClick={() => setColecao(null)}
+            className="text-sm font-semibold text-ciano"
+          >
             Trocar
           </button>
         </div>
@@ -145,7 +202,11 @@ export function CamposLimited({
                   >
                     {o.icone_svg && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={o.icone_svg} alt="" className="h-6 w-6 invert" />
+                      <img
+                        src={o.icone_svg}
+                        alt=""
+                        className="h-6 w-6 invert"
+                      />
                     )}
                     <span className="flex flex-col">
                       <span className="font-semibold">{o.nome}</span>
@@ -161,8 +222,16 @@ export function CamposLimited({
           )}
         </>
       )}
-      <input type="hidden" name="arte_escolhida_url" value={arteEscolhida?.url ?? ""} />
-      <input type="hidden" name="arte_escolhida_credito" value={arteEscolhida?.credito ?? ""} />
+      <input
+        type="hidden"
+        name="arte_escolhida_url"
+        value={arteEscolhida?.url ?? ""}
+      />
+      <input
+        type="hidden"
+        name="arte_escolhida_credito"
+        value={arteEscolhida?.credito ?? ""}
+      />
       {colecao && (
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center gap-3">
@@ -181,7 +250,11 @@ export function CamposLimited({
             >
               {carregando ? "Buscando…" : "Escolher a arte da coleção"}
             </button>
-            {arteEscolhida && <span className="text-sm text-ciano">Arte escolhida: {arteEscolhida.credito.split(" · ")[0]}</span>}
+            {arteEscolhida && (
+              <span className="text-sm text-ciano">
+                Arte escolhida: {arteEscolhida.credito.split(" · ")[0]}
+              </span>
+            )}
           </div>
           {artes.length > 0 && (
             <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-5">
@@ -194,28 +267,56 @@ export function CamposLimited({
                     className={`block w-full overflow-hidden rounded-md text-left ring-2 ${arteEscolhida?.url === a.url ? "ring-ciano" : "ring-transparent hover:ring-borda-forte"}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={a.url} alt="" loading="lazy" className="aspect-[4/3] w-full object-cover" />
-                    <span className="block truncate bg-grafite px-2 py-1 text-xs">{a.nome}</span>
+                    <img
+                      src={a.url}
+                      alt=""
+                      loading="lazy"
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                    <span className="block truncate bg-grafite px-2 py-1 text-xs">
+                      {a.nome}
+                    </span>
                   </button>
                 </li>
               ))}
             </ul>
           )}
-          <span className="text-xs text-cinza">Só aparecem ilustrações estreadas nesta coleção (sem reimpressões). Para máxima qualidade, envie a arte em alta abaixo.</span>
+          <span className="text-xs text-cinza">
+            Só aparecem ilustrações estreadas nesta coleção (sem reimpressões).
+            Para máxima qualidade, envie a arte em alta abaixo.
+          </span>
         </div>
       )}
       <div className="grid gap-3 sm:grid-cols-[120px_1fr]">
         <label className="flex flex-col gap-1 text-sm font-semibold">
           Boosters
-          <input name="pacotes" type="number" min={1} max={12} defaultValue={inicial.pacotes || (formato === "draft" ? 3 : 6)} className={campo} />
+          <input
+            name="pacotes"
+            type="number"
+            min={1}
+            max={12}
+            defaultValue={inicial.pacotes || (formato === "draft" ? 3 : 6)}
+            className={campo}
+          />
         </label>
         <label className="flex flex-col gap-1 text-sm font-semibold">
           Arte da coleção em alta (opcional)
-          <input type="file" name="arte_colecao" accept="image/png,image/jpeg,image/webp" className="text-sm font-normal" />
+          <input
+            type="file"
+            name="arte_colecao"
+            accept="image/png,image/jpeg,image/webp"
+            className="text-sm font-normal"
+          />
         </label>
       </div>
-      <input name="arte_credito" placeholder="Crédito da arte (ex.: Carta · ilustração de Artista · © Wizards of the Coast)" className={campo} />
-      <span className="text-xs text-cinza">Sem escolha nem envio, o portal usa a primeira arte inédita da coleção.</span>
+      <input
+        name="arte_credito"
+        placeholder="Crédito da arte (ex.: Carta · ilustração de Artista · © Wizards of the Coast)"
+        className={campo}
+      />
+      <span className="text-xs text-cinza">
+        Sem escolha nem envio, o portal usa a primeira arte inédita da coleção.
+      </span>
       {erro && <span className="text-sm text-erro">{erro}</span>}
     </div>
   );

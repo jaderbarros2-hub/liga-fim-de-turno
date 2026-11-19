@@ -31,6 +31,78 @@ const PIN =
   "M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Zm0-9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z";
 const ROTA = "M3 11l18-8-8 18-2-8-8-2Z";
 
+/** Faixa compacta: logo pequeno, nome, endereço e atalhos (Maps, rota, Instagram, WhatsApp). */
+export function FaixaLoja({
+  loja,
+  observacao,
+}: {
+  loja: LojaEvento;
+  observacao?: string | null;
+}) {
+  const insta = linkInstagram(loja.instagram);
+  const zap = linkWhatsapp(loja.whatsapp);
+  const end = { ...loja, nome: loja.nome };
+  const link = "inline-flex items-center gap-1.5 text-sm font-semibold";
+  return (
+    <div className="flex flex-col gap-3 rounded-md bg-grafite p-4 ring-1 ring-borda sm:flex-row sm:items-center sm:gap-4">
+      {loja.logo_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={loja.logo_url}
+          alt=""
+          className="h-12 w-12 shrink-0 rounded bg-white object-contain p-1"
+        />
+      ) : (
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded bg-azul text-xl font-bold">
+          {loja.nome.charAt(0)}
+        </span>
+      )}
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        {loja.slug ? (
+          <Link
+            href={`/parceiros/${loja.slug}`}
+            className="font-semibold text-gelo no-underline hover:text-ciano"
+          >
+            {loja.nome}
+          </Link>
+        ) : (
+          <span className="font-semibold">{loja.nome}</span>
+        )}
+        <span className="text-sm text-texto2">{enderecoLinha(loja)}</span>
+        {observacao && <span className="text-sm text-cinza">{observacao}</span>}
+        <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+          <a
+            href={linkMapa(end)}
+            target="_blank"
+            rel="noopener"
+            className={link}
+          >
+            <Icone d={PIN} /> Abrir no Google Maps
+          </a>
+          <a
+            href={linkRota(end)}
+            target="_blank"
+            rel="noopener"
+            className={link}
+          >
+            <Icone d={ROTA} /> Como chegar
+          </a>
+          {insta && (
+            <a href={insta} target="_blank" rel="noopener" className={link}>
+              Instagram
+            </a>
+          )}
+          {zap && (
+            <a href={zap} target="_blank" rel="noopener" className={link}>
+              WhatsApp
+            </a>
+          )}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 /** Onde fica: mapa embutido, endereço e atalhos (Maps, rota, Instagram, WhatsApp). */
 export function LocalDaLoja({
   loja,

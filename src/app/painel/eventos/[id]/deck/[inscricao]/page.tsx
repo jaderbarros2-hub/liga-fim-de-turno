@@ -9,7 +9,11 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 /** Organizador vê a lista registrada por qualquer inscrito (mesmo padrão da página pública). */
-export default async function DeckInscrito({ params }: { params: Promise<{ id: string; inscricao: string }> }) {
+export default async function DeckInscrito({
+  params,
+}: {
+  params: Promise<{ id: string; inscricao: string }>;
+}) {
   const { id, inscricao } = await params;
   const supabase = await criarClienteServidor();
   const { data } = await supabase
@@ -27,10 +31,16 @@ export default async function DeckInscrito({ params }: { params: Promise<{ id: s
     deck_sideboard: ItemLista[];
     deck_enviado_em: string;
     arquetipo: { nome: string } | null;
-    jogador: { nick_endstep: string | null; nome: string | null; avatar_url: string | null } | null;
+    jogador: {
+      nick_endstep: string | null;
+      nome: string | null;
+      avatar_url: string | null;
+    } | null;
     evento: { titulo: string } | null;
   };
-  const cartas = await buscarCartas([...i.deck_principal, ...i.deck_sideboard].map((c) => c.nome));
+  const cartas = await buscarCartas(
+    [...i.deck_principal, ...i.deck_sideboard].map((c) => c.nome),
+  );
 
   return (
     <div className="-mx-8 -my-8">
@@ -41,8 +51,13 @@ export default async function DeckInscrito({ params }: { params: Promise<{ id: s
         titulo={i.deck_nome}
         pagina={`/painel/eventos/${id}`}
         arteReserva={arteFixa(inscricao, "pauper")}
-        autor={{ nick: i.jogador?.nick_endstep || i.jogador?.nome || "Jogador", avatar: i.jogador?.avatar_url ?? null }}
-        detalhe={`${i.arquetipo?.nome ?? "Arquétipo não informado"} · registrado em ${new Date(i.deck_enviado_em).toLocaleString("pt-BR", {
+        autor={{
+          nick: i.jogador?.nick_endstep || i.jogador?.nome || "Jogador",
+          avatar: i.jogador?.avatar_url ?? null,
+        }}
+        detalhe={`${i.arquetipo?.nome ?? "Arquétipo não informado"} · registrado em ${new Date(
+          i.deck_enviado_em,
+        ).toLocaleString("pt-BR", {
           timeZone: "America/Sao_Paulo",
           dateStyle: "short",
           timeStyle: "short",
