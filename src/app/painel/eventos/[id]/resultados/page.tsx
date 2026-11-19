@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { reais } from "@/lib/formato";
@@ -149,12 +150,9 @@ export default async function ResultadosEvento({
                 className="flex flex-wrap items-center gap-4"
               >
                 <input type="hidden" name="evento_id" value={id} />
-                <button
-                  type="submit"
-                  className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white"
-                >
+                <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
                   Liberar prêmios na Carteira
-                </button>
+                </BotaoEnviar>
                 <span className="text-xs text-cinza">
                   Depois de liberar, a classificação fica travada. Saques
                   aparecem em Painel → Financeiro.

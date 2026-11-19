@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { alternarBanner, salvarBanner } from "./actions";
 import { FormularioLoja, type LojaForm } from "./FormularioLoja";
@@ -198,9 +199,9 @@ export default async function PainelParceiros({
               <form action={alternarBanner}>
                 <input type="hidden" name="id" value={b.id} />
                 <input type="hidden" name="ativo" value={String(b.ativo)} />
-                <button type="submit" className="font-semibold text-ciano">
+                <BotaoEnviar className="font-semibold text-ciano">
                   {b.ativo ? "Pausar" : "Reativar"}
-                </button>
+                </BotaoEnviar>
               </form>
             </li>
           ))}
@@ -273,12 +274,11 @@ export default async function PainelParceiros({
               Fim
               <input type="date" name="fim" className={CAMPO} />
             </label>
-            <button
-              type="submit"
+            <BotaoEnviar
               className={`${BOTAO} justify-self-start sm:col-span-2`}
             >
               Criar banner
-            </button>
+            </BotaoEnviar>
           </form>
         )}
       </section>

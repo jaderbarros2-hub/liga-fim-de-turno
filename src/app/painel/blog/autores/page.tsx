@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import type { Autor } from "@/lib/blogComum";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -136,12 +137,9 @@ export default async function Autores({
           />
         </label>
         <div className="flex gap-4">
-          <button
-            type="submit"
-            className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white"
-          >
+          <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
             Salvar autor
-          </button>
+          </BotaoEnviar>
           {atual && (
             <Link href="/painel/blog/autores" className="self-center text-sm">
               Cancelar

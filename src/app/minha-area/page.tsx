@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import type { Metadata } from "next";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { linkMapa } from "@/lib/lojas";
@@ -700,12 +701,9 @@ export default async function MinhaArea({
                                     value={destino}
                                   />
                                 )}
-                                <button
-                                  type="submit"
-                                  className="text-sm font-semibold text-cinza hover:text-erro"
-                                >
+                                <BotaoEnviar className="text-sm font-semibold text-cinza hover:text-erro">
                                   {rotulo}
-                                </button>
+                                </BotaoEnviar>
                               </form>
                             ))}
                         </li>

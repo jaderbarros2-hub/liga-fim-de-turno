@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -14,7 +15,12 @@ export const metadata: Metadata = { title: "Deck" };
 export const dynamic = "force-dynamic";
 
 const paraTexto = (principal: ItemLista[], sideboard: ItemLista[]) =>
-  [...principal.map((i) => `${i.qtd} ${i.nome}`), "", "Sideboard", ...sideboard.map((i) => `${i.qtd} ${i.nome}`)].join("\n");
+  [
+    ...principal.map((i) => `${i.qtd} ${i.nome}`),
+    "",
+    "Sideboard",
+    ...sideboard.map((i) => `${i.qtd} ${i.nome}`),
+  ].join("\n");
 
 export default async function Deck({
   params,
@@ -33,17 +39,24 @@ export default async function Deck({
 
   const { data: deck } = await supabase
     .from("decks")
-    .select("id, jogador_id, nome, arquetipo_id, principal, sideboard, legal, problemas, arquetipo:arquetipos(nome)")
+    .select(
+      "id, jogador_id, nome, arquetipo_id, principal, sideboard, legal, problemas, arquetipo:arquetipos(nome)",
+    )
     .eq("id", id)
     .maybeSingle();
   if (!deck || deck.jogador_id !== user.id) notFound();
 
   const principal = deck.principal as ItemLista[];
   const sideboard = deck.sideboard as ItemLista[];
-  const arquetipo = (deck.arquetipo as unknown as { nome: string } | null)?.nome;
+  const arquetipo = (deck.arquetipo as unknown as { nome: string } | null)
+    ?.nome;
 
   if (editar) {
-    const { data: arquetipos } = await supabase.from("arquetipos").select("id, nome").eq("ativo", true).order("nome");
+    const { data: arquetipos } = await supabase
+      .from("arquetipos")
+      .select("id, nome")
+      .eq("ativo", true)
+      .order("nome");
     return (
       <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
         <Link href={`/minha-area/decks/${id}`} className="text-sm">
@@ -51,8 +64,15 @@ export default async function Deck({
         </Link>
         <h1 className="titulo text-5xl">Editar deck</h1>
         <FormularioDeck
-          arquetipos={(arquetipos ?? []).sort((a, b) => (a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0))}
-          valores={{ id: deck.id, nome: deck.nome, arquetipo_id: deck.arquetipo_id, lista: paraTexto(principal, sideboard) }}
+          arquetipos={(arquetipos ?? []).sort((a, b) =>
+            a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0,
+          )}
+          valores={{
+            id: deck.id,
+            nome: deck.nome,
+            arquetipo_id: deck.arquetipo_id,
+            lista: paraTexto(principal, sideboard),
+          }}
         />
       </div>
     );
@@ -61,7 +81,11 @@ export default async function Deck({
   const [cartas, loja, { data: eu }] = await Promise.all([
     buscarCartas([...principal, ...sideboard].map((i) => i.nome)),
     lojaParaDeck(),
-    supabase.from("jogadores").select("nick_endstep, discord_nome, avatar_url").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("jogadores")
+      .select("nick_endstep, discord_nome, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle(),
   ]);
 
   return (
@@ -72,8 +96,19 @@ export default async function Deck({
       titulo={deck.nome}
       pagina={`/minha-area/decks/${id}`}
       arteReserva={arteFixa(id, "pauper")}
-      loja={loja ? { id: loja.id, nome: loja.nome, aceitaLista: !!loja.url_compra_lista } : null}
-      autor={{ nick: eu?.nick_endstep || eu?.discord_nome || "Você", avatar: eu?.avatar_url ?? null }}
+      loja={
+        loja
+          ? {
+              id: loja.id,
+              nome: loja.nome,
+              aceitaLista: !!loja.url_compra_lista,
+            }
+          : null
+      }
+      autor={{
+        nick: eu?.nick_endstep || eu?.discord_nome || "Você",
+        avatar: eu?.avatar_url ?? null,
+      }}
       detalhe={`Pauper${arquetipo ? ` · ${arquetipo}` : ""}`}
       caminho={
         <>
@@ -91,14 +126,17 @@ export default async function Deck({
       }
       acoes={
         <>
-          <Link href={`/minha-area/decks/${id}?editar=1`} className="text-sm font-semibold">
+          <Link
+            href={`/minha-area/decks/${id}?editar=1`}
+            className="text-sm font-semibold"
+          >
             Editar lista
           </Link>
           <form action={apagarDeck}>
             <input type="hidden" name="id" value={id} />
-            <button type="submit" className="text-sm font-semibold text-cinza hover:text-erro">
+            <BotaoEnviar className="text-sm font-semibold text-cinza hover:text-erro">
               Apagar
-            </button>
+            </BotaoEnviar>
           </form>
         </>
       }

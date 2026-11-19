@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { enviarTeste } from "./actions";
 
@@ -118,12 +119,9 @@ export default async function Emails({
               placeholder="voce@email.com"
               className="min-h-11 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo"
             />
-            <button
-              type="submit"
-              className="min-h-11 rounded-lg bg-azul px-5 text-sm font-semibold text-white"
-            >
+            <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 text-sm font-semibold text-white">
               Enviar
-            </button>
+            </BotaoEnviar>
           </div>
           {teste && MSG[teste] && (
             <p

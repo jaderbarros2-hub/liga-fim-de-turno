@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -130,12 +131,9 @@ export default async function EditarEvento({
                   <form action={confirmarManual}>
                     <input type="hidden" name="inscricao_id" value={i.id} />
                     <input type="hidden" name="evento_id" value={evento.id} />
-                    <button
-                      type="submit"
-                      className="font-semibold text-ciano hover:text-gelo"
-                    >
+                    <BotaoEnviar className="font-semibold text-ciano hover:text-gelo">
                       Confirmar manualmente
-                    </button>
+                    </BotaoEnviar>
                   </form>
                 )}
               </li>

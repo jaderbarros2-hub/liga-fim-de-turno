@@ -21,39 +21,94 @@
 }
 
 @layer base {
-html {
-  background: var(--color-preto);
-  color-scheme: dark;
-}
+  html {
+    background: var(--color-preto);
+    color-scheme: dark;
+  }
 
-body {
-  background: var(--color-preto);
-  color: var(--color-gelo);
-  font-family: var(--font-sans);
-}
+  body {
+    background: var(--color-preto);
+    color: var(--color-gelo);
+    font-family: var(--font-sans);
+  }
 
-a {
-  color: var(--color-ciano);
-}
+  a {
+    color: var(--color-ciano);
+  }
 
-a:hover {
-  color: #8fdbff;
-}
+  a:hover {
+    color: #8fdbff;
+  }
 
-::selection {
-  background: var(--color-azul);
-  color: #fff;
-}
+  ::selection {
+    background: var(--color-azul);
+    color: #fff;
+  }
 
-:focus-visible {
-  outline: 2px solid var(--color-ciano);
-  outline-offset: 3px;
-}
+  :focus-visible {
+    outline: 2px solid var(--color-ciano);
+    outline-offset: 3px;
+  }
 
-html {
-  scrollbar-color: var(--color-borda-forte) var(--color-preto);
-}
+  html {
+    scrollbar-color: var(--color-borda-forte) var(--color-preto);
+  }
 
+  /* Tudo que é clicável mostra a mãozinha (o Tailwind 4 tirou isso dos botões) */
+  button:not(:disabled),
+  [role="button"],
+  summary,
+  select,
+  label:has(> input[type="checkbox"]),
+  label:has(> input[type="radio"]),
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"]::file-selector-button {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  button[aria-busy="true"] {
+    cursor: progress;
+  }
+
+  /* Retorno ao clicar: o botão "afunda" um pouco */
+  button:not(:disabled),
+  a.corte,
+  a[class*="min-h-1"] {
+    transition-property:
+      color, background-color, border-color, box-shadow, transform, opacity;
+    transition-duration: 150ms;
+  }
+
+  button:not(:disabled):active,
+  a.corte:active,
+  a[class*="min-h-1"]:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  input[type="file"]::file-selector-button {
+    margin-right: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-borda-forte);
+    background: var(--color-grafite);
+    color: var(--color-gelo);
+    padding: 0.4rem 0.9rem;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 /* Botão principal: corte diagonal próprio da liga */
@@ -220,14 +275,21 @@ html {
 .booster {
   --z: 6px;
   mask:
-    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / calc(2 * var(--z)) 51% repeat-x,
-    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(2 * var(--z)) 51% repeat-x;
+    conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg)
+      top / calc(2 * var(--z)) 51% repeat-x,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+      bottom / calc(2 * var(--z)) 51% repeat-x;
 }
 .booster-selo {
   background: repeating-linear-gradient(90deg, #d7dde8 0 2px, #8792a6 2px 4px);
 }
 .booster-brilho {
-  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.18) 42%, transparent 55%);
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 42%,
+    transparent 55%
+  );
 }
 @media (prefers-reduced-motion: no-preference) {
   .leque > * {
@@ -235,5 +297,14 @@ html {
   }
   .leque:hover > * {
     transform: var(--abre);
+  }
+}
+
+@keyframes carregando {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
   }
 }

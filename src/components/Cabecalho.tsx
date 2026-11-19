@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { sair } from "@/app/minha-area/actions";
 import { Diamante } from "@/components/Diamante";
@@ -127,12 +128,9 @@ export async function Cabecalho() {
               itens={itensConta}
               rodape={
                 <form action={sair}>
-                  <button
-                    type="submit"
-                    className="w-full py-1.5 text-left text-sm text-cinza hover:text-gelo"
-                  >
+                  <BotaoEnviar className="w-full py-1.5 text-left text-sm text-cinza hover:text-gelo">
                     Sair
-                  </button>
+                  </BotaoEnviar>
                 </form>
               }
             />

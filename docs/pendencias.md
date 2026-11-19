@@ -61,3 +61,5 @@ Tudo marcado no banco de teste para limpar com um comando antes da produção.
 - Pagar lojas e saques pela API de Payouts do Mercado Pago (botão "pagar pendentes").
 - Futuro da Carteira: desconto em ingressos e lojinha de brindes da liga.
 - Termo simples de parceria com as lojas (prazo de 2 dias úteis, bônus, dados do cliente).
+
+- Limpeza: apagar o ajuste "Saldo de teste (apagar depois)" de R$ 50 da Carteira do Infinity420.

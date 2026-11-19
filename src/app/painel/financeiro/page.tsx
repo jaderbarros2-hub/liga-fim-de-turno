@@ -1,3 +1,4 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import { reais } from "@/lib/formato";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { cancelarMovimento, concluirMovimento, consultarPix } from "./actions";
@@ -199,12 +200,9 @@ export default async function Financeiro() {
                           Conferi o nome do titular
                         </label>
                       )}
-                      <button
-                        type="submit"
-                        className="min-h-9 rounded-lg bg-azul px-4 font-semibold text-white"
-                      >
+                      <BotaoEnviar className="min-h-9 rounded-lg bg-azul px-4 font-semibold text-white">
                         Marcar como pago
-                      </button>
+                      </BotaoEnviar>
                     </form>
                     <form action={cancelarMovimento}>
                       <input type="hidden" name="id" value={s.id} />
@@ -213,13 +211,12 @@ export default async function Financeiro() {
                         name="motivo"
                         value="Chave Pix com problema"
                       />
-                      <button
-                        type="submit"
+                      <BotaoEnviar
                         className="font-semibold text-cinza hover:text-erro"
                         title="Devolve o valor para a Carteira do jogador"
                       >
                         Devolver à Carteira
-                      </button>
+                      </BotaoEnviar>
                     </form>
                   </div>
                 </li>
@@ -301,21 +298,15 @@ export default async function Financeiro() {
                       <span className="text-cinza">{quando(e.criado_em)}</span>
                       <form action={concluirMovimento}>
                         <input type="hidden" name="id" value={e.id} />
-                        <button
-                          type="submit"
-                          className="font-semibold text-ciano"
-                        >
+                        <BotaoEnviar className="font-semibold text-ciano">
                           Pix enviado
-                        </button>
+                        </BotaoEnviar>
                       </form>
                       <form action={cancelarMovimento}>
                         <input type="hidden" name="id" value={e.id} />
-                        <button
-                          type="submit"
-                          className="text-cinza hover:text-erro"
-                        >
+                        <BotaoEnviar className="text-cinza hover:text-erro">
                           Cancelar
-                        </button>
+                        </BotaoEnviar>
                       </form>
                     </li>
                   ))}
@@ -359,9 +350,9 @@ export default async function Financeiro() {
                 </span>
                 <form action={consultarPix}>
                   <input type="hidden" name="id" value={p.id} />
-                  <button type="submit" className="font-semibold text-ciano">
+                  <BotaoEnviar className="font-semibold text-ciano">
                     Consultar no Mercado Pago
-                  </button>
+                  </BotaoEnviar>
                 </form>
               </li>
             ))}

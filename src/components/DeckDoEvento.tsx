@@ -1,7 +1,11 @@
+import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { escolherDeckDoEvento } from "@/app/minha-area/decks/actions";
 import type { Evento } from "@/lib/dados";
-import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
+import {
+  criarClienteServidor,
+  supabaseConfigurado,
+} from "@/lib/supabase/server";
 
 /** Bloco da página do evento: o inscrito escolhe o deck (Pauper) até o início. */
 export async function DeckDoEvento({ evento }: { evento: Evento }) {
@@ -21,16 +25,21 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
   // Antes do pagamento, o deck é escolhido no checkout do ingresso; aqui só para quem já tem ingresso
   if (insc?.status !== "confirmada") return null;
 
-  const aberto = new Date(evento.inicio).getTime() > Date.now() && ["aberto", "fechado"].includes(evento.status);
+  const aberto =
+    new Date(evento.inicio).getTime() > Date.now() &&
+    ["aberto", "fechado"].includes(evento.status);
   if (!aberto) {
     return (
       <div className="rounded-xl border border-borda bg-grafite p-4 text-sm">
         {insc.deck_nome ? (
           <>
-            Deck registrado: <strong className="text-gelo">{insc.deck_nome}</strong>
+            Deck registrado:{" "}
+            <strong className="text-gelo">{insc.deck_nome}</strong>
           </>
         ) : (
-          <span className="text-alerta">Nenhum deck registrado para este evento.</span>
+          <span className="text-alerta">
+            Nenhum deck registrado para este evento.
+          </span>
         )}
       </div>
     );
@@ -68,9 +77,9 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
               </option>
             ))}
           </select>
-          <button type="submit" className="min-h-10 rounded-lg border border-borda-forte px-4 font-semibold hover:border-ciano">
+          <BotaoEnviar className="min-h-10 rounded-lg border border-borda-forte px-4 font-semibold hover:border-ciano">
             {insc.deck_nome ? "Trocar" : "Registrar"}
-          </button>
+          </BotaoEnviar>
         </form>
       ) : null}
       <Link href="/minha-area/decks/novo" className="font-semibold">
