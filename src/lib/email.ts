@@ -116,7 +116,8 @@ export async function enviarEmail(e: {
 }) {
   if (!e.para) return { ok: false as const, erro: "sem destinatário" };
   const { html, texto } = montarEmail(e.conteudo);
-  const chave = process.env.RESEND_API_KEY;
+  // Remove espaços, quebras de linha e aspas que costumam vir junto ao colar a chave na Vercel
+  const chave = process.env.RESEND_API_KEY?.trim().replace(/^["']|["']$/g, "");
   let status: "enviado" | "falhou" | "simulado" = "simulado";
   let erro: string | null = null;
   let idExterno: string | null = null;

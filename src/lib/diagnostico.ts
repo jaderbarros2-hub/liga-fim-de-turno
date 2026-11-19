@@ -131,12 +131,12 @@ export async function diagnosticar(): Promise<Problema[]> {
       link: "/painel/emails",
       acao: "Ver e-mails",
     });
-  if (!process.env.NEXT_PUBLIC_EMAIL_CONTATO)
+  if (!process.env.EMAIL_CONTATO && !process.env.NEXT_PUBLIC_EMAIL_CONTATO)
     p.push({
       nivel: "alerta",
       titulo: "Sem e-mail de contato",
       detalhe:
-        "Defina NEXT_PUBLIC_EMAIL_CONTATO na Vercel: ele aparece nos e-mails e recebe as respostas.",
+        "Defina EMAIL_CONTATO na Vercel: ele aparece nos e-mails e recebe as respostas.",
     });
 
   const db = criarClienteAdmin();

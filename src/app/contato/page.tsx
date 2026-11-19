@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "Contato" };
 
 export default function Contato() {
   const discord = process.env.NEXT_PUBLIC_DISCORD_CONVITE;
-  const email = process.env.NEXT_PUBLIC_EMAIL_CONTATO;
+  const email = process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO;
   return (
     <PaginaTexto titulo="Contato">
       <p>O jeito mais rápido de falar com a organização é pelo Discord da liga.</p>
