@@ -15,6 +15,7 @@ export type ValoresEvento = {
   inscricoes_ate: string;
   modalidade: string;
   local: string;
+  loja_id?: string;
   valor: string;
   vagas: string;
   minimo: string;
@@ -33,7 +34,8 @@ const campo =
   "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
 
 /** A liga sai do formato: Pauper vai para a Liga Pauper; draft, selado e cubo, para a Liga Limited. */
-export function FormularioEvento({ valores }: { valores: ValoresEvento; ligas?: { id: number; nome: string }[] }) {
+export function FormularioEvento({ valores, lojas = [] }: { valores: ValoresEvento; ligas?: { id: number; nome: string }[]; lojas?: { id: string; nome: string; cidade: string | null }[] }) {
+  const [modalidade, setModalidade] = useState(valores.modalidade);
   const [estado, acao, enviando] = useActionState<EstadoEvento, FormData>(salvarEvento, {});
   const aviso = useRef<HTMLDivElement>(null);
   const [formato, setFormato] = useState(valores.formato);
@@ -111,14 +113,37 @@ export function FormularioEvento({ valores }: { valores: ValoresEvento; ligas?: 
         <input id="inscricoes_ate" name="inscricoes_ate" type="datetime-local" required defaultValue={valores.inscricoes_ate} className={campo} />
       </Campo>
       <Campo rotulo="Modalidade" id="modalidade">
-        <select id="modalidade" name="modalidade" defaultValue={valores.modalidade} className={campo}>
+        <select id="modalidade" name="modalidade" value={modalidade} onChange={(e) => setModalidade(e.target.value)} className={campo}>
           <option value="online">Online (Endstep)</option>
           <option value="presencial">Presencial</option>
         </select>
       </Campo>
-      <Campo rotulo="Endereço (obrigatório no presencial)" id="local">
-        <input id="local" name="local" defaultValue={valores.local} placeholder="Loja, rua, número, bairro, cidade" className={campo} />
-      </Campo>
+      {modalidade === "presencial" ? (
+        <>
+          <Campo rotulo="Loja (obrigatório para publicar)" id="loja_id">
+            <select id="loja_id" name="loja_id" defaultValue={valores.loja_id ?? ""} className={campo}>
+              <option value="">Escolha a loja</option>
+              {lojas.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.nome}
+                  {l.cidade ? ` · ${l.cidade}` : ""}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs font-normal text-cinza">
+              {lojas.length ? "Endereço, mapa e contato vêm do cadastro da loja." : "Nenhuma loja marcada como sede."}{" "}
+              <a href="/painel/parceiros#form" target="_blank">
+                Cadastrar loja
+              </a>
+            </span>
+          </Campo>
+          <Campo rotulo="Observação do local (opcional)" id="local">
+            <input id="local" name="local" defaultValue={valores.local} placeholder="Ex.: sala do 2º andar, entrada pela lateral" className={campo} />
+          </Campo>
+        </>
+      ) : (
+        <input type="hidden" name="local" value="" />
+      )}
       <Campo rotulo="Valor da inscrição (R$)" id="valor">
         <input id="valor" name="valor" inputMode="decimal" required defaultValue={valores.valor} className={campo} />
       </Campo>

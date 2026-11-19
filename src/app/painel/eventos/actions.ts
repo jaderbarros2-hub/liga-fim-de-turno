@@ -56,7 +56,7 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
   // Só publica com o lugar do evento definido: link do Endstep (online) ou endereço (presencial)
   if (status !== "rascunho" && status !== "cancelado") {
     if (t("modalidade") === "presencial") {
-      if (t("local").length < 10) return { erro: "Evento presencial: informe o endereço completo da loja (rua, número, bairro, cidade) para publicar." };
+      if (!t("loja_id")) return { erro: "Evento presencial: escolha a loja para publicar. Sem ela, salve como rascunho." };
     } else if (!link) {
       return { erro: "Informe o link do evento no Endstep para publicar. Sem ele, salve como rascunho." };
     }
@@ -112,7 +112,8 @@ export async function salvarEvento(_: EstadoEvento, form: FormData): Promise<Est
     inicio: deBrasilia(inicio),
     inscricoes_ate: deBrasilia(inscricoesAte),
     modalidade: t("modalidade") === "presencial" ? "presencial" : "online",
-    local: t("local") || null,
+    local: t("modalidade") === "presencial" ? t("local") || null : null,
+    loja_id: t("modalidade") === "presencial" ? t("loja_id") || null : null,
     valor_centavos: Math.round(valor * 100),
     vagas,
     minimo,

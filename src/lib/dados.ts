@@ -2,6 +2,25 @@ import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server
 
 export type Liga = { id: number; slug: string; nome: string; descricao: string | null };
 
+export type LojaEvento = {
+  id: string;
+  nome: string;
+  slug: string | null;
+  logo_url: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  bairro: string | null;
+  cidade: string | null;
+  uf: string | null;
+  cep: string | null;
+  mapa_url: string | null;
+  instagram: string | null;
+  whatsapp: string | null;
+  horario: string | null;
+  observacoes_local: string | null;
+};
+
 export type Evento = {
   id: string;
   slug: string;
@@ -32,6 +51,8 @@ export type Evento = {
     lancamento: string | null;
     total_cartas: number | null;
   } | null;
+  loja_id: string | null;
+  loja: LojaEvento | null;
   cubo_info: {
     cubecobra_id: string;
     nome: string;
@@ -43,7 +64,7 @@ export type Evento = {
 };
 
 const CAMPOS_EVENTO =
-  "*, liga:ligas(*), colecao_info:colecoes(codigo, nome, icone_svg, arte_url, arte_credito, lancamento, total_cartas), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, imagem_credito, total_cartas)";
+  "*, liga:ligas(*), colecao_info:colecoes(codigo, nome, icone_svg, arte_url, arte_credito, lancamento, total_cartas), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, imagem_credito, total_cartas), loja:parceiros(id, nome, slug, logo_url, logradouro, numero, complemento, bairro, cidade, uf, cep, mapa_url, instagram, whatsapp, horario, observacoes_local)";
 
 export async function listarProximosEventos(limite = 20, ligaSlug?: string): Promise<Evento[]> {
   if (!supabaseConfigurado()) return [];
@@ -145,4 +166,15 @@ export async function usuarioAtual() {
     .eq("id", user.id)
     .maybeSingle();
   return jogador;
+}
+
+/** Próximos eventos (e os últimos com resultado) numa loja. */
+export async function eventosDaLoja(lojaId: string): Promise<{ proximos: Evento[]; passados: Evento[] }> {
+  if (!supabaseConfigurado()) return { proximos: [], passados: [] };
+  const supabase = await criarClienteServidor();
+  const [{ data: p }, { data: r }] = await Promise.all([
+    supabase.from("eventos").select(CAMPOS_EVENTO).eq("loja_id", lojaId).in("status", ["aberto", "fechado", "em_andamento"]).order("inicio").limit(12),
+    supabase.from("eventos").select(CAMPOS_EVENTO).eq("loja_id", lojaId).eq("status", "resultados").order("inicio", { ascending: false }).limit(6),
+  ]);
+  return { proximos: (p as Evento[] | null) ?? [], passados: (r as Evento[] | null) ?? [] };
 }

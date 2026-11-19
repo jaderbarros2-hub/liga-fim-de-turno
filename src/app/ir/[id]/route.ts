@@ -7,7 +7,15 @@ export const dynamic = "force-dynamic";
  * Redirecionamento rastreado para parceiros: conta o clique e envia para a loja
  * com UTM (utm_source=ligafimdeturno). Só redireciona para endereços cadastrados no Painel.
  */
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+  try {
+    return await redirecionar(req, ctx);
+  } catch {
+    return NextResponse.redirect(new URL("/parceiros", req.url));
+  }
+}
+
+async function redirecionar(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const url = new URL(req.url);
   const origem = ["logo", "banner", "deck"].includes(url.searchParams.get("o") ?? "") ? url.searchParams.get("o")! : "logo";
@@ -18,12 +26,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const db = criarClienteAdmin();
   const { data: parceiro } = await db
     .from("parceiros")
-    .select("id, site_url, url_compra_lista, ativo")
+    .select("id, slug, site_url, instagram, url_compra_lista, ativo")
     .eq("id", id)
     .maybeSingle();
   if (!parceiro?.ativo) return NextResponse.redirect(new URL("/parceiros", url.origin));
 
-  let destino = parceiro.site_url;
+  let destino = parceiro.site_url ?? (parceiro.instagram ? `https://instagram.com/${parceiro.instagram}` : `${url.origin}/parceiros/${parceiro.slug ?? ""}`);
   if (bannerId) {
     const { data: banner } = await db
       .from("banners")

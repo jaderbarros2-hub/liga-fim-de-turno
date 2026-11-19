@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LocalDaLoja } from "@/components/Loja";
 import { notFound } from "next/navigation";
 import { AcaoEvento } from "@/components/AcaoEvento";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
@@ -97,7 +98,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             <h1 className="titulo text-5xl sm:text-7xl">{evento.titulo}</h1>
             <p className="text-lg text-texto2">
               {dataLonga(evento.inicio)} · {hora(evento.inicio)} (horário de Brasília)
-              {evento.modalidade === "presencial" && evento.local ? ` · ${evento.local}` : ""}
+              {evento.modalidade === "presencial" ? (evento.loja ? ` · ${evento.loja.nome}${evento.loja.cidade ? `, ${evento.loja.cidade}` : ""}` : evento.local ? ` · ${evento.local}` : "") : ""}
             </p>
             {campeao && (
               <Link
@@ -304,6 +305,13 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             </section>
           )}
 
+          {aba === "detalhes" && evento.modalidade === "presencial" && evento.loja && (
+            <section className="flex flex-col gap-3">
+              <h2 className="titulo text-3xl">Onde vai ser</h2>
+              <LocalDaLoja loja={evento.loja} observacao={evento.local} />
+            </section>
+          )}
+
           {aba === "detalhes" && (
             <div className="grid gap-4 sm:grid-cols-2">
               <Bloco titulo="Formato">
@@ -312,7 +320,9 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}. Pods de 6 a 8 jogadores, 3 rodadas suíças melhor de 3 dentro de cada pod. Deck mínimo de 40 cartas.`}
               </Bloco>
               <Bloco titulo="Como funciona a noite">
-                Depois da confirmação do Pix, o link privado do evento no Endstep aparece aqui. O check-in é feito lá até 10 minutos antes do início; emparelhamentos e rodadas acontecem no próprio Endstep.
+                {evento.modalidade === "presencial"
+                  ? "Evento presencial na loja. Chegue 15 minutos antes para fazer o check-in com a organização."
+                  : "Depois da confirmação do Pix, o link privado do evento no Endstep aparece aqui. O check-in é feito lá até 10 minutos antes do início; emparelhamentos e rodadas acontecem no próprio Endstep."}
               </Bloco>
               <Bloco titulo="Premiação">
                 {evento.percentual_premio}% das inscrições formam o prêmio. Ele cai na sua Carteira: use em ingressos, saque por Pix ou envie para uma loja parceira.

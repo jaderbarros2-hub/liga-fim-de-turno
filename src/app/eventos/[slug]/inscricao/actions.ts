@@ -1,5 +1,7 @@
 "use server";
 
+import { after } from "next/server";
+import { emailIngressoCancelado } from "@/lib/emails";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { saldoDaCarteira } from "@/lib/carteira";
@@ -268,6 +270,7 @@ export async function cancelarInscricao(form: FormData) {
         inscricao_id: insc.id,
         concluido_em: agora,
       });
+      after(() => emailIngressoCancelado(insc.id, pago.valor_centavos, form.get("destino") === "credito" ? "credito" : "pix"));
       if (form.get("destino") !== "credito") {
         const { data: j } = await db.from("jogadores").select("chave_pix").eq("id", user.id).single();
         await db.from("carteira_movimentos").insert({

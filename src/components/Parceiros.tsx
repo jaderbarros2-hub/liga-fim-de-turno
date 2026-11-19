@@ -3,7 +3,7 @@ import { bannerPara, linkRastreado, listarParceiros, type Banner, type Posicao }
 
 /** Faixa de logos das lojas parceiras, em cinza e colorindo ao passar o mouse. */
 export async function FaixaParceiros() {
-  const parceiros = (await listarParceiros()).filter((p) => p.logo_url);
+  const parceiros = (await listarParceiros()).filter((p) => p.logo_url && p.mostrar_logo);
   return (
     <section aria-label="Parceiros da liga" className="border-y border-borda bg-fundo2">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 pt-8">

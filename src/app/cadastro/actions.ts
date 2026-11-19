@@ -1,5 +1,7 @@
 "use server";
 
+import { after } from "next/server";
+import { emailBoasVindas } from "@/lib/emails";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { cpfValido, idadeEm, soDigitos, validarChavePix } from "@/lib/validacao";
@@ -41,7 +43,7 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
   const pix = validarChavePix(pixTipo, chavePix, [cpf, responsavelCpf].filter(Boolean));
   if (pix.erro) return { erro: pix.erro };
   if (form.get("pix_titular") !== "on") return { erro: "Confirme que a chave Pix está no seu nome." };
-  const { data: atual } = await supabase.from("jogadores").select("chave_pix").eq("id", user.id).maybeSingle();
+  const { data: atual } = await supabase.from("jogadores").select("chave_pix, aceite_termos_em").eq("id", user.id).maybeSingle();
 
   const { error } = await supabase
     .from("jogadores")
@@ -66,6 +68,7 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
     if (error.code === "23505") return { erro: "Este CPF já está cadastrado em outra conta. Fale com a organização." };
     return { erro: "Não foi possível salvar. Tente de novo." };
   }
+  if (!atual?.aceite_termos_em) after(() => emailBoasVindas(user.id));
 
   redirect(voltar);
 }

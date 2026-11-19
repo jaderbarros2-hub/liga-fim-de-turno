@@ -47,7 +47,7 @@ export function CartaoEvento({ evento }: { evento: Evento }) {
         </span>
         <span className="titulo text-3xl">{evento.titulo}</span>
         <span className="mt-auto flex items-center justify-between pt-3 text-sm text-texto2">
-          <span>{evento.modalidade === "online" ? "Online · Endstep" : (evento.local ?? "Presencial")}</span>
+          <span>{evento.modalidade === "online" ? "Online · Endstep" : evento.loja ? `${evento.loja.nome}${evento.loja.cidade ? ` · ${evento.loja.cidade}` : ""}` : (evento.local ?? "Presencial")}</span>
           <span className="font-semibold text-gelo group-hover:text-ciano">
             {evento.status === "aberto" ? "Inscrever-se →" : "Ver evento →"}
           </span>

@@ -5,9 +5,16 @@ export type Parceiro = {
   nome: string;
   descricao: string | null;
   logo_url: string | null;
-  site_url: string;
+  site_url: string | null;
   url_compra_lista: string | null;
   compra_deck: boolean;
+  slug: string | null;
+  mostrar_logo: boolean;
+  sede_eventos: boolean;
+  aceita_credito: boolean;
+  bonus_credito_pct: number;
+  cidade: string | null;
+  uf: string | null;
 };
 
 export type Banner = {
@@ -35,7 +42,7 @@ export async function listarParceiros(): Promise<Parceiro[]> {
   const supabase = await criarClienteServidor();
   const { data } = await supabase
     .from("parceiros")
-    .select("id, nome, descricao, logo_url, site_url, url_compra_lista, compra_deck")
+    .select("id, nome, descricao, logo_url, site_url, url_compra_lista, compra_deck, slug, mostrar_logo, sede_eventos, aceita_credito, bonus_credito_pct, cidade, uf")
     .eq("ativo", true)
     .order("ordem")
     .order("nome");

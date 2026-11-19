@@ -1,4 +1,6 @@
 import "server-only";
+import { after } from "next/server";
+import { emailIngressoConfirmado } from "@/lib/emails";
 import { buscarPedido } from "@/lib/mercadopago";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
@@ -19,11 +21,14 @@ export async function confirmarPagamento(pagamentoId: string, pagoEm?: string, o
     await db.from("pagamentos").update({ status: "aprovado", pago_em: quando }).eq("id", pag.id);
   }
   // Confirma mesmo que o Pix tenha chegado depois da expiração da tela: o dinheiro entrou.
-  await db
+  const { data: confirmadas } = await db
     .from("inscricoes")
     .update({ status: "confirmada", confirmado_em: quando, cancelado_em: null })
     .eq("id", pag.inscricao_id)
-    .neq("status", "confirmada");
+    .neq("status", "confirmada")
+    .select("id");
+  // E-mail só na primeira confirmação (webhook e consulta podem chegar juntos)
+  if (confirmadas?.length) after(() => emailIngressoConfirmado(pag.inscricao_id));
 
   await db.from("registro_atividades").insert({
     acao: "pagamento_confirmado",

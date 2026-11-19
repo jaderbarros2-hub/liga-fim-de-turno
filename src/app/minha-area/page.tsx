@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { criarClienteAdmin } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BotaoLink, Etiqueta } from "@/components/Botao";
@@ -194,18 +195,28 @@ export default async function MinhaArea({
     }[]) ?? []
   ).sort((a, b) => b.evento.inicio.localeCompare(a.evento.inicio));
 
-  const { data: dLojas } = await supabase
+  // Lojas que aceitam resgate (só as que já têm chave Pix e e-mail de pedidos cadastrados)
+  const admin = criarClienteAdmin();
+  const { data: dLojas } = await admin
     .from("parceiros")
-    .select("id, nome, instrucoes_credito, bonus_credito_pct")
+    .select("id, nome, slug, logo_url, cidade, uf, instrucoes_credito, bonus_credito_pct, credito:lojas_credito!inner(url_cadastro, identificacao, pix_chave, email_pedidos)")
     .eq("ativo", true)
     .eq("aceita_credito", true)
     .order("nome");
-  const lojasCredito = (dLojas ?? []).map((l) => ({
-    id: l.id,
-    nome: l.nome,
-    instrucoes: l.instrucoes_credito,
-    bonus: l.bonus_credito_pct,
-  }));
+  type LojaCred = { id: string; nome: string; slug: string | null; logo_url: string | null; cidade: string | null; uf: string | null; instrucoes_credito: string | null; bonus_credito_pct: number; credito: { url_cadastro: string | null; identificacao: string; pix_chave: string | null; email_pedidos: string | null } };
+  const lojasCredito = ((dLojas as unknown as LojaCred[] | null) ?? [])
+    .filter((l) => l.credito?.pix_chave && l.credito.email_pedidos)
+    .map((l) => ({
+      id: l.id,
+      nome: l.nome,
+      slug: l.slug,
+      logo: l.logo_url,
+      cidade: [l.cidade, l.uf].filter(Boolean).join("/"),
+      instrucoes: l.instrucoes_credito,
+      bonus: l.bonus_credito_pct,
+      cadastro: l.credito.url_cadastro,
+      identificacao: l.credito.identificacao,
+    }));
 
   // Circuito: posição no trimestre e vaga no Player of the Year, por formato
   const temporada = [
@@ -269,7 +280,7 @@ export default async function MinhaArea({
       acao: "Abrir Carteira",
     },
     emProcessamento.length > 0 && {
-      texto: `Em processamento: ${reais(totalProcessamento)} (saques e envios para lojas).`,
+      texto: `Em processamento: ${reais(Math.abs(totalProcessamento))} (saques e envios para lojas).`,
       href: "/minha-area?aba=carteira",
       acao: "Acompanhar",
     },
@@ -577,7 +588,7 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Em processamento
                 </dt>
-                <dd className="titulo text-3xl">{reais(totalProcessamento)}</dd>
+                <dd className="titulo text-3xl">{reais(Math.abs(totalProcessamento))}</dd>
                 <span className="text-sm text-texto2">
                   Saques e reembolsos são pagos por Pix em até 48 horas.
                 </span>
@@ -756,7 +767,7 @@ export default async function MinhaArea({
                 ],
                 [
                   "Em processamento",
-                  reais(totalProcessamento),
+                  reais(Math.abs(totalProcessamento)),
                   "Saques e envios ainda não concluídos.",
                 ],
                 [
@@ -816,12 +827,18 @@ export default async function MinhaArea({
                           {m.codigo_loja && (
                             <>
                               {" "}
-                              · código da loja:{" "}
+                              · código{" "}
                               <strong className="select-all font-mono text-ciano">
                                 {m.codigo_loja}
                               </strong>
                             </>
                           )}
+                          {m.tipo === "envio_loja" && m.credito_centavos ? (
+                            <> · {reais(m.credito_centavos)} de crédito na loja</>
+                          ) : null}
+                          {m.tipo === "envio_loja" && m.status === "concluido" && m.concluido_em ? (
+                            <> · Pix enviado à loja em {dataCurta(m.concluido_em)}</>
+                          ) : null}
                         </span>
                       </span>
                       {m.status !== "concluido" && (
@@ -829,7 +846,9 @@ export default async function MinhaArea({
                           tipo={m.status === "pendente" ? "alerta" : "contorno"}
                         >
                           {m.status === "pendente"
-                            ? "Em processamento"
+                            ? m.tipo === "envio_loja"
+                              ? "Aguardando Pix à loja"
+                              : "Em processamento"
                             : "Cancelado"}
                         </Etiqueta>
                       )}

@@ -41,20 +41,32 @@ export default async function Parceiros() {
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {parceiros.map((p) => (
               <li key={p.id}>
-                <a
-                  href={linkRastreado({ parceiro: p.id, origem: "logo", pagina: "/parceiros" })}
-                  target="_blank"
-                  rel="noopener"
-                  className="flex h-full flex-col gap-4 rounded-lg bg-grafite p-6 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
+                <Link
+                  href={p.slug ? `/parceiros/${p.slug}` : linkRastreado({ parceiro: p.id, origem: "logo", pagina: "/parceiros" })}
+                  className="flex h-full flex-col gap-4 rounded-lg bg-grafite p-6 text-gelo no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
                 >
-                  {p.logo_url && (
+                  {p.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.logo_url} alt={p.nome} className="h-14 w-auto self-start object-contain" />
+                  ) : (
+                    <span className="grid h-14 w-14 place-items-center rounded-md bg-azul text-2xl font-bold">{p.nome.charAt(0)}</span>
                   )}
-                  <span className="text-lg font-semibold">{p.nome}</span>
+                  <span className="flex flex-col">
+                    <span className="text-lg font-semibold">{p.nome}</span>
+                    <span className="text-sm text-cinza">{[p.cidade, p.uf].filter(Boolean).join("/") || "Loja online"}</span>
+                  </span>
                   {p.descricao && <span className="text-sm text-texto2">{p.descricao}</span>}
-                  <span className="mt-auto text-sm font-semibold text-ciano">Visitar a loja →</span>
-                </a>
+                  <span className="flex flex-wrap gap-1.5">
+                    {p.sede_eventos && <span className="rounded bg-azul/15 px-2 py-0.5 text-xs font-semibold text-ciano">Eventos presenciais</span>}
+                    {p.aceita_credito && (
+                      <span className="rounded bg-azul/15 px-2 py-0.5 text-xs font-semibold text-ciano">
+                        Resgate de prêmios{p.bonus_credito_pct ? ` +${p.bonus_credito_pct}%` : ""}
+                      </span>
+                    )}
+                    {p.compra_deck && <span className="rounded bg-azul/15 px-2 py-0.5 text-xs font-semibold text-ciano">Vende cartas</span>}
+                  </span>
+                  <span className="mt-auto text-sm font-semibold text-ciano">Conhecer a loja →</span>
+                </Link>
               </li>
             ))}
           </ul>

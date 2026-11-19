@@ -54,3 +54,10 @@ Tudo marcado no banco de teste para limpar com um comando antes da produção.
 - Integração: Assinaturas do Mercado Pago (preapproval, mensal/anual), webhook, gestão na Minha área, endereço para brindes.
 - Insígnia "Apoiador" (azul) / "Apoiador anual" (ouro) e losango ao lado do nick.
 - ATENÇÃO: a Fan Content Policy da Wizards proíbe cobrar acesso a conteúdo (artigos exclusivos/paywall). Benefícios devem ser comunidade, reconhecimento e brindes com a marca da liga (sem arte de cartas/logos da Wizards).
+
+## E-mails e Carteira — próximos passos
+- Lembretes agendados (precisam de cron): 24h antes do evento, deck pendente no Pauper, aviso 7 dias antes do saque automático. O saque automático (pg_cron) ainda não manda e-mail.
+- Domínio próprio no Resend para enviar a qualquer jogador (hoje só chega no e-mail dono da conta).
+- Pagar lojas e saques pela API de Payouts do Mercado Pago (botão "pagar pendentes").
+- Futuro da Carteira: desconto em ingressos e lojinha de brindes da liga.
+- Termo simples de parceria com as lojas (prazo de 2 dias úteis, bônus, dados do cliente).

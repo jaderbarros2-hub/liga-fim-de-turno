@@ -10,55 +10,125 @@ type Pendente = {
   automatico: boolean;
   chave_pix: string | null;
   criado_em: string;
-  jogador: { nick_endstep: string | null; nome: string | null; chave_pix: string | null; pix_tipo: string | null; pix_verificado_em: string | null; responsavel_nome: string | null } | null;
-  parceiro: { id: string; nome: string; bonus_credito_pct: number } | null;
+  jogador: {
+    nick_endstep: string | null;
+    nome: string | null;
+    chave_pix: string | null;
+    pix_tipo: string | null;
+    pix_verificado_em: string | null;
+    responsavel_nome: string | null;
+  } | null;
+  credito_centavos: number | null;
+  conta_loja: string | null;
+  codigo_loja: string | null;
+  parceiro: {
+    id: string;
+    nome: string;
+    bonus_credito_pct: number;
+    credito: {
+      pix_tipo: string | null;
+      pix_chave: string | null;
+      pix_titular: string | null;
+      email_pedidos: string | null;
+    } | null;
+  } | null;
 };
 
-const quando = (iso: string) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
-const NOME_TIPO: Record<string, string> = { cpf: "CPF", email: "E-mail", telefone: "Telefone", aleatoria: "Aleatória" };
+const quando = (iso: string) =>
+  new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+const NOME_TIPO: Record<string, string> = {
+  cpf: "CPF",
+  email: "E-mail",
+  telefone: "Telefone",
+  aleatoria: "Aleatória",
+};
 
 export default async function Financeiro() {
   const db = criarClienteAdmin();
-  const [{ data }, { data: saldos }, { data: avisos }, { data: pixPendentes }] = await Promise.all([
-    db
-      .from("carteira_movimentos")
-      .select(
-        "id, tipo, valor_centavos, descricao, automatico, chave_pix, criado_em, jogador:jogadores(nick_endstep, nome, chave_pix, pix_tipo, pix_verificado_em, responsavel_nome), parceiro:parceiros(id, nome, bonus_credito_pct)",
-      )
-      .eq("status", "pendente")
-      .order("criado_em"),
-    db.from("carteira_movimentos").select("valor_centavos").neq("status", "cancelado"),
-    db.from("registro_atividades").select("id, acao, detalhes, criado_em").in("acao", ["webhook_recebido", "webhook_assinatura_invalida", "pagamento_confirmado", "mercadopago_status"]).order("criado_em", { ascending: false }).limit(10),
-    db
-      .from("pagamentos")
-      .select("id, id_externo, valor_centavos, criado_em, expira_em, inscricao:inscricoes(jogador:jogadores(nick_endstep), evento:eventos(titulo))")
-      .eq("status", "pendente")
-      .eq("provedor", "mercadopago")
-      .order("criado_em", { ascending: false })
-      .limit(10),
-  ]);
+  const [{ data }, { data: saldos }, { data: avisos }, { data: pixPendentes }] =
+    await Promise.all([
+      db
+        .from("carteira_movimentos")
+        .select(
+          "id, tipo, valor_centavos, descricao, automatico, chave_pix, criado_em, jogador:jogadores(nick_endstep, nome, chave_pix, pix_tipo, pix_verificado_em, responsavel_nome), parceiro:parceiros(id, nome, bonus_credito_pct, credito:lojas_credito(pix_tipo, pix_chave, pix_titular, email_pedidos)), credito_centavos, conta_loja, codigo_loja",
+        )
+        .eq("status", "pendente")
+        .order("criado_em"),
+      db
+        .from("carteira_movimentos")
+        .select("valor_centavos")
+        .neq("status", "cancelado"),
+      db
+        .from("registro_atividades")
+        .select("id, acao, detalhes, criado_em")
+        .in("acao", [
+          "webhook_recebido",
+          "webhook_assinatura_invalida",
+          "pagamento_confirmado",
+          "mercadopago_status",
+        ])
+        .order("criado_em", { ascending: false })
+        .limit(10),
+      db
+        .from("pagamentos")
+        .select(
+          "id, id_externo, valor_centavos, criado_em, expira_em, inscricao:inscricoes(jogador:jogadores(nick_endstep), evento:eventos(titulo))",
+        )
+        .eq("status", "pendente")
+        .eq("provedor", "mercadopago")
+        .order("criado_em", { ascending: false })
+        .limit(10),
+    ]);
   const pendentes = (data as unknown as Pendente[]) ?? [];
   const saques = pendentes.filter((p) => p.tipo === "saque");
   const envios = pendentes.filter((p) => p.tipo === "envio_loja");
   const porLoja = new Map<string, Pendente[]>();
-  for (const e of envios) porLoja.set(e.parceiro?.nome ?? "Loja", [...(porLoja.get(e.parceiro?.nome ?? "Loja") ?? []), e]);
+  for (const e of envios)
+    porLoja.set(e.parceiro?.nome ?? "Loja", [
+      ...(porLoja.get(e.parceiro?.nome ?? "Loja") ?? []),
+      e,
+    ]);
   const emCarteiras = (saldos ?? []).reduce((s, m) => s + m.valor_centavos, 0);
 
   return (
     <div className="flex max-w-5xl flex-col gap-10">
       <div className="flex flex-col gap-2">
         <h1 className="titulo text-5xl">Financeiro</h1>
-        <p className="text-sm text-texto2">Saques por Pix, envios para lojas parceiras e o total guardado nas Carteiras.</p>
+        <p className="text-sm text-texto2">
+          Saques por Pix, envios para lojas parceiras e o total guardado nas
+          Carteiras.
+        </p>
       </div>
 
       <dl className="grid gap-3 sm:grid-cols-3">
         {[
-          ["Saques a pagar", reais(Math.abs(saques.reduce((s, m) => s + m.valor_centavos, 0))), `${saques.length} pedido(s)`],
-          ["Repasses a lojas", reais(Math.abs(envios.reduce((s, m) => s + m.valor_centavos, 0))), `${envios.length} pedido(s)`],
-          ["Saldo nas Carteiras", reais(emCarteiras), "Disponível para os jogadores"],
+          [
+            "Saques a pagar",
+            reais(Math.abs(saques.reduce((s, m) => s + m.valor_centavos, 0))),
+            `${saques.length} pedido(s)`,
+          ],
+          [
+            "Resgates em lojas",
+            reais(Math.abs(envios.reduce((s, m) => s + m.valor_centavos, 0))),
+            `${envios.length} pedido(s)`,
+          ],
+          [
+            "Saldo nas Carteiras",
+            reais(emCarteiras),
+            "Disponível para os jogadores",
+          ],
         ].map(([r, v, t]) => (
-          <div key={r} className="flex flex-col gap-1 rounded-xl border border-borda bg-grafite p-5">
-            <dt className="text-xs font-bold uppercase tracking-wider text-cinza">{r}</dt>
+          <div
+            key={r}
+            className="flex flex-col gap-1 rounded-xl border border-borda bg-grafite p-5"
+          >
+            <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
+              {r}
+            </dt>
             <dd className="titulo text-3xl">{v}</dd>
             <span className="text-sm text-texto2">{t}</span>
           </div>
@@ -68,8 +138,9 @@ export default async function Financeiro() {
       <section className="flex flex-col gap-3">
         <h2 className="titulo text-3xl">Saques por Pix</h2>
         <p className="text-sm text-cinza">
-          Faça o Pix pelo app do banco e confira se o nome do titular bate com o cadastro. Marque a conferência na primeira vez: a
-          chave fica verificada.
+          Faça o Pix pelo app do banco e confira se o nome do titular bate com o
+          cadastro. Marque a conferência na primeira vez: a chave fica
+          verificada.
         </p>
         {saques.length === 0 ? (
           <p className="text-texto2">Nenhum saque pendente.</p>
@@ -81,42 +152,72 @@ export default async function Financeiro() {
                 <li key={s.id} className="flex flex-col gap-3 p-4">
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
                     <span className="min-w-40 flex-1">
-                      <strong>{s.jogador?.nick_endstep || s.jogador?.nome}</strong>
+                      <strong>
+                        {s.jogador?.nick_endstep || s.jogador?.nome}
+                      </strong>
                       <span className="block text-xs text-cinza">
                         {s.jogador?.nome}
-                        {s.jogador?.responsavel_nome ? ` · responsável: ${s.jogador.responsavel_nome}` : ""}
+                        {s.jogador?.responsavel_nome
+                          ? ` · responsável: ${s.jogador.responsavel_nome}`
+                          : ""}
                       </span>
                     </span>
                     <span className="text-sm text-texto2">
                       {s.descricao}
                       {s.automatico && " · automático"} · {quando(s.criado_em)}
                     </span>
-                    <strong className="titulo text-2xl text-ciano">{reais(-s.valor_centavos)}</strong>
+                    <strong className="titulo text-2xl text-ciano">
+                      {reais(-s.valor_centavos)}
+                    </strong>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     <span>
-                      Pix ({NOME_TIPO[s.jogador?.pix_tipo ?? ""] ?? "chave"}): <strong className="select-all font-mono">{chave ?? "não cadastrada"}</strong>
+                      Pix ({NOME_TIPO[s.jogador?.pix_tipo ?? ""] ?? "chave"}):{" "}
+                      <strong className="select-all font-mono">
+                        {chave ?? "não cadastrada"}
+                      </strong>
                     </span>
                     {s.jogador?.pix_verificado_em ? (
                       <span className="text-ciano">✓ titular conferido</span>
                     ) : (
-                      <span className="text-alerta">titular ainda não conferido</span>
+                      <span className="text-alerta">
+                        titular ainda não conferido
+                      </span>
                     )}
-                    <form action={concluirMovimento} className="ml-auto flex flex-wrap items-center gap-3">
+                    <form
+                      action={concluirMovimento}
+                      className="ml-auto flex flex-wrap items-center gap-3"
+                    >
                       <input type="hidden" name="id" value={s.id} />
                       {!s.jogador?.pix_verificado_em && (
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" name="titular_conferido" className="h-4 w-4 accent-[#2e6bff]" /> Conferi o nome do titular
+                          <input
+                            type="checkbox"
+                            name="titular_conferido"
+                            className="h-4 w-4 accent-[#2e6bff]"
+                          />{" "}
+                          Conferi o nome do titular
                         </label>
                       )}
-                      <button type="submit" className="min-h-9 rounded-lg bg-azul px-4 font-semibold text-white">
+                      <button
+                        type="submit"
+                        className="min-h-9 rounded-lg bg-azul px-4 font-semibold text-white"
+                      >
                         Marcar como pago
                       </button>
                     </form>
                     <form action={cancelarMovimento}>
                       <input type="hidden" name="id" value={s.id} />
-                      <input type="hidden" name="motivo" value="Chave Pix com problema" />
-                      <button type="submit" className="font-semibold text-cinza hover:text-erro" title="Devolve o valor para a Carteira do jogador">
+                      <input
+                        type="hidden"
+                        name="motivo"
+                        value="Chave Pix com problema"
+                      />
+                      <button
+                        type="submit"
+                        className="font-semibold text-cinza hover:text-erro"
+                        title="Devolve o valor para a Carteira do jogador"
+                      >
                         Devolver à Carteira
                       </button>
                     </form>
@@ -129,51 +230,99 @@ export default async function Financeiro() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Envios para lojas parceiras</h2>
+        <h2 className="titulo text-3xl">Resgates em lojas parceiras</h2>
         <p className="text-sm text-cinza">
-          Repasse o valor à loja (com o bônus dela, se houver, por conta da loja). Quando a loja liberar o crédito, anote o código e
-          marque como repassado: o jogador vê o código na Carteira.
+          Faça o Pix do valor para a chave da loja (o bônus é por conta da loja)
+          e clique em <strong className="text-gelo">Pix enviado</strong>: a loja
+          recebe por e-mail o pedido para gerar o crédito em até 2 dias úteis. O
+          jogador já recebeu o código quando pediu.
         </p>
         {porLoja.size === 0 ? (
-          <p className="text-texto2">Nenhum envio pendente.</p>
+          <p className="text-texto2">Nenhum resgate pendente.</p>
         ) : (
-          [...porLoja.entries()].map(([loja, itens]) => (
-            <div key={loja} className="flex flex-col rounded-xl border border-borda">
-              <div className="flex items-center justify-between border-b border-borda bg-grafite px-4 py-3">
-                <strong>{loja}</strong>
-                <span className="text-sm">
-                  Total a repassar: <strong className="text-ciano">{reais(-itens.reduce((s, m) => s + m.valor_centavos, 0))}</strong>
-                </span>
-              </div>
-              <ul className="divide-y divide-borda">
-                {itens.map((e) => (
-                  <li key={e.id} className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 text-sm">
-                    <span className="min-w-36 flex-1 font-semibold">{e.jogador?.nick_endstep || e.jogador?.nome}</span>
-                    <span>
-                      {reais(-e.valor_centavos)}
-                      {e.parceiro?.bonus_credito_pct ? (
-                        <span className="text-ciano"> → {reais(Math.round(-e.valor_centavos * (1 + e.parceiro.bonus_credito_pct / 100)))} na loja</span>
-                      ) : null}
+          [...porLoja.entries()].map(([loja, itens]) => {
+            const c = itens[0].parceiro?.credito;
+            return (
+              <div
+                key={loja}
+                className="flex flex-col rounded-xl border border-borda"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-borda bg-grafite px-4 py-3">
+                  <span className="flex flex-col">
+                    <strong>{loja}</strong>
+                    <span className="text-xs text-cinza">
+                      Pix{" "}
+                      {c?.pix_tipo
+                        ? `(${NOME_TIPO[c.pix_tipo] ?? c.pix_tipo.toUpperCase()})`
+                        : ""}
+                      :{" "}
+                      <span className="select-all font-mono text-texto2">
+                        {c?.pix_chave ?? "não cadastrada"}
+                      </span>
+                      {c?.pix_titular ? ` · ${c.pix_titular}` : ""} · pedidos
+                      para {c?.email_pedidos ?? "—"}
                     </span>
-                    <span className="text-cinza">{quando(e.criado_em)}</span>
-                    <form action={concluirMovimento} className="flex items-center gap-2">
-                      <input type="hidden" name="id" value={e.id} />
-                      <input name="codigo_loja" placeholder="Código do crédito" className="min-h-9 w-40 rounded-md border border-borda-forte bg-fundo2 px-2" />
-                      <button type="submit" className="font-semibold text-ciano">
-                        Marcar repassado
-                      </button>
-                    </form>
-                    <form action={cancelarMovimento}>
-                      <input type="hidden" name="id" value={e.id} />
-                      <button type="submit" className="text-cinza hover:text-erro">
-                        Cancelar
-                      </button>
-                    </form>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
+                  </span>
+                  <span className="text-sm">
+                    Total a enviar:{" "}
+                    <strong className="text-ciano">
+                      {reais(-itens.reduce((s, m) => s + m.valor_centavos, 0))}
+                    </strong>
+                  </span>
+                </div>
+                <ul className="divide-y divide-borda">
+                  {itens.map((e) => (
+                    <li
+                      key={e.id}
+                      className="flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 text-sm"
+                    >
+                      <span className="flex min-w-44 flex-1 flex-col">
+                        <span className="font-semibold">
+                          {e.jogador?.nick_endstep || e.jogador?.nome}
+                        </span>
+                        <span className="text-xs text-cinza">
+                          Conta na loja:{" "}
+                          <span className="select-all text-texto2">
+                            {e.conta_loja ?? "—"}
+                          </span>{" "}
+                          · {e.codigo_loja}
+                        </span>
+                      </span>
+                      <span>
+                        Pix {reais(-e.valor_centavos)}
+                        {e.credito_centavos &&
+                        e.credito_centavos !== -e.valor_centavos ? (
+                          <span className="text-ciano">
+                            {" "}
+                            → {reais(e.credito_centavos)} de crédito
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-cinza">{quando(e.criado_em)}</span>
+                      <form action={concluirMovimento}>
+                        <input type="hidden" name="id" value={e.id} />
+                        <button
+                          type="submit"
+                          className="font-semibold text-ciano"
+                        >
+                          Pix enviado
+                        </button>
+                      </form>
+                      <form action={cancelarMovimento}>
+                        <input type="hidden" name="id" value={e.id} />
+                        <button
+                          type="submit"
+                          className="text-cinza hover:text-erro"
+                        >
+                          Cancelar
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })
         )}
       </section>
 
@@ -183,14 +332,31 @@ export default async function Financeiro() {
           <p className="text-texto2">Nenhum Pix em aberto.</p>
         ) : (
           <ul className="flex flex-col divide-y divide-borda rounded-xl border border-borda text-sm">
-            {((pixPendentes as unknown as { id: string; id_externo: string | null; valor_centavos: number; criado_em: string; inscricao: { jogador: { nick_endstep: string | null } | null; evento: { titulo: string } | null } | null }[]) ?? []).map((p) => (
-              <li key={p.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5">
+            {(
+              (pixPendentes as unknown as {
+                id: string;
+                id_externo: string | null;
+                valor_centavos: number;
+                criado_em: string;
+                inscricao: {
+                  jogador: { nick_endstep: string | null } | null;
+                  evento: { titulo: string } | null;
+                } | null;
+              }[]) ?? []
+            ).map((p) => (
+              <li
+                key={p.id}
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5"
+              >
                 <span className="w-32 text-cinza">{quando(p.criado_em)}</span>
                 <span className="min-w-40 flex-1">
-                  <strong>{p.inscricao?.jogador?.nick_endstep}</strong> · {p.inscricao?.evento?.titulo}
+                  <strong>{p.inscricao?.jogador?.nick_endstep}</strong> ·{" "}
+                  {p.inscricao?.evento?.titulo}
                 </span>
                 <span>{reais(p.valor_centavos)}</span>
-                <span className="font-mono text-xs text-cinza">{p.id_externo}</span>
+                <span className="font-mono text-xs text-cinza">
+                  {p.id_externo}
+                </span>
                 <form action={consultarPix}>
                   <input type="hidden" name="id" value={p.id} />
                   <button type="submit" className="font-semibold text-ciano">
@@ -205,15 +371,27 @@ export default async function Financeiro() {
 
       <section className="flex flex-col gap-3">
         <h2 className="titulo text-3xl">Avisos do Mercado Pago</h2>
-        <p className="text-sm text-cinza">Últimos avisos automáticos (webhook) e pagamentos confirmados. Útil para conferir os testes.</p>
+        <p className="text-sm text-cinza">
+          Últimos avisos automáticos (webhook) e pagamentos confirmados. Útil
+          para conferir os testes.
+        </p>
         {(avisos ?? []).length === 0 ? (
           <p className="text-texto2">Nenhum aviso recebido ainda.</p>
         ) : (
           <ul className="flex flex-col divide-y divide-borda rounded-xl border border-borda text-sm">
             {(avisos ?? []).map((a) => (
-              <li key={a.id} className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5">
+              <li
+                key={a.id}
+                className="flex flex-wrap items-center gap-x-5 gap-y-1 px-4 py-2.5"
+              >
                 <span className="w-32 text-cinza">{quando(a.criado_em)}</span>
-                <span className={a.acao === "webhook_assinatura_invalida" ? "font-semibold text-erro" : "font-semibold"}>
+                <span
+                  className={
+                    a.acao === "webhook_assinatura_invalida"
+                      ? "font-semibold text-erro"
+                      : "font-semibold"
+                  }
+                >
                   {a.acao === "webhook_recebido"
                     ? "Aviso recebido"
                     : a.acao === "pagamento_confirmado"
@@ -222,7 +400,9 @@ export default async function Financeiro() {
                         ? "Situação no Mercado Pago"
                         : "Assinatura inválida"}
                 </span>
-                <span className="font-mono text-xs text-texto2">{JSON.stringify(a.detalhes)}</span>
+                <span className="font-mono text-xs text-texto2">
+                  {JSON.stringify(a.detalhes)}
+                </span>
               </li>
             ))}
           </ul>

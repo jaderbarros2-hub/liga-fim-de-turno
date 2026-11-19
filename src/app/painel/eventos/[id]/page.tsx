@@ -29,7 +29,7 @@ function paraCampo(iso: string) {
 export default async function EditarEvento({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await criarClienteServidor();
-  const [{ data: evento }, { data: ligas }, { data: link }] = await Promise.all([
+  const [{ data: evento }, { data: ligas }, { data: link }, { data: lojas }] = await Promise.all([
     supabase
       .from("eventos")
       .select("*, colecao_info:colecoes(nome, icone_svg), cubo_info:cubos(cubecobra_id, nome, dono, imagem_url, total_cartas)")
@@ -37,6 +37,7 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
       .maybeSingle(),
     supabase.from("ligas").select("id, nome").order("id"),
     supabase.from("evento_links").select("link_endstep").eq("evento_id", id).maybeSingle(),
+    supabase.from("parceiros").select("id, nome, cidade").eq("ativo", true).eq("sede_eventos", true).order("nome"),
   ]);
   if (!evento) notFound();
 
@@ -101,6 +102,7 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
       </section>
       <FormularioEvento
         ligas={ligas ?? []}
+        lojas={lojas ?? []}
         valores={{
           id: evento.id,
           titulo: evento.titulo,
@@ -112,6 +114,7 @@ export default async function EditarEvento({ params }: { params: Promise<{ id: s
           inscricoes_ate: paraCampo(evento.inscricoes_ate),
           modalidade: evento.modalidade,
           local: evento.local ?? "",
+          loja_id: evento.loja_id ?? "",
           valor: (evento.valor_centavos / 100).toFixed(2),
           vagas: evento.vagas ? String(evento.vagas) : "",
           minimo: String(evento.minimo),
