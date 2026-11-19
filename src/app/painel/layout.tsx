@@ -14,6 +14,7 @@ const MENU = [
   { href: "/painel/blog", rotulo: "Blog" },
   { href: "/painel/parceiros", rotulo: "Lojas e parceiros" },
   { href: "/painel/emails", rotulo: "E-mails" },
+  { href: "/painel/artes", rotulo: "Artes" },
 ];
 
 export default async function LayoutPainel({

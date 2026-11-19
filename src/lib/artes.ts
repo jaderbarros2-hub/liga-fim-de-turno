@@ -55,18 +55,20 @@ export const CARTAS_FAIXA: Arte[] = [
 
 /* =====================================================================
  * Banco de artes em alta resolução (arquivos em /public/artes).
- * Fonte: artigos oficiais da Wizards (Planeswalker's Guides) e Art of MtG.
- * Para adicionar: coloque a imagem em artes-originais, converta para WebP
- * (até 1920px) em public/artes e registre aqui com o crédito.
+ * Fonte: MTGPics (via MTG Art Downloader), artigos da Wizards e Art of MtG.
+ * Para adicionar: Painel → Artes gera a lista; depois rode scripts/importar_artes.py
+ * (converte para WebP em public/artes, gera o JPG de e-mail e grava o crédito).
  * ===================================================================== */
+
+/** Grupos do banco: cada liga usa o seu; "geral" serve de reserva e para banners do site. */
+export type GrupoArte = "pauper" | "premodern" | "limited" | "geral";
 
 export type ArteBanco = {
   arquivo: string;
   carta: string | null;
   artista: string;
   colecao?: string;
-  /** "pauper": carta legal no Pauper (serve para tudo). "geral": só Limited e banners gerais. */
-  grupo: "pauper" | "geral";
+  grupo: GrupoArte;
   largura: number;
   altura: number;
   /** Ponto de foco do recorte (CSS object-position). */
@@ -79,11 +81,29 @@ export const srcArte = (a: ArteBanco) => `/artes/${a.arquivo}.webp`;
 export const creditoArte = (a: ArteBanco) =>
   `${a.carta ? `${a.carta} · ` : ""}ilustração de ${a.artista} · © Wizards of the Coast`;
 
-/** Pauper usa só cartas do Pauper; Limited (e o resto do site) pode usar qualquer arte de Magic. */
-function pool(formato: "pauper" | "limited" | "geral", minLargura = 0) {
-  const lista = BANCO.filter((a) => (formato === "pauper" ? a.grupo === "pauper" : true) && a.largura >= minLargura);
-  return lista.length ? lista : BANCO.filter((a) => (formato === "pauper" ? a.grupo === "pauper" : true));
+/** Abaixo disso, a liga completa com as artes gerais para não repetir demais. */
+const MINIMO_POR_GRUPO = 8;
+
+/**
+ * Cada liga usa as artes do próprio grupo. "geral" (banners do site) usa o banco todo.
+ * Pauper fica só com cartas legais no Pauper; as outras completam com o grupo geral se faltar.
+ */
+function pool(grupo: GrupoArte, minLargura = 0) {
+  const filtrar = (largura: number) => {
+    const base = BANCO.filter((a) => a.largura >= largura);
+    if (grupo === "geral") return base;
+    const proprias = base.filter((a) => a.grupo === grupo);
+    if (grupo === "pauper" || proprias.length >= MINIMO_POR_GRUPO) return proprias;
+    const comGerais = [...proprias, ...base.filter((a) => a.grupo === "geral")];
+    return comGerais.length >= MINIMO_POR_GRUPO ? comGerais : base;
+  };
+  for (const lista of [filtrar(minLargura), filtrar(0)]) if (lista.length) return lista;
+  return BANCO;
 }
+
+/** Grupo de arte de um evento a partir do formato (draft, selado e cubo são Limited). */
+export const grupoDoFormato = (formato: string): GrupoArte =>
+  formato === "pauper" ? "pauper" : formato === "premodern" ? "premodern" : "limited";
 
 function hash(texto: string) {
   let h = 2166136261;
@@ -92,20 +112,20 @@ function hash(texto: string) {
 }
 
 /** Arte fixa por chave (ex.: id de um artigo), dentro do grupo do formato. */
-export function arteFixa(chave: string, formato: "pauper" | "limited" | "geral"): ArteBanco {
-  const lista = pool(formato);
+export function arteFixa(chave: string, grupo: GrupoArte): ArteBanco {
+  const lista = pool(grupo);
   return lista[hash(chave) % lista.length];
 }
 
 /** Arte fixa para um evento (sempre a mesma para aquela etapa, diferente entre etapas). */
 export function arteDoEvento(evento: { id: string; liga: { slug: string }; formato?: string }): ArteBanco {
-  const lista = pool((evento.formato ?? evento.liga.slug) === "pauper" ? "pauper" : "limited");
+  const lista = pool(grupoDoFormato(evento.formato ?? evento.liga.slug));
   return lista[hash(evento.id) % lista.length];
 }
 
 /** Sorteio a cada visita. `grande` exige imagens largas o bastante para o topo da página. */
-export function sortearArtes(formato: "pauper" | "limited" | "geral", quantidade: number, grande = false): ArteBanco[] {
-  const lista = [...pool(formato, grande ? 1800 : 0)];
+export function sortearArtes(grupo: GrupoArte, quantidade: number, grande = false): ArteBanco[] {
+  const lista = [...pool(grupo, grande ? 1800 : 0)];
   for (let i = lista.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [lista[i], lista[j]] = [lista[j], lista[i]];

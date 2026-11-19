@@ -30,11 +30,9 @@ export const NOME_LIGA: Record<string, string> = {
 /** Grupo de artes do banco para o formato (Premodern usa as gerais até ganhar artes próprias). */
 export const grupoDeArte = (
   formatoOuLiga: string | null | undefined,
-): "pauper" | "limited" | "geral" =>
-  formatoOuLiga === "pauper"
-    ? "pauper"
-    : formatoOuLiga === "premodern"
-      ? "geral"
-      : formatoOuLiga
-        ? "limited"
-        : "geral";
+): "pauper" | "premodern" | "limited" | "geral" =>
+  formatoOuLiga === "pauper" || formatoOuLiga === "premodern"
+    ? formatoOuLiga
+    : formatoOuLiga
+      ? "limited"
+      : "geral";

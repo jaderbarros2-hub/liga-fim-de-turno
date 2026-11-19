@@ -1,5 +1,10 @@
 import "server-only";
-import { arteFixa, capaDoEvento, creditoArte } from "@/lib/artes";
+import {
+  arteFixa,
+  capaDoEvento,
+  creditoArte,
+  type GrupoArte,
+} from "@/lib/artes";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -48,7 +53,7 @@ export type Conteudo = {
 /** Arte do banco da liga em versão leve para e-mail (sempre a mesma para a mesma chave). */
 export function imagemFixa(
   chave: string,
-  formato: "pauper" | "limited" | "geral" = "geral",
+  formato: GrupoArte = "geral",
 ): Imagem {
   const a = arteFixa(chave, formato);
   return {
