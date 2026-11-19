@@ -1,4 +1,5 @@
 import "server-only";
+import { arteFixa, capaDoEvento, creditoArte } from "@/lib/artes";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
 /**
@@ -10,19 +11,49 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
 export const SITE = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://liga-fim-de-turno.vercel.app"
 ).replace(/\/$/, "");
-export const EMAIL_CONTATO = process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO || "";
+export const EMAIL_CONTATO =
+  process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO || "";
 const REMETENTE =
   process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
+
+export type Imagem = { url: string; credito?: string | null };
 
 export type Conteudo = {
   titulo: string;
   previa?: string; // linha que aparece na caixa de entrada
+  imagem?: Imagem; // arte no topo (JPG leve em /public/email/artes ou arte da coleção)
+  selo?: { texto: string; tom?: "ciano" | "alerta" | "erro" }; // situação: Confirmado, Cancelado…
+  destaque?: { valor: string; rotulo: string }; // número principal (valor do prêmio, do crédito…)
   paragrafos: string[]; // aceita **negrito**
-  detalhes?: [string, string][]; // tabela rótulo → valor
+  detalhes?: [string, string][]; // rótulo → valor
   codigo?: { rotulo: string; valor: string };
   botao?: { texto: string; url: string };
-  aviso?: string; // caixa de destaque (ex.: prazo, regra)
+  aviso?: string; // regra ou prazo importante
 };
+
+/** Arte do banco da liga em versão leve para e-mail (sempre a mesma para a mesma chave). */
+export function imagemFixa(
+  chave: string,
+  formato: "pauper" | "limited" | "geral" = "geral",
+): Imagem {
+  const a = arteFixa(chave, formato);
+  return {
+    url: `${SITE}/email/artes/${a.arquivo}.jpg`,
+    credito: creditoArte(a),
+  };
+}
+
+/** Capa do evento para e-mail: arte da coleção ou do cubo, senão a arte da etapa em versão leve. */
+export function imagemDoEvento(
+  evento: Parameters<typeof capaDoEvento>[0],
+): Imagem {
+  const c = capaDoEvento(evento);
+  const local = c.src.match(/^\/artes\/(.+)\.webp$/);
+  return {
+    url: local ? `${SITE}/email/artes/${local[1]}.jpg` : c.src,
+    credito: c.credito,
+  };
+}
 
 const escapar = (s: string) =>
   s
@@ -45,55 +76,79 @@ const C = {
   cinza: "#9aa6b8",
   azul: "#2e6bff",
   ciano: "#5cc8ff",
+  alerta: "#f2b84b",
+  erro: "#ff6b6b",
 };
-const FONTE = "Inter,Segoe UI,Helvetica,Arial,sans-serif";
+const FONTE = "Inter,'Segoe UI',Helvetica,Arial,sans-serif";
 const TITULO = "'Barlow Condensed','Arial Narrow',Arial,sans-serif";
 
-/** HTML com o visual da liga (tabelas e estilos em linha, que é o que os clientes de e-mail entendem). */
+/** HTML com o visual da liga: arte no topo, título, número em destaque, detalhes e um botão. */
 export function montarEmail(c: Conteudo): { html: string; texto: string } {
+  const imagem = c.imagem
+    ? `<tr><td style="padding:0;line-height:0"><img src="${escapar(c.imagem.url)}" width="560" alt="" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px 12px 0 0"></td></tr>`
+    : "";
+  const tomSelo =
+    c.selo?.tom === "erro"
+      ? C.erro
+      : c.selo?.tom === "alerta"
+        ? C.alerta
+        : C.ciano;
+  const selo = c.selo
+    ? `<div style="margin:0 0 14px"><span style="display:inline-block;padding:5px 10px;border-radius:999px;border:1px solid ${tomSelo};font:600 12px ${FONTE};color:${tomSelo}">${escapar(c.selo.texto)}</span></div>`
+    : "";
+  const destaque = c.destaque
+    ? `<div style="margin:4px 0 20px"><div style="font:700 44px/1 ${TITULO};color:${C.ciano}">${escapar(c.destaque.valor)}</div><div style="margin-top:6px;font:14px ${FONTE};color:${C.cinza}">${escapar(c.destaque.rotulo)}</div></div>`
+    : "";
   const p = c.paragrafos
     .map(
       (t) =>
-        `<p style="margin:0 0 16px;font:16px/1.6 ${FONTE};color:${C.texto2}">${negrito(t)}</p>`,
+        `<p style="margin:0 0 14px;font:16px/1.6 ${FONTE};color:${C.texto2}">${negrito(t)}</p>`,
     )
     .join("");
   const detalhes = c.detalhes?.length
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px;border:1px solid ${C.borda};border-radius:8px;border-collapse:separate">${c.detalhes
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0 22px;border-top:1px solid ${C.borda}">${c.detalhes
         .map(
-          ([r, v], i) =>
-            `<tr><td style="padding:12px 16px;font:13px ${FONTE};color:${C.cinza};${i ? `border-top:1px solid ${C.borda};` : ""}">${escapar(r)}</td><td align="right" style="padding:12px 16px;font:600 14px ${FONTE};color:${C.texto};${i ? `border-top:1px solid ${C.borda};` : ""}">${escapar(v)}</td></tr>`,
+          ([r, v]) =>
+            `<tr><td style="padding:12px 0;border-bottom:1px solid ${C.borda};font:14px ${FONTE};color:${C.cinza}">${escapar(r)}</td><td align="right" style="padding:12px 0 12px 16px;border-bottom:1px solid ${C.borda};font:600 14px ${FONTE};color:${C.texto}">${escapar(v)}</td></tr>`,
         )
         .join("")}</table>`
     : "";
   const codigo = c.codigo
-    ? `<div style="margin:8px 0 20px;padding:16px;border:1px dashed ${C.ciano};border-radius:8px;text-align:center"><div style="font:600 12px ${FONTE};letter-spacing:2px;text-transform:uppercase;color:${C.cinza}">${escapar(c.codigo.rotulo)}</div><div style="margin-top:6px;font:700 30px ${TITULO};letter-spacing:3px;color:${C.ciano}">${escapar(c.codigo.valor)}</div></div>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td align="center" style="padding:16px;border:1px dashed ${C.ciano};border-radius:10px;background:#0b0e14"><div style="font:600 12px ${FONTE};color:${C.cinza}">${escapar(c.codigo.rotulo)}</div><div style="margin-top:6px;font:700 30px ${TITULO};letter-spacing:4px;color:${C.ciano}">${escapar(c.codigo.valor)}</div></td></tr></table>`
     : "";
   const aviso = c.aviso
-    ? `<div style="margin:4px 0 20px;padding:14px 16px;border-left:4px solid ${C.azul};background:#0b0e14;font:14px/1.5 ${FONTE};color:${C.texto2}">${negrito(c.aviso)}</div>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td style="padding:14px 16px;border-left:4px solid ${C.azul};background:#0b0e14;font:14px/1.55 ${FONTE};color:${C.texto2}">${negrito(c.aviso)}</td></tr></table>`
     : "";
   const botao = c.botao
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 8px"><tr><td style="border-radius:8px;background:${C.azul}"><a href="${escapar(c.botao.url)}" style="display:inline-block;padding:14px 24px;font:600 15px ${FONTE};color:#ffffff;text-decoration:none">${escapar(c.botao.texto)}</a></td></tr></table>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 0"><tr><td align="center" style="border-radius:10px;background:${C.azul}"><a href="${escapar(c.botao.url)}" style="display:block;padding:15px 24px;font:700 16px ${FONTE};color:#ffffff;text-decoration:none">${escapar(c.botao.texto)}</a></td></tr></table>`
+    : "";
+  const credito = c.imagem?.credito
+    ? `<div style="margin-top:22px;font:11px ${FONTE};color:#5b6576">Arte: ${escapar(c.imagem.credito)}</div>`
     : "";
   const contato = EMAIL_CONTATO
     ? `Dúvidas? Responda este e-mail ou escreva para <a href="mailto:${escapar(EMAIL_CONTATO)}" style="color:${C.ciano}">${escapar(EMAIL_CONTATO)}</a>.`
     : "Dúvidas? Responda este e-mail.";
 
-  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>${escapar(c.titulo)}</title></head>
+  const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="supported-color-schemes" content="dark light"><title>${escapar(c.titulo)}</title></head>
 <body style="margin:0;padding:0;background:${C.fundo}">
-<div style="display:none;max-height:0;overflow:hidden">${escapar(c.previa ?? c.titulo)}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.fundo}"><tr><td align="center" style="padding:32px 16px">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapar(c.previa ?? c.titulo)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.fundo}"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
-<tr><td style="padding:0 0 20px"><a href="${SITE}" style="text-decoration:none"><img src="${SITE}/email/logo.png" width="36" height="36" alt="" style="vertical-align:middle;border:0"><span style="margin-left:10px;vertical-align:middle;font:700 22px ${TITULO};letter-spacing:.5px;text-transform:uppercase;color:${C.texto}">Liga Fim de Turno</span></a></td></tr>
-<tr><td style="background:${C.cartao};border:1px solid ${C.borda};border-radius:12px;padding:32px 28px">
-<h1 style="margin:0 0 20px;font:700 34px/1.05 ${TITULO};text-transform:uppercase;color:${C.texto}">${escapar(c.titulo)}</h1>
-${p}${detalhes}${codigo}${aviso}${botao}
+<tr><td style="padding:0 4px 18px"><a href="${SITE}" style="text-decoration:none"><img src="${SITE}/email/logo.png" width="32" height="32" alt="" style="vertical-align:middle;border:0"><span style="margin-left:10px;vertical-align:middle;font:700 20px ${TITULO};letter-spacing:.5px;color:${C.texto}">LIGA FIM DE TURNO</span></a></td></tr>
+<tr><td style="background:${C.cartao};border:1px solid ${C.borda};border-radius:12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${imagem}
+<tr><td style="padding:28px 28px 30px">
+${selo}<h1 style="margin:0 0 16px;font:700 28px/1.2 ${FONTE};letter-spacing:-.3px;color:${C.texto}">${escapar(c.titulo)}</h1>
+${destaque}${p}${detalhes}${codigo}${aviso}${botao}${credito}
+</td></tr></table>
 </td></tr>
-<tr><td style="padding:20px 4px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>Liga Fim de Turno · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
+<tr><td style="padding:20px 6px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>Você recebe este e-mail porque tem cadastro na Liga Fim de Turno · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const texto = [
     c.titulo,
     "",
+    c.destaque ? `${c.destaque.valor} · ${c.destaque.rotulo}` : "",
     ...c.paragrafos.map((t) => t.replace(/\*\*/g, "")),
     ...(c.detalhes ?? []).map(([r, v]) => `${r}: ${v}`),
     c.codigo ? `${c.codigo.rotulo}: ${c.codigo.valor}` : "",

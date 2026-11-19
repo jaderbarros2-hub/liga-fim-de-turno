@@ -1,6 +1,12 @@
 import "server-only";
 import { DIAS_SAQUE_AUTOMATICO, SAQUE_MINIMO } from "@/lib/carteira";
-import { EMAIL_CONTATO, enviarEmail, SITE } from "@/lib/email";
+import {
+  EMAIL_CONTATO,
+  enviarEmail,
+  imagemDoEvento,
+  imagemFixa,
+  SITE,
+} from "@/lib/email";
 import { dataLonga, hora, NOMES_FORMATO, reais } from "@/lib/formato";
 import { enderecoLinha, IDENTIFICACAO, linkMapa } from "@/lib/lojas";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -37,14 +43,14 @@ export const emailBoasVindas = (jogadorId: string) =>
       para: j?.email,
       tipo: "boas_vindas",
       jogadorId,
-      assunto: "Bem-vindo à Liga Fim de Turno",
+      assunto: `Bem-vindo à Liga Fim de Turno, ${nomeDe(j)}`,
       conteudo: {
-        titulo: `Bem-vindo, ${nomeDe(j)}`,
+        imagem: imagemFixa("boas-vindas"),
+        titulo: `Bem-vindo à liga, ${nomeDe(j)}`,
         previa: "Seu cadastro está pronto. Escolha a próxima etapa.",
         paragrafos: [
-          "Seu cadastro na Liga Fim de Turno está completo.",
-          "Escolha uma etapa na agenda, garanta o seu ingresso e jogue no Endstep. Cada etapa vale pontos no ranking do trimestre.",
-          "Prêmios caem na sua **Carteira**: você saca por Pix, usa em ingressos ou resgata em lojas parceiras.",
+          "Seu cadastro está completo. Escolha uma etapa na agenda, garanta o ingresso e jogue: cada etapa vale pontos no ranking do trimestre.",
+          "Os prêmios caem na sua **Carteira**, para sacar por Pix, pagar ingressos ou resgatar em lojas parceiras.",
         ],
         botao: { texto: "Ver a agenda", url: `${SITE}/eventos` },
       },
@@ -57,7 +63,7 @@ export const emailIngressoConfirmado = (inscricaoId: string) =>
     const { data: i } = await db
       .from("inscricoes")
       .select(
-        "id, deck_principal, jogador:jogadores(id, email, nick_endstep, nome), evento:eventos(slug, titulo, inicio, formato, modalidade, local, loja:parceiros(nome, logradouro, numero, complemento, bairro, cidade, uf, cep, mapa_url))",
+        "id, deck_principal, jogador:jogadores(id, email, nick_endstep, nome), evento:eventos(id, slug, titulo, inicio, formato, modalidade, local, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito), loja:parceiros(nome, logradouro, numero, complemento, bairro, cidade, uf, cep, mapa_url))",
       )
       .eq("id", inscricaoId)
       .maybeSingle();
@@ -87,7 +93,7 @@ export const emailIngressoConfirmado = (inscricaoId: string) =>
       nick_endstep: string | null;
       nome: string | null;
     };
-    const e = i.evento as unknown as {
+    const e = i.evento as unknown as Parameters<typeof imagemDoEvento>[0] & {
       slug: string;
       titulo: string;
       inicio: string;
@@ -104,15 +110,18 @@ export const emailIngressoConfirmado = (inscricaoId: string) =>
       tipo: "ingresso_confirmado",
       jogadorId: j.id,
       referencia: inscricaoId,
-      assunto: `Ingresso confirmado · ${e.titulo}`,
+      assunto: `Ingresso confirmado: ${e.titulo}`,
       conteudo: {
-        titulo: "Ingresso confirmado",
-        previa: `${e.titulo} · ${dataLonga(e.inicio)} às ${hora(e.inicio)}`,
+        imagem: imagemDoEvento(e),
+        selo: { texto: "Ingresso confirmado" },
+        titulo: e.titulo,
+        previa: `${dataLonga(e.inicio)} às ${hora(e.inicio)}. Sua vaga está garantida.`,
         paragrafos: [
-          `Tudo certo, ${nomeDe(j)}. Sua vaga em **${e.titulo}** está garantida.`,
-          presencial
-            ? "O evento é presencial. Chegue com uns 15 minutos de antecedência."
-            : "O link do torneio no Endstep fica na página do seu ingresso. Entre alguns minutos antes do horário.",
+          `Tudo certo, ${nomeDe(j)}: sua vaga está garantida. ${
+            presencial
+              ? "Chegue 15 minutos antes para o check-in na loja."
+              : "O link do torneio no Endstep fica na página do seu ingresso."
+          }`,
         ],
         detalhes: [
           ["Data", dataLonga(e.inicio)],
@@ -160,7 +169,7 @@ export const emailIngressoCancelado = (
     const { data: i } = await criarClienteAdmin()
       .from("inscricoes")
       .select(
-        "jogador:jogadores(id, email, nick_endstep, nome), evento:eventos(titulo)",
+        "jogador:jogadores(id, email, nick_endstep, nome), evento:eventos(id, titulo, formato, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito))",
       )
       .eq("id", inscricaoId)
       .maybeSingle();
@@ -172,23 +181,34 @@ export const emailIngressoCancelado = (
           nome: string | null;
         }
       | undefined;
-    const e = i?.evento as unknown as { titulo: string } | undefined;
+    const e = i?.evento as unknown as
+      (Parameters<typeof imagemDoEvento>[0] & { titulo: string }) | undefined;
     if (!j || !e) return;
     await enviarEmail({
       para: j.email,
       tipo: "ingresso_cancelado",
       jogadorId: j.id,
       referencia: inscricaoId,
-      assunto: `Ingresso cancelado · ${e.titulo}`,
+      assunto: `Ingresso cancelado: ${e.titulo}`,
       conteudo: {
-        titulo: "Ingresso cancelado",
+        imagem: imagemDoEvento(e),
+        selo: { texto: "Ingresso cancelado", tom: "erro" },
+        titulo: e.titulo,
+        destaque: valor
+          ? {
+              valor: reais(valor),
+              rotulo:
+                destino === "credito"
+                  ? "de volta na sua Carteira"
+                  : "de reembolso por Pix, em até 48 horas",
+            }
+          : undefined,
         paragrafos: [
-          `Cancelamos o seu ingresso de **${e.titulo}**.`,
           !valor
             ? "Não havia valor a devolver."
             : destino === "credito"
-              ? `${reais(valor)} voltaram para a sua Carteira e já podem ser usados no próximo ingresso.`
-              : `O reembolso de ${reais(valor)} vai para a sua chave Pix em até 48 horas.`,
+              ? "O valor já está na sua Carteira e pode pagar o próximo ingresso."
+              : "O reembolso vai para a sua chave Pix cadastrada.",
         ],
         botao: { texto: "Ver a agenda", url: `${SITE}/eventos` },
       },
@@ -202,22 +222,44 @@ export const emailPremio = (
   evento: { titulo: string; slug: string },
 ) =>
   seguro(async () => {
-    const { data: j } = await criarClienteAdmin()
-      .from("jogadores")
-      .select("email, nick_endstep, nome")
-      .eq("id", jogadorId)
-      .maybeSingle();
+    const db = criarClienteAdmin();
+    const [{ data: j }, { data: ev }] = await Promise.all([
+      db
+        .from("jogadores")
+        .select("email, nick_endstep, nome")
+        .eq("id", jogadorId)
+        .maybeSingle(),
+      db
+        .from("eventos")
+        .select(
+          "id, formato, liga:ligas(slug), colecao_info:colecoes(arte_url, arte_credito), cubo_info:cubos(imagem_url, imagem_credito)",
+        )
+        .eq("slug", evento.slug)
+        .maybeSingle(),
+    ]);
     await enviarEmail({
       para: j?.email,
       tipo: "premio",
       jogadorId,
-      assunto: `Seu prêmio de ${reais(valor)} chegou · ${evento.titulo}`,
+      assunto:
+        posicao === 1
+          ? `Você venceu ${evento.titulo}: ${reais(valor)} na Carteira`
+          : `Prêmio de ${reais(valor)} em ${evento.titulo}`,
       conteudo: {
-        titulo: posicao === 1 ? "Você é campeão!" : "Seu prêmio chegou",
-        previa: `${reais(valor)} na sua Carteira`,
+        imagem: ev
+          ? imagemDoEvento(
+              ev as unknown as Parameters<typeof imagemDoEvento>[0],
+            )
+          : imagemFixa("premio"),
+        selo: { texto: posicao ? `${posicao}º lugar` : "Premiado" },
+        titulo:
+          posicao === 1
+            ? `Parabéns, ${nomeDe(j)}: você é campeão!`
+            : `Parabéns, ${nomeDe(j)}!`,
+        previa: `${reais(valor)} já estão na sua Carteira.`,
+        destaque: { valor: reais(valor), rotulo: "já estão na sua Carteira" },
         paragrafos: [
-          `Parabéns, ${nomeDe(j)}! ${posicao ? `Você ficou em **${posicao}º lugar** em` : "Você premiou em"} **${evento.titulo}**.`,
-          `**${reais(valor)}** já estão na sua Carteira. Você escolhe o que fazer: sacar por Pix (a partir de ${reais(SAQUE_MINIMO)}), pagar o próximo ingresso ou resgatar em uma loja parceira.`,
+          `Seu prêmio de **${evento.titulo}** chegou. Saque por Pix (a partir de ${reais(SAQUE_MINIMO)}), pague o próximo ingresso ou resgate em uma loja parceira.`,
         ],
         aviso: `Saldo parado há ${DIAS_SAQUE_AUTOMATICO} dias é depositado automaticamente na sua chave Pix.`,
         botao: {
@@ -245,13 +287,18 @@ type Mov = {
     nome: string | null;
     telefone?: string | null;
   } | null;
-  parceiro: { id: string; nome: string; bonus_credito_pct: number } | null;
+  parceiro: {
+    id: string;
+    nome: string;
+    bonus_credito_pct: number;
+    foto_url: string | null;
+  } | null;
 };
 async function movimento(id: string) {
   const { data } = await criarClienteAdmin()
     .from("carteira_movimentos")
     .select(
-      "id, tipo, valor_centavos, credito_centavos, conta_loja, codigo_loja, chave_pix, automatico, descricao, jogador:jogadores(id, email, nick_endstep, nome), parceiro:parceiros(id, nome, bonus_credito_pct)",
+      "id, tipo, valor_centavos, credito_centavos, conta_loja, codigo_loja, chave_pix, automatico, descricao, jogador:jogadores(id, email, nick_endstep, nome), parceiro:parceiros(id, nome, bonus_credito_pct, foto_url)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -269,22 +316,22 @@ export const emailSaqueSolicitado = (movId: string) =>
       jogadorId: m.jogador.id,
       referencia: movId,
       assunto: m.automatico
-        ? `Saque automático de ${reais(valor)}`
+        ? `Saque automático de ${reais(valor)} a caminho`
         : `Saque de ${reais(valor)} solicitado`,
       conteudo: {
-        titulo: m.automatico
-          ? "Saque automático a caminho"
-          : "Saque solicitado",
+        imagem: imagemFixa(`saque-${movId}`),
+        selo: {
+          texto: m.automatico ? "Saque automático" : "Saque solicitado",
+          tom: "alerta",
+        },
+        titulo: "Seu saque está a caminho",
+        destaque: { valor: reais(valor), rotulo: "por Pix, em até 48 horas" },
         paragrafos: [
           m.automatico
-            ? `O saldo da sua Carteira ficou parado por ${DIAS_SAQUE_AUTOMATICO} dias, então vamos depositar **${reais(valor)}** na sua chave Pix.`
-            : `Recebemos o seu pedido de saque de **${reais(valor)}**.`,
-          "O Pix cai em até 48 horas. Avisamos por e-mail quando for feito.",
+            ? `O saldo da sua Carteira ficou parado por ${DIAS_SAQUE_AUTOMATICO} dias, então vamos depositar o valor na sua chave Pix. Avisamos quando o Pix for feito.`
+            : "Recebemos o seu pedido. Avisamos por e-mail quando o Pix for feito.",
         ],
-        detalhes: [
-          ["Valor", reais(valor)],
-          ["Chave Pix", mascararChave(m.chave_pix) || "—"],
-        ],
+        detalhes: [["Chave Pix", mascararChave(m.chave_pix) || "—"]],
         botao: {
           texto: "Abrir minha Carteira",
           url: `${SITE}/minha-area?aba=carteira`,
@@ -313,16 +360,17 @@ export const emailSaquePago = (movId: string) =>
       tipo: "saque_pago",
       jogadorId: m.jogador.id,
       referencia: movId,
-      assunto: `Pix de ${reais(valor)} enviado`,
+      assunto: `Pix de ${reais(valor)} enviado para você`,
       conteudo: {
-        titulo: "Pix enviado",
-        paragrafos: [
-          `Fizemos o Pix de **${reais(valor)}** para a sua chave. Confira no app do seu banco.`,
-        ],
-        detalhes: [
-          ["Valor", reais(valor)],
-          ["Chave Pix", mascararChave(m.chave_pix) || "—"],
-        ],
+        imagem: imagemFixa(`pix-${movId}`),
+        selo: { texto: "Pago" },
+        titulo: "Seu Pix foi enviado",
+        destaque: {
+          valor: reais(valor),
+          rotulo: "enviados para a sua chave Pix",
+        },
+        paragrafos: ["Confira no app do seu banco."],
+        detalhes: [["Chave Pix", mascararChave(m.chave_pix) || "—"]],
         botao: {
           texto: "Ver o histórico",
           url: `${SITE}/minha-area?aba=carteira`,
@@ -348,23 +396,34 @@ export const emailResgateSolicitado = (movId: string) =>
       tipo: "resgate_solicitado",
       jogadorId: m.jogador.id,
       referencia: movId,
-      assunto: `Seu crédito na ${m.parceiro.nome} foi solicitado`,
+      assunto: `Crédito de ${reais(credito)} na ${m.parceiro.nome} solicitado`,
       conteudo: {
-        titulo: "Crédito solicitado",
-        previa: `${reais(credito)} na ${m.parceiro.nome} em até ${PRAZO_LOJA}`,
+        imagem: m.parceiro.foto_url
+          ? { url: m.parceiro.foto_url }
+          : imagemFixa(`loja-${m.parceiro.id}`),
+        selo: { texto: `Em até ${PRAZO_LOJA}`, tom: "alerta" },
+        titulo: `Seu crédito na ${m.parceiro.nome} está a caminho`,
+        previa: `${reais(credito)} na sua conta da loja em até ${PRAZO_LOJA}.`,
+        destaque: {
+          valor: reais(credito),
+          rotulo: `de crédito na ${m.parceiro.nome}`,
+        },
         paragrafos: [
-          `Seu crédito na **${m.parceiro.nome}** foi solicitado. Em até **${PRAZO_LOJA}** ele estará disponível na sua conta da loja.`,
-          "Use o código abaixo se a loja pedir alguma confirmação na hora da compra.",
+          "O crédito aparece na sua conta da loja em até 2 dias úteis. Guarde o código: a loja pode pedir na hora da compra.",
         ],
         codigo: m.codigo_loja
           ? { rotulo: "Código do crédito", valor: m.codigo_loja }
           : undefined,
         detalhes: [
           ["Saiu da Carteira", reais(valor)],
-          [
-            "Crédito na loja",
-            `${reais(credito)}${credito > valor ? ` (+${m.parceiro.bonus_credito_pct}% de bônus)` : ""}`,
-          ],
+          ...(credito > valor
+            ? ([
+                [
+                  "Bônus da loja",
+                  `+${m.parceiro.bonus_credito_pct}% (${reais(credito - valor)})`,
+                ],
+              ] as [string, string][])
+            : []),
           [
             IDENTIFICACAO[cred?.identificacao ?? "email"]
               .replace(" da sua conta", "")
@@ -372,7 +431,7 @@ export const emailResgateSolicitado = (movId: string) =>
             m.conta_loja ?? "—",
           ],
         ],
-        aviso: `Para usar o crédito você precisa ter **cadastro e login na ${m.parceiro.nome}**${cred?.url_cadastro ? ` (${cred.url_cadastro})` : ""}. Depois de liberado, o crédito é da loja e segue as regras dela.`,
+        aviso: `Para usar o crédito você precisa ter **cadastro e login na ${m.parceiro.nome}**${cred?.url_cadastro ? ` (${cred.url_cadastro})` : ""}. Depois de liberado, ele segue as regras da loja.`,
         botao: {
           texto: "Ver minha Carteira",
           url: `${SITE}/minha-area?aba=carteira`,
@@ -409,13 +468,17 @@ export const emailResgateParaLoja = (movId: string) =>
       para: cred?.email_pedidos,
       tipo: "resgate_loja",
       referencia: movId,
-      assunto: `Liga Fim de Turno · gerar crédito de ${reais(credito)} (${m.codigo_loja ?? ""})`,
+      assunto: `Novo crédito para gerar: ${reais(credito)} · pedido ${m.codigo_loja ?? ""}`,
       conteudo: {
-        titulo: "Novo crédito para gerar",
+        selo: { texto: `Gerar em até ${PRAZO_LOJA}`, tom: "alerta" },
+        titulo: "Gere o crédito deste cliente",
+        destaque: {
+          valor: reais(credito),
+          rotulo: "de crédito para gerar na conta do cliente",
+        },
         previa: `Pix de ${reais(valor)} enviado. Gerar ${reais(credito)} para ${m.conta_loja ?? ""}`,
         paragrafos: [
-          `Olá, equipe da **${m.parceiro.nome}**! Enviamos um Pix de **${reais(valor)}** para a chave cadastrada da loja.`,
-          `Por favor, gere **${reais(credito)}** de crédito na conta do cliente abaixo em até **${PRAZO_LOJA}**.`,
+          `Olá, equipe da **${m.parceiro.nome}**! Enviamos um Pix de **${reais(valor)}** para a chave da loja. Por favor, gere o crédito na conta abaixo em até **${PRAZO_LOJA}**.`,
         ],
         detalhes: [
           ["Cliente", m.jogador.nome || nomeDe(m.jogador)],
@@ -427,11 +490,15 @@ export const emailResgateParaLoja = (movId: string) =>
             m.conta_loja ?? "—",
           ],
           ["E-mail do cliente", m.jogador.email ?? "—"],
-          ["Pix enviado", reais(valor)],
-          [
-            "Crédito a gerar",
-            `${reais(credito)}${credito > valor ? ` (inclui ${m.parceiro.bonus_credito_pct}% de bônus da parceria)` : ""}`,
-          ],
+          ["Pix enviado à loja", reais(valor)],
+          ...(credito > valor
+            ? ([
+                [
+                  "Bônus da parceria",
+                  `+${m.parceiro.bonus_credito_pct}% (${reais(credito - valor)})`,
+                ],
+              ] as [string, string][])
+            : []),
         ],
         codigo: m.codigo_loja
           ? { rotulo: "Código do pedido", valor: m.codigo_loja }
@@ -453,8 +520,9 @@ async function avisarOrganizacao(
   await enviarEmail({
     para,
     tipo: "organizacao",
-    assunto,
+    assunto: `Painel · ${assunto}`,
     conteudo: {
+      selo: { texto: "Ação pendente", tom: "alerta" },
       titulo,
       paragrafos: [texto],
       detalhes,
@@ -470,6 +538,8 @@ export const emailTeste = (para: string) =>
     tipo: "teste",
     assunto: "Teste de e-mail · Liga Fim de Turno",
     conteudo: {
+      imagem: imagemFixa("teste"),
+      selo: { texto: "Teste" },
       titulo: "Tudo certo por aqui",
       paragrafos: [
         "Se você recebeu este e-mail, o envio do portal está funcionando.",
