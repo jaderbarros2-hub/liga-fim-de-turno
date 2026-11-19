@@ -44,6 +44,19 @@ export default async function Emails({
     .order("criado_em", { ascending: false })
     .limit(100);
   const configurado = Boolean(process.env.RESEND_API_KEY);
+  // Conferência da chave sem revelá-la: só o início (o mesmo que o Resend mostra na lista) e o tamanho
+  const bruta = process.env.RESEND_API_KEY ?? "";
+  const limpa = bruta.trim().replace(/^["']|["']$/g, "");
+  const problemasChave = configurado
+    ? [
+        !limpa.startsWith("re_") &&
+          "não começa com re_ (o Resend sempre começa assim)",
+        /\s/.test(limpa) && "tem espaço ou quebra de linha no meio",
+        /…|\.\.\./.test(limpa) &&
+          "parece cortada (tem “…”): foi copiada da lista e não do botão de copiar",
+        limpa.length < 30 && `é curta demais (${limpa.length} caracteres)`,
+      ].filter(Boolean)
+    : [];
   const remetente =
     process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
 
@@ -68,6 +81,19 @@ export default async function Emails({
                 : "Simulado (falta RESEND_API_KEY)"}
             </dd>
           </div>
+          {configurado && (
+            <div>
+              <dt className="text-cinza">Chave</dt>
+              <dd className="font-mono text-texto2">
+                {limpa.slice(0, 7)}… · {limpa.length} caracteres
+              </dd>
+              {problemasChave.length > 0 && (
+                <dd className="mt-1 text-xs text-erro">
+                  A chave {problemasChave.join("; ")}.
+                </dd>
+              )}
+            </div>
+          )}
           <div>
             <dt className="text-cinza">Remetente</dt>
             <dd className="font-mono text-texto2">{remetente}</dd>

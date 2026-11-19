@@ -10,7 +10,7 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
 export const SITE = (
   process.env.NEXT_PUBLIC_SITE_URL || "https://liga-fim-de-turno.vercel.app"
 ).replace(/\/$/, "");
-export const EMAIL_CONTATO = process.env.NEXT_PUBLIC_EMAIL_CONTATO || "";
+export const EMAIL_CONTATO = process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO || "";
 const REMETENTE =
   process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
 
