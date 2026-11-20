@@ -19,7 +19,7 @@ export async function Cabecalho() {
 
   const itensFormatos: ItemMenu[] = formatos.map((f) => ({
     href: `/ligas/${f.slug}`,
-    rotulo: f.nome.replace(/^Liga /, ""),
+    rotulo: f.slug === "limited" ? "Limitado" : f.nome.replace(/^Liga /, ""),
     descricao: f.descricao ?? undefined,
   }));
 
@@ -36,8 +36,8 @@ export async function Cabecalho() {
     },
     {
       href: "/resultados",
-      rotulo: "Resultados",
-      descricao: "Classificação de cada etapa",
+      rotulo: "Últimos eventos",
+      descricao: "Resultado e classificação de cada etapa",
     },
   ];
 
@@ -72,9 +72,6 @@ export async function Cabecalho() {
           aria-label="Principal"
           className="order-last flex w-full items-center justify-between text-[13px] font-semibold uppercase sm:justify-start sm:gap-6 md:order-none md:mr-auto md:w-auto md:text-sm"
         >
-          <Link href="/eventos" className={linkMenu}>
-            Eventos
-          </Link>
           <MenuSuspenso
             gatilho="Formatos"
             itens={itensFormatos}
@@ -86,7 +83,10 @@ export async function Cabecalho() {
             classeGatilho={`${linkMenu} uppercase`}
           />
           <Link href="/blog" className={linkMenu}>
-            Blog
+            Artigos
+          </Link>
+          <Link href="/eventos" className={linkMenu}>
+            Agenda
           </Link>
           <Link href="/sobre" className={linkMenu}>
             Sobre

@@ -48,7 +48,7 @@ export function LequeBoosters(props: { quantidade: number; arte: string; foco?: 
   const n = Math.min(Math.max(props.quantidade, 1), 6);
   const largura = n > 3 ? 120 : 150;
   return (
-    <div className="leque flex justify-center py-6" aria-label={`${n} boosters de ${props.nome}`}>
+    <div className="leque flex justify-center pb-6 pt-12" aria-label={`${n} boosters de ${props.nome}`}>
       {Array.from({ length: n }, (_, i) => {
         const meio = i - (n - 1) / 2;
         const fechado = `rotate(${meio * 7}deg) translateY(${Math.abs(meio) * 8}px)`;

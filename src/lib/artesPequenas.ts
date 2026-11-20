@@ -222,3 +222,24 @@ export async function capaPequena(evento: Parameters<typeof capaDoEvento>[0]) {
     artista: a.artista,
   };
 }
+
+/** N ilustrações diferentes, sempre as mesmas para a mesma chave. */
+export async function pequenasFixas(
+  grupo: GrupoArte,
+  chave: string,
+  n: number,
+) {
+  const lista = await artesPequenas(grupo);
+  const inicio = hash(chave) % lista.length;
+  const passo = Math.max(1, Math.floor(lista.length / n));
+  const saida: ArteBanco[] = [];
+  for (
+    let i = 0;
+    saida.length < Math.min(n, lista.length) && i < lista.length * 2;
+    i++
+  ) {
+    const a = lista[(inicio + i * passo) % lista.length];
+    if (!saida.includes(a)) saida.push(a);
+  }
+  return saida;
+}

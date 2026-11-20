@@ -5,6 +5,7 @@ import { ehConstruido, NOME_LIGA } from "@/lib/formatos";
 import {
   cronograma,
   duracaoTexto,
+  MINUTOS_RODADA,
   oQueLevar,
   perguntasPadrao,
 } from "@/lib/eventoInfo";
@@ -16,6 +17,9 @@ import { EtiquetaLiga } from "@/components/Eventos";
 import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { BannerPatrocinado } from "@/components/Parceiros";
 import { LequeBoosters } from "@/components/Booster";
+import { LequeCartas, SeloLocal } from "@/components/Deck";
+import { pequenasFixas } from "@/lib/artesPequenas";
+import { grupoDoFormato } from "@/lib/artes";
 import { GaleriaCartas, type CartaGaleria } from "@/components/GaleriaCartas";
 import { capaDoEvento } from "@/lib/artes";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -74,6 +78,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const colecao = evento.colecao_info;
   const cubo = evento.cubo_info;
   const temVitrine = !pauper && (colecao || cubo);
+  // Construídos: quatro ilustrações do formato em leque, no lugar dos boosters
+  const cartasDeck = pauper
+    ? await pequenasFixas(grupoDoFormato(evento.formato), evento.id, 4)
+    : [];
   const campeao = resultados[0];
   const { trimestre } = periodo(evento.inicio);
 
@@ -430,6 +438,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
           {aba === "detalhes" && temVitrine && (
             <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
               <div className="relative isolate bg-fundo2 px-4">
+                <SeloLocal presencial={presencial} loja={evento.loja} />
                 <LequeBoosters
                   quantidade={
                     evento.pacotes ?? (evento.formato === "selado" ? 6 : 3)
@@ -527,6 +536,60 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                       Abrir no Cube Cobra ↗
                     </a>
                   )}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {aba === "detalhes" && pauper && cartasDeck.length > 0 && (
+            <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
+              <div className="relative isolate bg-fundo2 px-4">
+                <SeloLocal presencial={presencial} loja={evento.loja} />
+                <LequeCartas
+                  artes={cartasDeck}
+                  estilo={
+                    evento.formato === "premodern" ? "classica" : "moderna"
+                  }
+                />
+              </div>
+              <div className="flex flex-col gap-3 p-6 md:pl-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+                  Formato construído
+                </span>
+                <h2 className="titulo text-4xl">
+                  {NOMES_FORMATO[evento.formato]}
+                </h2>
+                <dl className="grid grid-cols-2 gap-3 text-sm">
+                  <Dado
+                    rotulo="Cartas permitidas"
+                    valor={
+                      evento.formato === "premodern"
+                        ? "Fourth Edition a Scourge"
+                        : "Só cartas comuns"
+                    }
+                  />
+                  <Dado rotulo="Deck" valor="60 cartas + 15 no sideboard" />
+                  <Dado
+                    rotulo="Rodadas"
+                    valor={`3 ou 4 suíças, ~${MINUTOS_RODADA} min`}
+                  />
+                  <Dado rotulo="Lista" valor="Enviada no ingresso" />
+                </dl>
+                <div className="flex flex-wrap gap-4 pt-1 text-sm font-semibold">
+                  <Link href={`/ligas/${evento.formato}`}>
+                    Sobre o formato →
+                  </Link>
+                  <a
+                    href={
+                      evento.formato === "premodern"
+                        ? "https://premodernmagic.com/"
+                        : "https://magic.wizards.com/en/banned-restricted-list"
+                    }
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Cartas banidas ↗
+                  </a>
                 </div>
               </div>
             </section>
