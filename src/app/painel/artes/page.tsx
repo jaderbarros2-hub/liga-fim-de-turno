@@ -8,17 +8,17 @@ const GRUPOS: { v: GrupoArte; r: string; dica: string }[] = [
   {
     v: "pauper",
     r: "Pauper",
-    dica: "Cartas legais no Pauper, das mais jogadas para as menos.",
+    dica: "As 50 cartas mais jogadas no Pauper (MTGGoldfish), uma ilustração de cada.",
   },
   {
     v: "premodern",
     r: "Premodern",
-    dica: "Cartas legais no Premodern. Marque abaixo para ficar só com as ilustrações da época (até 2003).",
+    dica: "As 50 cartas mais jogadas no Premodern (MTGGoldfish), uma ilustração de cada. Marque abaixo para ficar só com as artes da época (até 2003).",
   },
   {
     v: "limited",
     r: "Limited",
-    dica: "Raras, míticas e incomuns das últimas coleções. Deixe as coleções em branco para usar as 4 mais recentes.",
+    dica: "Raras e míticas das últimas coleções, uma ilustração de cada. Deixe as coleções em branco para usar as 4 mais recentes.",
   },
   {
     v: "geral",
@@ -101,7 +101,7 @@ export default async function Artes({
                   type="number"
                   min={10}
                   max={500}
-                  defaultValue={150}
+                  defaultValue={50}
                   className={`${campo} w-36`}
                 />
               </label>
