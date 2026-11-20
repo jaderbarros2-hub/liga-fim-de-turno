@@ -1,7 +1,7 @@
 /**
- * Cartas desenhadas pela liga para representar o deck nos eventos construídos
- * (o equivalente ao leque de boosters do Limited). Não reproduz a moldura oficial:
- * só uma silhueta de carta com a ilustração, o nome e o crédito do artista.
+ * Leque de cartas nos eventos construídos (o equivalente aos boosters do Limited).
+ * Mostra a carta real do Scryfall, inteira e sem alterações (moldura, texto e crédito).
+ * Se a imagem da carta não estiver disponível, usa uma carta desenhada com a ilustração.
  */
 import type { ArteBanco } from "@/lib/artes";
 import { srcArte } from "@/lib/artes";
@@ -85,7 +85,7 @@ export function LequeCartas({
   estilo: Estilo;
 }) {
   const n = artes.length;
-  const largura = 140;
+  const largura = 160;
   return (
     <div
       className="leque flex justify-center pb-8 pt-14"
@@ -105,7 +105,19 @@ export function LequeCartas({
               zIndex: 10 - Math.abs(Math.round(meio)),
             }}
           >
-            <CartaDesenhada arte={a} estilo={estilo} largura={largura} />
+            {a.cartaUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={a.cartaUrl}
+                alt={a.carta ?? "Carta"}
+                loading="lazy"
+                width={largura}
+                style={{ width: largura, aspectRatio: "63 / 88" }}
+                className="rounded-[4.75%/3.5%] shadow-2xl shadow-preto"
+              />
+            ) : (
+              <CartaDesenhada arte={a} estilo={estilo} largura={largura} />
+            )}
           </div>
         );
       })}

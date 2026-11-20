@@ -20,24 +20,20 @@ export async function Cabecalho() {
   const itensFormatos: ItemMenu[] = formatos.map((f) => ({
     href: `/ligas/${f.slug}`,
     rotulo: f.slug === "limited" ? "Limitado" : f.nome.replace(/^Liga /, ""),
-    descricao: f.descricao ?? undefined,
   }));
 
   const itensCircuito: ItemMenu[] = [
     {
       href: "/circuito",
       rotulo: "Como funciona",
-      descricao: "Etapas, finais do trimestre e Player of the Year",
     },
     {
       href: "/ranking",
       rotulo: "Ranking",
-      descricao: "Pontos da temporada e corrida ao top 8",
     },
     {
       href: "/resultados",
       rotulo: "Últimos eventos",
-      descricao: "Resultado e classificação de cada etapa",
     },
   ];
 
@@ -45,7 +41,6 @@ export async function Cabecalho() {
     {
       href: "/minha-area",
       rotulo: "Minha área",
-      descricao: "Inscrições e próximos passos",
     },
     { href: "/minha-area?aba=decks", rotulo: "Meus decks" },
     { href: "/minha-area?aba=carteira", rotulo: "Carteira" },
@@ -53,7 +48,6 @@ export async function Cabecalho() {
     {
       href: "/apoie",
       rotulo: "Seja apoiador",
-      descricao: "Apoie a liga e ganhe brindes",
       separar: true,
     },
     ...(equipe

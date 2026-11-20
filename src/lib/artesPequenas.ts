@@ -31,11 +31,11 @@ type CartaScryfall = {
   name: string;
   artist?: string;
   set_name: string;
-  image_uris?: { art_crop?: string };
+  image_uris?: { art_crop?: string; normal?: string };
   card_faces?: {
     name: string;
     artist?: string;
-    image_uris?: { art_crop?: string };
+    image_uris?: { art_crop?: string; normal?: string };
   }[];
 };
 
@@ -77,6 +77,7 @@ async function ultimasColecoes(n = 3) {
 function paraArte(c: CartaScryfall, grupo: GrupoArte): ArteBanco | null {
   const face = c.card_faces?.[0];
   const url = c.image_uris?.art_crop ?? face?.image_uris?.art_crop;
+  const cartaUrl = c.image_uris?.normal ?? face?.image_uris?.normal;
   const artista = c.artist ?? face?.artist;
   if (!url || !artista) return null;
   const carta = face?.name ?? c.name;
@@ -90,6 +91,7 @@ function paraArte(c: CartaScryfall, grupo: GrupoArte): ArteBanco | null {
     altura: 457,
     foco: "50% 40%",
     url,
+    cartaUrl,
   };
 }
 

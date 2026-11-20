@@ -136,6 +136,8 @@ export type ArteBanco = {
   foco?: string;
   /** Imagem externa (ilustração do Scryfall, para espaços pequenos). Sem isso, usa /artes/<arquivo>.webp. */
   url?: string;
+  /** Imagem da carta inteira (Scryfall), quando disponível. */
+  cartaUrl?: string;
 };
 
 export const BANCO: ArteBanco[] = bancoJson as ArteBanco[];

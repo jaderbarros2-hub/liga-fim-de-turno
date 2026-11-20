@@ -61,7 +61,7 @@ export function MenuSuspenso({
       {aberto && (
         <div
           id={id}
-          className={`absolute top-full z-50 mt-2 min-w-56 overflow-hidden rounded-lg bg-grafite py-1.5 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)] ring-1 ring-borda-forte ${
+          className={`absolute top-full z-50 mt-2 min-w-48 overflow-hidden rounded-lg bg-grafite py-1.5 shadow-[0_18px_40px_-12px_rgb(0_0_0/0.8)] ring-1 ring-borda-forte ${
             alinhar === "direita" ? "right-0" : "left-0"
           }`}
         >
