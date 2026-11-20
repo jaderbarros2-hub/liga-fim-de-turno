@@ -94,12 +94,12 @@ export function LequeCartas({
       {artes.map((a, i) => {
         const meio = i - (n - 1) / 2;
         const fechado = `rotate(${meio * 8}deg) translateY(${Math.abs(meio) * 10}px)`;
-        const aberto = `rotate(${meio * 11}deg) translateY(${Math.abs(meio) * 14 - 8}px)`;
+        const aberto = `translateX(${meio * 22}px) rotate(${meio * 12}deg) translateY(${Math.abs(meio) * 14 - 14}px)`;
         return (
           <div
             key={a.arquivo}
             style={{
-              transform: fechado,
+              ["--fecha" as string]: fechado,
               ["--abre" as string]: aberto,
               marginLeft: i ? -largura * 0.42 : 0,
               zIndex: 10 - Math.abs(Math.round(meio)),

@@ -291,9 +291,17 @@
     transparent 55%
   );
 }
+/* Posição de cada carta/booster vem de variáveis (inline style não deixaria o :hover agir) */
+.leque > * {
+  transform: var(--fecha);
+}
 @media (prefers-reduced-motion: no-preference) {
   .leque > * {
-    transition: transform 0.35s ease;
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  /* Leque flutua de leve mesmo parado */
+  .leque {
+    animation: leque-flutua 5s ease-in-out infinite alternate;
   }
   .leque:hover > * {
     transform: var(--abre);
@@ -350,5 +358,14 @@
   }
   to {
     opacity: 0.42;
+  }
+}
+
+@keyframes leque-flutua {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
   }
 }

@@ -52,11 +52,11 @@ export function LequeBoosters(props: { quantidade: number; arte: string; foco?: 
       {Array.from({ length: n }, (_, i) => {
         const meio = i - (n - 1) / 2;
         const fechado = `rotate(${meio * 7}deg) translateY(${Math.abs(meio) * 8}px)`;
-        const aberto = `rotate(${meio * 10}deg) translateY(${Math.abs(meio) * 12 - 8}px)`;
+        const aberto = `translateX(${meio * 18}px) rotate(${meio * 11}deg) translateY(${Math.abs(meio) * 12 - 12}px)`;
         return (
           <div
             key={i}
-            style={{ transform: fechado, ["--abre" as string]: aberto, marginLeft: i ? -largura * 0.35 : 0, zIndex: 10 - Math.abs(Math.round(meio)) }}
+            style={{ ["--fecha" as string]: fechado, ["--abre" as string]: aberto, marginLeft: i ? -largura * 0.35 : 0, zIndex: 10 - Math.abs(Math.round(meio)) }}
           >
             {/* Cada pacote mostra um trecho diferente da arte, como uma variação de capa */}
             <Booster {...props} foco={n > 1 ? `${15 + (i * 70) / (n - 1)}% 30%` : props.foco} largura={largura} />
