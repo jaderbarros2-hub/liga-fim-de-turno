@@ -1,7 +1,13 @@
+import { sortearPequenas } from "@/lib/artesPequenas";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
-import { creditoArte, sortearArtes, srcArte } from "@/lib/artes";
+import {
+  creditoArte,
+  sortearArtes,
+  srcArte,
+  type ArteBanco,
+} from "@/lib/artes";
 
 export const dynamic = "force-dynamic";
 
@@ -29,14 +35,18 @@ const DIFERENCIAIS = [
   },
 ];
 
-export default function Sobre() {
+export default async function Sobre() {
   const [arte] = sortearArtes("geral", 1, true);
-  const artesFormato: Record<string, ReturnType<typeof sortearArtes>[number]> =
-    {
-      pauper: sortearArtes("pauper", 1)[0],
-      premodern: sortearArtes("geral", 1)[0],
-      limited: sortearArtes("limited", 1)[0],
-    };
+  const [[pauper], [premodern], [limited]] = await Promise.all([
+    sortearPequenas("pauper", 1),
+    sortearPequenas("premodern", 1),
+    sortearPequenas("limited", 1),
+  ]);
+  const artesFormato: Record<string, ArteBanco> = {
+    pauper,
+    premodern,
+    limited,
+  };
   return (
     <>
       <section className="relative isolate overflow-hidden border-b border-borda">

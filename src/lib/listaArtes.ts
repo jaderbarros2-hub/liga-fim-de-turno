@@ -69,7 +69,7 @@ export async function ultimasColecoes(quantidade = 4): Promise<string[]> {
 }
 
 /** Impressões que não servem: Secret Lair, promos, Universes Beyond, digitais, coleções de brincadeira. */
-const SEM_ESPECIAIS =
+export const SEM_ESPECIAIS =
   "-t:basic -is:digital -is:universesbeyond -is:promo -st:box -st:promo -st:funny -st:memorabilia -st:masterpiece -st:token game:paper" +
   // The List, Mystery Booster e Jumpstart: reimpressões com numeração própria que o MTGPics não acha.
   " -e:plst -e:mb1 -e:mb2 -e:fmb1 -e:j22 -e:j25 -e:jmp" +

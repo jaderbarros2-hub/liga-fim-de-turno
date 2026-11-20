@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Etiqueta } from "@/components/Botao";
-import { capaDoEvento } from "@/lib/artes";
+import { capaPequena } from "@/lib/artesPequenas";
 import type { Evento } from "@/lib/dados";
 import { dataCurta, hora, NOMES_FORMATO } from "@/lib/formato";
 import { ehConstruido } from "@/lib/formatos";
@@ -16,8 +16,8 @@ export function EtiquetaLiga({ evento }: { evento: Evento }) {
 }
 
 /** Cartão de evento com a arte da liga no topo e a etiqueta encostada na imagem. */
-export function CartaoEvento({ evento }: { evento: Evento }) {
-  const capa = capaDoEvento(evento);
+export async function CartaoEvento({ evento }: { evento: Evento }) {
+  const capa = await capaPequena(evento);
   return (
     <Link
       href={`/eventos/${evento.slug}`}

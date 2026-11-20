@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BotaoLink } from "@/components/Botao";
 import { HeroRotativo, type Destaque } from "@/components/HeroRotativo";
 import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
+import { sortearPequenas } from "@/lib/artesPequenas";
 import { BannerPatrocinado, FaixaParceiros } from "@/components/Parceiros";
 import {
   CARTAS_FAIXA,
@@ -84,14 +85,12 @@ export default async function Inicio() {
   const [a1, a2, a3] = sortearArtes("geral", 3, true).map((a, i, arr) =>
     a.arquivo === aEvento.arquivo ? arr[(i + 1) % arr.length] : a,
   );
-  const [artePauper] = sortearArtes("pauper", 1);
-  const [arteLimited] = sortearArtes("limited", 1).map((a) =>
-    a.arquivo === artePauper.arquivo ? sortearArtes("geral", 1)[0] : a,
-  );
-  const [artePremodern] = sortearArtes("geral", 3).filter(
-    (a) =>
-      a.arquivo !== artePauper.arquivo && a.arquivo !== arteLimited.arquivo,
-  );
+  // Cartões das ligas: ilustrações do Scryfall (espaço pequeno)
+  const [[artePauper], [artePremodern], [arteLimited]] = await Promise.all([
+    sortearPequenas("pauper", 1),
+    sortearPequenas("premodern", 1),
+    sortearPequenas("limited", 1),
+  ]);
   const img = (a: ArteBanco) => ({
     imagem: srcArte(a),
     credito: creditoArte(a),
@@ -226,7 +225,7 @@ export default async function Inicio() {
           slug="premodern"
           nome="Liga Premodern"
           texto="O Magic clássico: cartas de Fourth Edition a Scourge, decks de 60 cartas e o metagame de 1995 a 2003."
-          arte={artePremodern ?? artePauper}
+          arte={artePremodern}
         />
         <Liga
           slug="limited"

@@ -56,8 +56,13 @@ foreach ($i in $itens) {
     $ext = [IO.Path]::GetExtension(($img -split '\?')[0])
     $nome = Limpar "$carta ($artista) [$colecao]$ext"
     $destino = Join-Path $pasta $nome
-    if (-not (Test-Path $destino)) { Invoke-WebRequest -Uri $img -Headers $ua -OutFile $destino -UseBasicParsing -TimeoutSec 60 }
-    $kb = [math]::Round((Get-Item $destino).Length / 1KB)
+    # Baixa com nome provisório e renomeia: o PowerShell trata [ ] no caminho como curinga
+    if (-not (Test-Path -LiteralPath $destino)) {
+      $tmp = Join-Path $pasta "baixando.tmp"
+      Invoke-WebRequest -Uri $img -Headers $ua -OutFile $tmp -UseBasicParsing -TimeoutSec 60
+      Move-Item -LiteralPath $tmp -Destination $destino -Force
+    }
+    $kb = [math]::Round((Get-Item -LiteralPath $destino).Length / 1KB)
     $relatorio += "OK  $nome  ($kb KB)  $pagina"
     Write-Host "  ok $nome ($kb KB)" -ForegroundColor Green
     $ok++
