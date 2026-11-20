@@ -84,9 +84,10 @@ def versao_email(im, foco):
 
 
 def imagens(pasta):
-    for raiz, _, arquivos in os.walk(pasta):
+    for raiz, dirs, arquivos in os.walk(pasta):
+        dirs[:] = [d for d in dirs if not d.startswith("_")]  # _descartadas etc.
         for f in sorted(arquivos):
-            if re.search(r"\.(jpe?g|png|webp)$", f, re.I) and not f.startswith("prancha-"):
+            if re.search(r"\.(jpe?g|png|webp)$", f, re.I) and not f.startswith(("prancha-", "_")):
                 yield os.path.join(raiz, f)
 
 
@@ -154,6 +155,9 @@ def main():
                 im = ImageOps.exif_transpose(im).convert("RGB")
                 if im.width < minimo:
                     pequenas.append(f"{os.path.basename(caminho)} ({im.width}px)")
+                    continue
+                if im.width < im.height * 1.15:  # banners são horizontais
+                    pequenas.append(f"{os.path.basename(caminho)} (vertical {im.width}x{im.height})")
                     continue
                 escala = min(1920 / im.width, 1400 / im.height, 1)
                 if escala < 1:

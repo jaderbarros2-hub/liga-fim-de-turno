@@ -197,5 +197,65 @@
   "largura": 1024,
   "altura": 768,
   "foco": "45% 35%"
+ },
+ {
+  "arquivo": "annul-kaldheim",
+  "carta": "Annul",
+  "artista": "Caio Monteiro",
+  "grupo": "pauper",
+  "largura": 1920,
+  "altura": 1333,
+  "foco": "50% 35%",
+  "colecao": "Kaldheim"
+ },
+ {
+  "arquivo": "baleful-strix-secret-lair",
+  "carta": "Baleful Strix",
+  "artista": "Allen Douglas",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 902,
+  "foco": "45% 25%",
+  "colecao": "Secret Lair"
+ },
+ {
+  "arquivo": "blue-elemental-blast-signature-spellbook-jace",
+  "carta": "Blue Elemental Blast",
+  "artista": "Slawomir Maniak",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 881,
+  "foco": "50% 35%",
+  "colecao": "Signature Spellbook Jace"
+ },
+ {
+  "arquivo": "dispel-battle-for-zendikar",
+  "carta": "Dispel",
+  "artista": "Chase Stone",
+  "grupo": "pauper",
+  "largura": 1280,
+  "altura": 935,
+  "foco": "50% 35%",
+  "colecao": "Battle for Zendikar"
+ },
+ {
+  "arquivo": "ponder-modern-horizons",
+  "carta": "Ponder",
+  "artista": "Tommy Arnold",
+  "grupo": "pauper",
+  "largura": 1200,
+  "altura": 881,
+  "foco": "50% 30%",
+  "colecao": "Modern Horizons"
+ },
+ {
+  "arquivo": "voldaren-epicure-innistrad-crimson-vow",
+  "carta": "Voldaren Epicure",
+  "artista": "Vi Szendrey",
+  "grupo": "pauper",
+  "largura": 1000,
+  "altura": 847,
+  "foco": "50% 10%",
+  "colecao": "Innistrad Crimson Vow"
  }
 ]
