@@ -154,7 +154,8 @@ const MINIMO_POR_GRUPO = 8;
 function pool(grupo: GrupoArte, minLargura = 0) {
   const filtrar = (largura: number) => {
     const base = BANCO.filter((a) => a.largura >= largura);
-    if (grupo === "geral") return base;
+    // Geral (banners) e Limited (formato variado) usam o banco todo
+    if (grupo === "geral" || grupo === "limited") return base;
     const proprias = base.filter((a) => a.grupo === grupo);
     if (grupo === "pauper" || proprias.length >= MINIMO_POR_GRUPO)
       return proprias;

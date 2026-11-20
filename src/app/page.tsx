@@ -214,25 +214,41 @@ export default async function Inicio() {
       </section>
 
       {/* As ligas, cada uma com sua arte */}
-      <section className="mx-auto grid max-w-6xl gap-5 px-6 pb-16 md:grid-cols-3">
-        <Liga
-          slug="pauper"
-          nome="Liga Pauper"
-          texto="Só cartas comuns, decks acessíveis e jogo competitivo toda semana. Rodadas suíças e prêmio por classificação."
-          arte={artePauper}
-        />
-        <Liga
-          slug="premodern"
-          nome="Liga Premodern"
-          texto="O Magic clássico: cartas de Fourth Edition a Scourge, decks de 60 cartas e o metagame de 1995 a 2003."
-          arte={artePremodern}
-        />
-        <Liga
-          slug="limited"
-          nome="Liga Limited"
-          texto="Draft, selado e cubo em pods de até 8 jogadores, com prêmio por campanha."
-          arte={arteLimited}
-        />
+      <section className="border-t border-borda">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="titulo text-5xl">As ligas</h2>
+              <p className="mt-1 text-texto2">
+                Três formatos, uma temporada. Escolha a sua e acompanhe etapas,
+                ranking e regras.
+              </p>
+            </div>
+            <Link href="/circuito" className="text-sm font-semibold">
+              Ver o circuito →
+            </Link>
+          </div>
+          <div className="grid gap-5 md:grid-cols-3">
+            <Liga
+              slug="pauper"
+              nome="Liga Pauper"
+              texto="Só cartas comuns, decks acessíveis e jogo competitivo toda semana. Rodadas suíças e prêmio por classificação."
+              arte={artePauper}
+            />
+            <Liga
+              slug="premodern"
+              nome="Liga Premodern"
+              texto="O Magic clássico: cartas de Fourth Edition a Scourge, decks de 60 cartas e o metagame de 1995 a 2003."
+              arte={artePremodern}
+            />
+            <Liga
+              slug="limited"
+              nome="Liga Limited"
+              texto="Draft, selado e cubo em pods de até 8 jogadores, com prêmio por campanha."
+              arte={arteLimited}
+            />
+          </div>
+        </div>
       </section>
 
       <div className="mx-auto max-w-6xl px-6 pb-16">
@@ -352,25 +368,34 @@ function Liga({
   return (
     <Link
       href={`/ligas/${slug}`}
-      className="group relative isolate flex min-h-[300px] flex-col justify-end overflow-hidden rounded-lg p-8 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
+      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:ring-ciano"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={srcArte(arte)}
-        alt=""
-        loading="lazy"
-        style={{ objectPosition: arte.foco }}
-        className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/70 to-preto/10" />
-      <span className="absolute right-4 top-3 text-[11px] text-white/60">
-        {creditoArte(arte)}
-      </span>
-      <h2 className="titulo text-5xl">{nome}</h2>
-      <p className="mt-2 max-w-md text-texto2">{texto}</p>
-      <span className="mt-4 text-sm font-semibold text-ciano">
-        Ver etapas e regras →
-      </span>
+      <div className="relative aspect-[16/9] overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={srcArte(arte)}
+          alt=""
+          loading="lazy"
+          style={{ objectPosition: arte.foco }}
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-grafite via-grafite/20 to-transparent" />
+        <span
+          className="absolute right-3 top-2 max-w-[70%] truncate text-[10px] text-white/60"
+          title={creditoArte(arte)}
+        >
+          {arte.artista}
+        </span>
+        <h3 className="titulo absolute bottom-3 left-5 text-4xl drop-shadow">
+          {nome}
+        </h3>
+      </div>
+      <div className="flex flex-1 flex-col gap-3 px-5 pb-5 pt-3">
+        <p className="line-clamp-3 text-sm text-texto2">{texto}</p>
+        <span className="mt-auto text-sm font-semibold text-ciano">
+          Ver etapas e regras →
+        </span>
+      </div>
     </Link>
   );
 }

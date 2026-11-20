@@ -17,6 +17,7 @@ import {
   type GrupoArte,
 } from "./artes";
 import { SEM_ESPECIAIS } from "./listaArtes";
+import { criarClienteAdmin } from "./supabase/admin";
 import { STAPLES } from "./staples";
 
 const API = "https://api.scryfall.com";
@@ -104,6 +105,28 @@ async function buscar(q: string, ordem: string, preferir = "newest") {
   return j?.data ?? [];
 }
 
+/** 40 cartas variadas dos cubos cadastrados (Cube Cobra), sem terrenos básicos. */
+async function cartasDosCubos(): Promise<string[]> {
+  try {
+    const { data } = await criarClienteAdmin()
+      .from("cubos")
+      .select("cartas")
+      .limit(5);
+    const nomes = (data ?? [])
+      .flatMap((c) => (c.cartas ?? []) as { nome?: string; tipo?: string }[])
+      .filter(
+        (c) => c.nome && c.nome !== "?" && !/Basic Land/i.test(c.tipo ?? ""),
+      )
+      .map((c) => c.nome!.split(" // ")[0]);
+    const unicos = [...new Set(nomes)];
+    // Amostra espalhada pela lista (não só as primeiras cartas de uma cor)
+    const passo = Math.max(1, Math.floor(unicos.length / 40));
+    return unicos.filter((_, i) => i % passo === 0).slice(0, 40);
+  } catch {
+    return [];
+  }
+}
+
 const aspas = (nome: string) => `!"${nome.replace(/"/g, "")}"`;
 
 /** Lista de ilustrações pequenas do grupo (em cache). */
@@ -132,12 +155,30 @@ export const artesPequenas = cache(
           validos.has((c.card_faces?.[0]?.name ?? c.name).toLowerCase()),
         );
     } else {
-      const colecoes = await ultimasColecoes();
-      if (colecoes.length) {
-        cartas = await buscar(
-          `(${colecoes.map((c) => `e:${c}`).join(" or ")}) (r:rare or r:mythic) ${SEM_ESPECIAIS}`,
-          "rarity",
-        );
+      // Limited é variado: raras dos drafts recentes + cartas dos cubos cadastrados
+      const [colecoes, nomesCubo] = await Promise.all([
+        ultimasColecoes(),
+        cartasDosCubos(),
+      ]);
+      const [recentes, ...doCubo] = await Promise.all([
+        colecoes.length
+          ? buscar(
+              `(${colecoes.map((c) => `e:${c}`).join(" or ")}) (r:rare or r:mythic) ${SEM_ESPECIAIS}`,
+              "rarity",
+            )
+          : Promise.resolve([]),
+        ...[nomesCubo.slice(0, 20), nomesCubo.slice(20, 40)]
+          .filter((p) => p.length)
+          .map((p) =>
+            buscar(`(${p.map(aspas).join(" or ")}) ${SEM_ESPECIAIS}`, "name"),
+          ),
+      ]);
+      // Intercala para não ficar tudo de uma fonte só
+      const cubo = doCubo.flat();
+      const n = Math.max(recentes.length, cubo.length);
+      for (let i = 0; i < n; i++) {
+        if (cubo[i]) cartas.push(cubo[i]);
+        if (recentes[i]) cartas.push(recentes[i]);
       }
     }
     const lista = cartas
