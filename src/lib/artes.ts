@@ -197,13 +197,13 @@ export function arteDoEvento(evento: {
   return lista[hash(evento.id) % lista.length];
 }
 
-/** Sorteio a cada visita. `grande` exige imagens largas o bastante para o topo da página. */
+/** Sorteio a cada visita. `grande` exige imagens largas (1700 px ou mais) o bastante para o topo da página. */
 export function sortearArtes(
   grupo: GrupoArte,
   quantidade: number,
   grande = false,
 ): ArteBanco[] {
-  const lista = [...pool(grupo, grande ? 1800 : 0)];
+  const lista = [...pool(grupo, grande ? 1700 : 0)];
   for (let i = lista.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [lista[i], lista[j]] = [lista[j], lista[i]];

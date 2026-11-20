@@ -257,5 +257,505 @@
   "altura": 847,
   "foco": "50% 10%",
   "colecao": "Innistrad Crimson Vow"
+ },
+ {
+  "arquivo": "annul-urza-s-saga",
+  "carta": "Annul",
+  "artista": "Greg Simanson",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Urza's Saga"
+ },
+ {
+  "arquivo": "aura-of-silence-weatherlight",
+  "carta": "Aura of Silence",
+  "artista": "D. Alexander Gregory",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Weatherlight"
+ },
+ {
+  "arquivo": "blue-elemental-blast-limited-edition-alpha",
+  "carta": "Blue Elemental Blast",
+  "artista": "Richard Thomas",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "brain-freeze-scourge",
+  "carta": "Brain Freeze",
+  "artista": "Tim Hildebrandt",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Scourge"
+ },
+ {
+  "arquivo": "cabal-therapy-judgment",
+  "carta": "Cabal Therapy",
+  "artista": "Ron Spencer",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Judgment"
+ },
+ {
+  "arquivo": "call-of-the-herd-odyssey",
+  "carta": "Call of the Herd",
+  "artista": "Carl Critchlow",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Odyssey"
+ },
+ {
+  "arquivo": "chain-of-vapor-onslaught",
+  "carta": "Chain of Vapor",
+  "artista": "Carl Critchlow",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Onslaught"
+ },
+ {
+  "arquivo": "circle-of-protection-red-limited-edition-alpha",
+  "carta": "Circle of Protection: Red",
+  "artista": "Mark Tedin",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "counterspell-limited-edition-alpha",
+  "carta": "Counterspell",
+  "artista": "Mark Poole",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "cursed-scroll-tempest",
+  "carta": "Cursed Scroll",
+  "artista": "D. Alexander Gregory",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Tempest"
+ },
+ {
+  "arquivo": "dark-ritual-limited-edition-alpha",
+  "carta": "Dark Ritual",
+  "artista": "Sandra Everingham",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "daze-nemesis",
+  "carta": "Daze",
+  "artista": "Matthew D. Wilson",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Nemesis"
+ },
+ {
+  "arquivo": "decree-of-justice-scourge",
+  "carta": "Decree of Justice",
+  "artista": "Adam Rex",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Scourge"
+ },
+ {
+  "arquivo": "diabolic-edict-tempest",
+  "carta": "Diabolic Edict",
+  "artista": "Ron Spencer",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Tempest"
+ },
+ {
+  "arquivo": "disenchant-limited-edition-alpha",
+  "carta": "Disenchant",
+  "artista": "Amy Weber",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "duress-urza-s-saga",
+  "carta": "Duress",
+  "artista": "Lawrence Snelly",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Urza's Saga"
+ },
+ {
+  "arquivo": "engineered-plague-urza-s-legacy",
+  "carta": "Engineered Plague",
+  "artista": "Michael Sutfin",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Urza's Legacy"
+ },
+ {
+  "arquivo": "exalted-angel-onslaught",
+  "carta": "Exalted Angel",
+  "artista": "Michael Sutfin",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 15%",
+  "colecao": "Onslaught"
+ },
+ {
+  "arquivo": "fact-or-fiction-invasion",
+  "carta": "Fact or Fiction",
+  "artista": "Terese Nielsen",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Invasion"
+ },
+ {
+  "arquivo": "flash-of-insight-judgment",
+  "carta": "Flash of Insight",
+  "artista": "Ben Thompson",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Judgment"
+ },
+ {
+  "arquivo": "foil-prophecy",
+  "carta": "Foil",
+  "artista": "Bradley Williams",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 10%",
+  "colecao": "Prophecy"
+ },
+ {
+  "arquivo": "gush-mercadian-masques",
+  "carta": "Gush",
+  "artista": "Kev Walker",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Mercadian Masques"
+ },
+ {
+  "arquivo": "hydroblast-ice-age",
+  "carta": "Hydroblast",
+  "artista": "Kaja Foglio",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Ice Age"
+ },
+ {
+  "arquivo": "impulse-visions",
+  "carta": "Impulse",
+  "artista": "Bryan Talbot",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Visions"
+ },
+ {
+  "arquivo": "lightning-bolt-limited-edition-alpha",
+  "carta": "Lightning Bolt",
+  "artista": "Christopher Rush",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "mana-leak-stronghold",
+  "carta": "Mana Leak",
+  "artista": "Christopher Rush",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Stronghold"
+ },
+ {
+  "arquivo": "meddling-mage-planeshift",
+  "carta": "Meddling Mage",
+  "artista": "Christopher Moeller",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 60%",
+  "colecao": "Planeshift"
+ },
+ {
+  "arquivo": "mogg-fanatic-tempest",
+  "carta": "Mogg Fanatic",
+  "artista": "Brom",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 80%",
+  "colecao": "Tempest"
+ },
+ {
+  "arquivo": "naturalize-onslaught",
+  "carta": "Naturalize",
+  "artista": "Ron Spears",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Onslaught"
+ },
+ {
+  "arquivo": "opt-invasion",
+  "carta": "Opt",
+  "artista": "John Howe",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 75%",
+  "colecao": "Invasion"
+ },
+ {
+  "arquivo": "parallax-wave-nemesis",
+  "carta": "Parallax Wave",
+  "artista": "Greg Staples",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Nemesis"
+ },
+ {
+  "arquivo": "phyrexian-furnace-weatherlight",
+  "carta": "Phyrexian Furnace",
+  "artista": "George Pratt",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Weatherlight"
+ },
+ {
+  "arquivo": "portent-ice-age",
+  "carta": "Portent",
+  "artista": "Liz Danforth",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Ice Age"
+ },
+ {
+  "arquivo": "powder-keg-urza-s-destiny",
+  "carta": "Powder Keg",
+  "artista": "Dan Frazier",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 70%",
+  "colecao": "Urza's Destiny"
+ },
+ {
+  "arquivo": "pyroblast-ice-age",
+  "carta": "Pyroblast",
+  "artista": "Kaja Foglio",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Ice Age"
+ },
+ {
+  "arquivo": "pyroclasm-ice-age",
+  "carta": "Pyroclasm",
+  "artista": "Pat Lewis",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Ice Age"
+ },
+ {
+  "arquivo": "ray-of-revelation-judgment",
+  "carta": "Ray of Revelation",
+  "artista": "Doug Chaffee",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Judgment"
+ },
+ {
+  "arquivo": "red-elemental-blast-limited-edition-alpha",
+  "carta": "Red Elemental Blast",
+  "artista": "Richard Thomas",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "replenish-urza-s-destiny",
+  "carta": "Replenish",
+  "artista": "Jim Nelson",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Urza's Destiny"
+ },
+ {
+  "arquivo": "seal-of-cleansing-nemesis",
+  "carta": "Seal of Cleansing",
+  "artista": "Christopher Moeller",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Nemesis"
+ },
+ {
+  "arquivo": "smother-onslaught",
+  "carta": "Smother",
+  "artista": "Carl Critchlow",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Onslaught"
+ },
+ {
+  "arquivo": "stifle-scourge",
+  "carta": "Stifle",
+  "artista": "Dany Orizio",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Scourge"
+ },
+ {
+  "arquivo": "swords-to-plowshares-limited-edition-alpha",
+  "carta": "Swords to Plowshares",
+  "artista": "Jeff A. Menges",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 15%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "sylvan-library-legends",
+  "carta": "Sylvan Library",
+  "artista": "Harold McNeill",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Legends"
+ },
+ {
+  "arquivo": "tormod-s-crypt-the-dark",
+  "carta": "Tormod's Crypt",
+  "artista": "Christopher Rush",
+  "grupo": "premodern",
+  "largura": 1745,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "The Dark"
+ },
+ {
+  "arquivo": "tranquil-domain-mirage",
+  "carta": "Tranquil Domain",
+  "artista": "D. Alexander Gregory",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Mirage"
+ },
+ {
+  "arquivo": "tsabo-s-web-invasion",
+  "carta": "Tsabo's Web",
+  "artista": "Carl Critchlow",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Invasion"
+ },
+ {
+  "arquivo": "withered-wretch-legions",
+  "carta": "Withered Wretch",
+  "artista": "Tim Hildebrandt",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 15%",
+  "colecao": "Legions"
+ },
+ {
+  "arquivo": "wrath-of-god-limited-edition-alpha",
+  "carta": "Wrath of God",
+  "artista": "Quinton Hoover",
+  "grupo": "premodern",
+  "largura": 1748,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Limited Edition Alpha"
+ },
+ {
+  "arquivo": "xantid-swarm-scourge",
+  "carta": "Xantid Swarm",
+  "artista": "David Martin",
+  "grupo": "premodern",
+  "largura": 1738,
+  "altura": 1400,
+  "foco": "50% 35%",
+  "colecao": "Scourge"
  }
 ]

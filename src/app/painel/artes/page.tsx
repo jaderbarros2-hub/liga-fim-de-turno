@@ -39,7 +39,7 @@ export default async function Artes({
   const grupo = GRUPOS.find((g) => g.v === pedido)?.v ?? "pauper";
   const info = GRUPOS.find((g) => g.v === grupo)!;
   const artes = BANCO.filter((a) => a.grupo === grupo);
-  const grandes = artes.filter((a) => a.largura >= 1800).length;
+  const grandes = artes.filter((a) => a.largura >= 1700).length;
 
   return (
     <div className="flex flex-col gap-8">
@@ -72,7 +72,7 @@ export default async function Artes({
                 {lista.length}
               </div>
               <div className="text-xs text-cinza">
-                {lista.filter((a) => a.largura >= 1800).length} em tela cheia
+                {lista.filter((a) => a.largura >= 1700).length} em tela cheia
               </div>
             </Link>
           );
@@ -197,7 +197,7 @@ export default async function Artes({
             No banco: {info.r}
           </h2>
           <span className="text-xs text-cinza">
-            {artes.length} artes · {grandes} com 1800 px ou mais
+            {artes.length} artes · {grandes} com 1700 px ou mais
           </span>
         </div>
         {artes.length ? (
