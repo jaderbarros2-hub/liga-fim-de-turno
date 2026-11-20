@@ -70,7 +70,11 @@ export async function ultimasColecoes(quantidade = 4): Promise<string[]> {
 
 /** Impressões que não servem: Secret Lair, promos, Universes Beyond, digitais, coleções de brincadeira. */
 const SEM_ESPECIAIS =
-  "-t:basic -is:digital -is:universesbeyond -is:promo -st:box -st:promo -st:funny -st:memorabilia -st:masterpiece -st:token game:paper";
+  "-t:basic -is:digital -is:universesbeyond -is:promo -st:box -st:promo -st:funny -st:memorabilia -st:masterpiece -st:token game:paper" +
+  // The List, Mystery Booster e Jumpstart: reimpressões com numeração própria que o MTGPics não acha.
+  " -e:plst -e:mb1 -e:mb2 -e:fmb1 -e:j22 -e:j25 -e:jmp" +
+  // Só coleções "de verdade" (básicas, expansões, masters, draft especiais e Commander).
+  " (st:core or st:expansion or st:masters or st:draft_innovation or st:commander)";
 
 /** Já no banco: mesma carta (uma ilustração por carta). */
 function cartasNoBanco() {
@@ -150,6 +154,12 @@ export async function montarLista(
       for (const c of j.data) {
         const nome = c.card_faces?.[0]?.name ?? c.name;
         const artista = c.artist ?? c.card_faces?.[0]?.artist ?? "";
+        // A busca por nome exato também acha cartas de duas faces com a staple no verso: ignora.
+        if (
+          grupo !== "limited" &&
+          !STAPLES[grupo].some((x) => x.toLowerCase() === nome.toLowerCase())
+        )
+          continue;
         if (
           !artista ||
           noBanco.has(nome.toLowerCase()) ||

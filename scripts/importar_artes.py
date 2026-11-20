@@ -52,7 +52,7 @@ def ler_nome(nome):
     """'Carta (Artista) [SET]' -> (carta, artista, set)."""
     m = re.match(r"^(.*?)\s*(?:\(([^)]+)\))?\s*(?:\[([^\]]+)\])?\s*$", nome)
     carta = re.sub(r"\s+", " ", m.group(1)).strip()
-    return carta, (m.group(2) or "").strip(), (m.group(3) or "").strip().upper()
+    return carta, (m.group(2) or "").strip(), (m.group(3) or "").strip()
 
 
 def ler_lista(pasta):
@@ -135,7 +135,7 @@ def main():
             for caminho in imagens(pasta):
                 carta, artista, setc = ler_nome(os.path.splitext(os.path.basename(caminho))[0])
                 candidatos = lista.get(chave_carta(carta), [])
-                meta = next((c for c in candidatos if setc and c["set"] == setc), None) \
+                meta = next((c for c in candidatos if setc and setc.upper() in (c["set"], c["colecao"].upper())), None) \
                     or next((c for c in candidatos if artista and slug(c["artista"]) == slug(artista)), None) \
                     or (candidatos[0] if len(candidatos) == 1 else None)
                 artista = artista or (meta or {}).get("artista", "")
@@ -163,10 +163,13 @@ def main():
                     os.path.join(DESTINO_EMAIL, arquivo + ".jpg"), "JPEG", quality=72, optimize=True, progressive=True)
                 item = {"arquivo": arquivo, "carta": carta, "artista": artista, "grupo": grupo,
                         "largura": im.width, "altura": im.height, "foco": FOCO_PADRAO}
-                if meta and meta.get("colecao"):
+                # Coleção: a do nome do arquivo (de onde a arte veio), senão a da lista
+                if setc and len(setc) > 6:
+                    item["colecao"] = setc
+                elif meta and meta.get("colecao"):
                     item["colecao"] = meta["colecao"]
                 elif setc:
-                    item["colecao"] = setc
+                    item["colecao"] = setc.upper()
                 banco.append(item)
                 existentes.add(arquivo)
                 ja_carta_artista.add((chave_carta(carta), slug(artista)))
