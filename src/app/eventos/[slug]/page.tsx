@@ -18,6 +18,7 @@ import { FotoJogador, NomeJogador } from "@/components/Jogador";
 import { BannerPatrocinado } from "@/components/Parceiros";
 import { LequeBoosters } from "@/components/Booster";
 import { LequeCartas, SeloLocal } from "@/components/Deck";
+import { Palco } from "@/components/Palco";
 import { pequenasFixas } from "@/lib/artesPequenas";
 import { grupoDoFormato } from "@/lib/artes";
 import { GaleriaCartas, type CartaGaleria } from "@/components/GaleriaCartas";
@@ -437,7 +438,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
 
           {aba === "detalhes" && temVitrine && (
             <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
-              <div className="relative isolate bg-fundo2 px-4">
+              <Palco arte={capa.src} foco={capa.foco}>
                 <SeloLocal presencial={presencial} loja={evento.loja} />
                 <LequeBoosters
                   quantidade={
@@ -455,7 +456,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         : "Cube draft"
                   }
                 />
-              </div>
+              </Palco>
               <div className="flex flex-col gap-3 p-6 md:pl-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-ciano">
                   {NOMES_FORMATO[evento.formato]}
@@ -543,7 +544,11 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
 
           {aba === "detalhes" && pauper && cartasDeck.length > 0 && (
             <section className="mb-4 grid items-center gap-6 overflow-hidden rounded-md bg-grafite ring-1 ring-borda md:grid-cols-[1.1fr_1fr]">
-              <div className="relative isolate bg-fundo2 px-4">
+              <Palco
+                arte={capa.src}
+                foco={capa.foco}
+                cor={evento.formato === "premodern" ? "#d9a441" : "#2e6bff"}
+              >
                 <SeloLocal presencial={presencial} loja={evento.loja} />
                 <LequeCartas
                   artes={cartasDeck}
@@ -551,7 +556,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                     evento.formato === "premodern" ? "classica" : "moderna"
                   }
                 />
-              </div>
+              </Palco>
               <div className="flex flex-col gap-3 p-6 md:pl-0">
                 <span className="text-xs font-bold uppercase tracking-wider text-ciano">
                   Formato construído

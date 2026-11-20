@@ -308,3 +308,47 @@
     transform: translateX(300%);
   }
 }
+
+/* Vitrine do evento (boosters e cartas): fundo que respira e reage ao mouse */
+.palco-fundo {
+  transform: scale(1.12);
+}
+.palco-brilho {
+  opacity: 0.3;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .palco-fundo {
+    animation: palco-respira 14s ease-in-out infinite alternate;
+    transition: filter 0.6s ease;
+  }
+  .palco-brilho {
+    transition: opacity 0.5s ease;
+    animation: palco-pulsa 6s ease-in-out infinite alternate;
+  }
+  .palco:hover .palco-fundo {
+    filter: blur(2px) brightness(1.2);
+  }
+  .palco:hover .palco-brilho {
+    opacity: 0.55;
+    animation-play-state: paused;
+  }
+  .palco:hover .leque > * {
+    transform: var(--abre);
+  }
+}
+@keyframes palco-respira {
+  from {
+    transform: scale(1.12) translate(0, 0);
+  }
+  to {
+    transform: scale(1.2) translate(-2%, -1.5%);
+  }
+}
+@keyframes palco-pulsa {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 0.42;
+  }
+}
