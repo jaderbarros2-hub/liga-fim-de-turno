@@ -2,7 +2,7 @@
  * Ilustrações do Scryfall (art_crop, ~626 px) para espaços pequenos: cartões de evento,
  * cartões das ligas, miniaturas. Os banners grandes continuam no banco em alta resolução.
  *
- * Pauper e Premodern: as staples do formato (staples.ts). Limited: raras e míticas das
+ * Pauper e Premodern: as staples do formato (staples.ts); no Premodern, sempre a arte original (até 2003). Limited: raras e míticas das
  * últimas coleções. A busca fica em cache por 7 dias; se o Scryfall falhar, usa o banco.
  */
 import { cache } from "react";
@@ -92,9 +92,9 @@ function paraArte(c: CartaScryfall, grupo: GrupoArte): ArteBanco | null {
   };
 }
 
-async function buscar(q: string, ordem: string) {
+async function buscar(q: string, ordem: string, preferir = "newest") {
   const params = new URLSearchParams({
-    q: `${q} prefer:newest`,
+    q: `${q} prefer:${preferir}`,
     unique: "cards",
     order: ordem,
   });
@@ -115,7 +115,14 @@ export const artesPequenas = cache(
       const partes = [nomes.slice(0, 25), nomes.slice(25)];
       const res = await Promise.all(
         partes.map((p) =>
-          buscar(`(${p.map(aspas).join(" or ")}) ${SEM_ESPECIAIS}`, "name"),
+          grupo === "premodern"
+            ? // Premodern: a arte original da época (impressões até Scourge, 2003)
+              buscar(
+                `(${p.map(aspas).join(" or ")}) ${SEM_ESPECIAIS} date<=2003-07-30`,
+                "name",
+                "oldest",
+              )
+            : buscar(`(${p.map(aspas).join(" or ")}) ${SEM_ESPECIAIS}`, "name"),
         ),
       );
       const validos = new Set(nomes.map((n) => n.toLowerCase()));
