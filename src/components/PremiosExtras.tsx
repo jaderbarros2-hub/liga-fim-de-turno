@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { criterioTexto, type PremioParceiro } from "@/lib/premiosParceiros";
+import type { PremioParceiro } from "@/lib/premiosParceiros";
 
 const ICONE: Record<string, string> = {
   cupom: "Cupom",
@@ -7,7 +7,10 @@ const ICONE: Record<string, string> = {
   brinde: "Brinde",
 };
 
-/** Prêmios extras das lojas parceiras na página do evento (e quem ganhou, depois do resultado). */
+/**
+ * Prêmio extra das lojas parceiras: uma linha discreta logo abaixo das informações do evento.
+ * Depois do resultado, mostra quem ganhou.
+ */
 export function PremiosExtras({
   premios,
   mostrarGanhador = false,
@@ -17,53 +20,48 @@ export function PremiosExtras({
 }) {
   if (!premios.length) return null;
   return (
-    <section className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="titulo text-3xl">Prêmios extras</h2>
-        <span className="text-xs font-semibold uppercase tracking-wider text-cinza">
-          Oferecidos por lojas parceiras
-        </span>
-      </div>
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {premios.map((p) => (
-          <li
-            key={p.id}
-            className="flex items-center gap-4 rounded-md bg-grafite p-4 ring-1 ring-borda"
-          >
-            {p.parceiro?.logo_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={p.parceiro.logo_url}
-                alt={p.parceiro.nome}
-                className="h-12 w-16 shrink-0 rounded bg-white/5 object-contain p-1"
-              />
-            ) : (
-              <span className="grid h-12 w-16 shrink-0 place-items-center rounded bg-azul/15 text-xs font-bold text-ciano">
-                {ICONE[p.tipo]}
-              </span>
-            )}
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span className="font-semibold">{p.descricao}</span>
-              <span className="text-sm text-texto2">
-                {criterioTexto(p)} ·{" "}
-                {p.parceiro?.slug ? (
-                  <Link href={`/parceiros/${p.parceiro.slug}`}>
-                    {p.parceiro.nome}
-                  </Link>
-                ) : (
-                  p.parceiro?.nome
-                )}
-              </span>
-              {mostrarGanhador && p.entregue_em && (
-                <span className="text-sm font-semibold text-ciano">
-                  Ganhador:{" "}
-                  {p.jogador?.nick_endstep || p.jogador?.nome || "jogador"}
-                </span>
-              )}
+    <ul className="flex flex-col gap-2">
+      {premios.map((p) => (
+        <li
+          key={p.id}
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-dashed border-ciano/40 px-4 py-2.5 text-sm"
+        >
+          <span className="font-bold uppercase tracking-wider text-ciano">
+            + Bônus
+          </span>
+          {p.parceiro?.logo_url && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={p.parceiro.logo_url}
+              alt=""
+              className="h-5 w-auto max-w-16 object-contain"
+            />
+          )}
+          <span className="text-texto2">
+            <span className="font-semibold text-gelo">{p.descricao}</span>{" "}
+            {p.parceiro?.slug ? (
+              <>
+                na{" "}
+                <Link href={`/parceiros/${p.parceiro.slug}`}>
+                  {p.parceiro.nome}
+                </Link>
+              </>
+            ) : p.parceiro?.nome ? (
+              `na ${p.parceiro.nome}`
+            ) : null}
+            {" · "}
+            {p.criterio === "sorteio"
+              ? "sorteado entre os participantes"
+              : `para o ${p.posicao ?? 1}º lugar`}
+          </span>
+          {mostrarGanhador && p.entregue_em && (
+            <span className="font-semibold text-ciano">
+              · Ganhador:{" "}
+              {p.jogador?.nick_endstep || p.jogador?.nome || "jogador"}
             </span>
-          </li>
-        ))}
-      </ul>
-    </section>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }

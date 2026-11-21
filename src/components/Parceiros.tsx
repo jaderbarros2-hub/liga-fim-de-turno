@@ -76,14 +76,18 @@ export async function BannerPatrocinado({
   posicao,
   pagina,
   coluna = false,
+  discreto = false,
 }: {
   posicao: Posicao;
   pagina: string;
+  /** Sem anúncio, não mostra nada (sem o "Anuncie aqui"); com anúncio, faixa mais baixa. */
+  discreto?: boolean;
   /** Versão alta para a coluna lateral dos artigos. */
   coluna?: boolean;
 }) {
   const banner = await bannerPara(posicao);
   if (coluna) return <BannerColuna banner={banner} pagina={pagina} />;
+  if (!banner && discreto) return null;
   if (!banner) {
     return (
       <Link
@@ -131,7 +135,7 @@ export async function BannerPatrocinado({
       })}
       rel="sponsored noopener"
       target="_blank"
-      className="group relative flex min-h-24 items-center gap-5 overflow-hidden rounded-lg bg-grafite px-6 py-4 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
+      className={`group relative flex items-center gap-5 overflow-hidden rounded-lg bg-grafite px-6 text-gelo no-underline ring-1 ring-borda hover:ring-ciano ${discreto ? "min-h-16 py-2" : "min-h-24 py-4"}`}
     >
       {banner.imagem_url && (
         // eslint-disable-next-line @next/next/no-img-element

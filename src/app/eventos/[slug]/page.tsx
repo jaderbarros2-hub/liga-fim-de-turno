@@ -637,18 +637,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               </ul>
 
               {premiosExtras.length > 0 && (
-                <div className="pb-8">
+                <div className="-mt-4 pb-8">
                   <PremiosExtras premios={premiosExtras} />
                 </div>
               )}
-
-              {/* Banner de parceiro no momento de decidir o ingresso */}
-              <div className="pb-8">
-                <BannerPatrocinado
-                  posicao="evento"
-                  pagina={`/eventos/${evento.slug}`}
-                />
-              </div>
 
               <Secao titulo="Onde vai ser">
                 {presencial ? (
@@ -863,14 +855,13 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
         )}
       </div>
 
-      {aba !== "detalhes" && (
-        <div className="mx-auto max-w-6xl px-6 pb-12">
-          <BannerPatrocinado
-            posicao="evento"
-            pagina={`/eventos/${evento.slug}`}
-          />
-        </div>
-      )}
+      <div className="mx-auto max-w-6xl px-6 pb-12">
+        <BannerPatrocinado
+          posicao="evento"
+          pagina={`/eventos/${evento.slug}`}
+          discreto
+        />
+      </div>
     </>
   );
 }

@@ -31,11 +31,11 @@ export function PremiosParceirosPainel({
       className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-borda bg-grafite p-5"
     >
       <div>
-        <h2 className="titulo text-3xl">Prêmios extras dos parceiros</h2>
+        <h2 className="titulo text-3xl">Cupons dos parceiros</h2>
         <p className="text-sm text-texto2">
-          Cupons, boosters e brindes oferecidos pelas lojas. Aparecem na página
-          do evento com o logo da loja. Por posição: entregue ao publicar o
-          resultado. Por sorteio: sorteie aqui depois do resultado.
+          Cupons de desconto oferecidos pelas lojas, como prêmio extra. Aparecem
+          na página do evento com o logo da loja. Por posição: entregue ao
+          publicar o resultado. Por sorteio: sorteie aqui depois do resultado.
         </p>
       </div>
       {mensagem && (
@@ -126,14 +126,8 @@ export function PremiosParceirosPainel({
                 ))}
               </select>
             </label>
-            <label className={ROTULO}>
-              Tipo
-              <select name="tipo" className={CAMPO}>
-                <option value="cupom">Cupom de desconto</option>
-                <option value="booster">Booster</option>
-                <option value="brinde">Brinde</option>
-              </select>
-            </label>
+            {/* Por enquanto só cupom de desconto; booster e brinde físico entram depois, com campos próprios */}
+            <input type="hidden" name="tipo" value="cupom" />
             <label className={ROTULO}>
               Descrição (aparece no site)
               <input
