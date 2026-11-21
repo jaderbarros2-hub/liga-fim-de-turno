@@ -87,14 +87,14 @@ export function GradeArtigos({ artigos }: { artigos: Artigo[] }) {
 }
 
 /** Faixa com título, "Ver todos" e a grade de cartões (home e fim do artigo). */
-export function SecaoArtigos({ titulo, artigos, href }: { titulo: string; artigos: Artigo[]; href: string }) {
+export function SecaoArtigos({ titulo, artigos, href, grande = false }: { titulo: string; artigos: Artigo[]; href: string; grande?: boolean }) {
   if (!artigos.length) return null;
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex items-end justify-between gap-3">
-        <h2 className="titulo text-3xl">{titulo}</h2>
+    <section className={`flex flex-col ${grande ? "gap-8" : "gap-4"}`}>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h2 className={`titulo ${grande ? "text-5xl" : "text-3xl"}`}>{titulo}</h2>
         <Link href={href} className="text-sm font-semibold">
-          Ver todos »
+          Ver todos →
         </Link>
       </div>
       <GradeArtigos artigos={artigos} />

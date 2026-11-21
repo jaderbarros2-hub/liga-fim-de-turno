@@ -1,5 +1,10 @@
 # Pendências e ideias para tratar depois
 
+## 0. Próximos passos combinados (20/11/2026)
+- Home: decidir a faixa abaixo do topo (ponto 2) e revisar os textos das chamadas do topo.
+- Anunciante fictício de exemplo no banner "Anuncie aqui" (home), para mostrar aos parceiros.
+- Media Kit para lojas e parceiros: onde cada anúncio aparece, formatos, tamanhos e alcance.
+
 Lista viva do que ficou combinado para fases futuras. Atualizada em 18/11/2026.
 
 ## 1. Overhaul de texto (todo o portal)

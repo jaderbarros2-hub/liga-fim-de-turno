@@ -5,39 +5,25 @@ import { EtiquetaLiga, ListaEventos } from "@/components/Eventos";
 import { sortearPequenas } from "@/lib/artesPequenas";
 import { BannerPatrocinado, FaixaParceiros } from "@/components/Parceiros";
 import {
-  CARTAS_FAIXA,
-  cartaInteira,
+  capaDoEvento,
   creditoArte,
   sortearArtes,
   srcArte,
   type ArteBanco,
 } from "@/lib/artes";
+import { CorridaTemporada } from "@/components/CorridaTemporada";
+import { MesaDeCartas } from "@/components/MesaDeCartas";
 import { SecaoArtigos } from "@/components/Artigos";
 import { listarArtigos } from "@/lib/blog";
 import {
   listarEventosEncerrados,
   listarInscritos,
   listarProximosEventos,
+  listarResultados,
 } from "@/lib/dados";
 import { dataCurta, dataLonga, hora } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
-
-const PASSOS = [
-  {
-    titulo: "Entre com o Discord",
-    texto: "Informe seu nick do Endstep e sua chave Pix para prêmios.",
-  },
-  {
-    titulo: "Pague a inscrição no Pix",
-    texto: "A confirmação é automática e libera o link privado do evento.",
-  },
-  {
-    titulo: "Jogue no Endstep",
-    texto:
-      "Direto no navegador, sem precisar ter as cartas. O resultado sai aqui.",
-  },
-];
 
 const POR_QUE = [
   {
@@ -70,11 +56,21 @@ const POR_QUE = [
 export default async function Inicio() {
   const [proximos, encerrados, artigos] = await Promise.all([
     listarProximosEventos(6),
-    listarEventosEncerrados(3),
+    listarEventosEncerrados(5),
     listarArtigos(4),
   ]);
   const destaque = proximos[0];
-  const inscritos = destaque ? await listarInscritos(destaque.id) : [];
+  const [inscritos, resultadosEncerrados, mesa] = await Promise.all([
+    destaque ? listarInscritos(destaque.id) : Promise.resolve([]),
+    Promise.all(encerrados.map((e) => listarResultados(e.id))),
+    Promise.all([
+      sortearPequenas("pauper", 20),
+      sortearPequenas("premodern", 20),
+      sortearPequenas("limited", 20),
+    ]).then((g) => g.flat().sort(() => Math.random() - 0.5)),
+  ]);
+  // Capa do evento em destaque: arte da coleção/cubo ou do formato do evento
+  const capaDestaque = destaque ? capaDoEvento(destaque) : null;
 
   // Artes sorteadas a cada visita (topo: só imagens grandes)
   const [aEvento] = sortearArtes(
@@ -98,10 +94,12 @@ export default async function Inicio() {
   });
 
   const destaques: Destaque[] = [
-    destaque
+    destaque && capaDestaque
       ? {
           id: "evento",
-          ...img(aEvento),
+          imagem: capaDestaque.src,
+          credito: capaDestaque.credito,
+          posicaoImagem: capaDestaque.foco,
           etiqueta: (
             <>
               <EtiquetaLiga evento={destaque} />
@@ -111,7 +109,10 @@ export default async function Inicio() {
             </>
           ),
           titulo: destaque.titulo,
-          texto: `Online no Endstep, sem precisar ter as cartas, com ${destaque.percentual_premio}% das inscrições em prêmios pagos por Pix.`,
+          texto:
+            destaque.modalidade === "presencial"
+              ? `Presencial${destaque.loja?.nome ? ` na ${destaque.loja.nome}` : ""}${destaque.loja?.cidade ? `, em ${destaque.loja.cidade}` : ""}, com ${destaque.percentual_premio}% das inscrições em prêmios.`
+              : `Online no Endstep, sem precisar ter as cartas, com ${destaque.percentual_premio}% das inscrições em prêmios.`,
           acao: { href: `/eventos/${destaque.slug}`, rotulo: "Inscrever-se" },
           rodape: `${inscritos.length} inscritos${destaque.vagas ? ` de ${destaque.vagas}` : ""} · até ${dataCurta(destaque.inscricoes_ate)}, ${hora(destaque.inscricoes_ate)}`,
         }
@@ -255,37 +256,19 @@ export default async function Inicio() {
         <BannerPatrocinado posicao="home" pagina="/" />
       </div>
 
-      {/* Como funciona: uma faixa direta, sem cartões */}
-      <section className="border-y border-borda bg-fundo2">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-14 lg:grid-cols-[1fr_2fr]">
-          <h2 className="titulo text-5xl">Do cadastro à mesa</h2>
-          <ol className="grid gap-8 sm:grid-cols-3">
-            {PASSOS.map((p, i) => (
-              <li
-                key={p.titulo}
-                className="flex flex-col gap-2 border-t-2 border-azul pt-4"
-              >
-                <span className="text-sm font-semibold text-cinza">
-                  Passo {i + 1}
-                </span>
-                <span className="text-lg font-semibold">{p.titulo}</span>
-                <span className="text-texto2">{p.texto}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      {/* Prévia do ranking: top 5 de cada liga */}
+      <CorridaTemporada />
 
       {encerrados.length > 0 && (
         <section className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-5xl">Últimos resultados</h2>
+            <h2 className="titulo text-5xl">Últimos eventos</h2>
             <Link href="/resultados" className="text-sm font-semibold">
-              Todos os resultados →
+              Todos os eventos →
             </Link>
           </div>
           <ul className="flex flex-col border-t border-borda">
-            {encerrados.map((e) => (
+            {encerrados.map((e, n) => (
               <li key={e.id}>
                 <Link
                   href={`/eventos/${e.slug}?aba=resultados`}
@@ -297,6 +280,15 @@ export default async function Inicio() {
                   <span className="min-w-56 flex-1 text-lg font-semibold group-hover:text-ciano">
                     {e.titulo}
                   </span>
+                  {resultadosEncerrados[n]?.[0] && (
+                    <span className="text-sm text-texto2">
+                      Campeão:{" "}
+                      <span className="font-semibold text-gelo">
+                        {resultadosEncerrados[n][0].nick_endstep}
+                      </span>{" "}
+                      · {resultadosEncerrados[n].length} jogadores
+                    </span>
+                  )}
                   <EtiquetaLiga evento={e} />
                   <span className="text-sm font-semibold text-ciano">
                     Classificação →
@@ -309,38 +301,23 @@ export default async function Inicio() {
       )}
 
       {artigos.length > 0 && (
-        <div className="mx-auto max-w-6xl px-6 py-16">
+        <div className="mx-auto max-w-6xl px-6 pb-16 pt-4">
           <SecaoArtigos
             titulo="Últimos artigos"
             artigos={artigos}
             href="/blog"
+            grande
           />
         </div>
       )}
 
       <FaixaParceiros />
 
-      {/* Comunidade: cartas espalhadas como textura, uma chamada no centro */}
+      {/* Comunidade: cartas jogadas na mesa, uma chamada no centro */}
       <section className="relative isolate overflow-hidden border-t border-borda">
-        <div className="absolute inset-0 -z-10 opacity-60" aria-hidden="true">
-          {CARTAS_FAIXA.map((a, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={a.carta}
-              src={cartaInteira(a, "normal")}
-              alt=""
-              loading="lazy"
-              className="carta-solta absolute w-[180px]"
-              style={{
-                left: `${(i / CARTAS_FAIXA.length) * 100 - 4}%`,
-                top: `${i % 2 ? 38 : -12}%`,
-                transform: `rotate(${((i * 37) % 30) - 15}deg)`,
-              }}
-            />
-          ))}
-        </div>
-        <div className="absolute inset-0 -z-10 bg-preto/70" />
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 px-6 py-24 text-center">
+        <MesaDeCartas cartas={mesa} />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(6_7_10/0.9)_20%,rgb(6_7_10/0.45)_60%,rgb(6_7_10/0.3)_100%)]" />
+        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 px-6 py-28 text-center">
           <h2 className="titulo text-5xl">A liga acontece no Discord</h2>
           <p className="text-lg text-texto2">
             Avisos de etapa, conversa sobre decks e suporte nos dias de evento.
