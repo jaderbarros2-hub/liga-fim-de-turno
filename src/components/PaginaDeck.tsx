@@ -19,6 +19,8 @@ import {
 export function cartaDestaque(
   principal: ItemLista[],
   cartas: Map<string, Carta>,
+  /** Sorteia entre as principais cartas do deck (topo da página muda a cada visita). */
+  sortear = false,
 ) {
   const candidatas = [...principal]
     .map((i) => ({ i, c: cartas.get(chaveCarta(i.nome)) }))
@@ -32,6 +34,10 @@ export function cartaDestaque(
   const criaturas = candidatas
     .filter((x) => grupoDaCarta(x.c!.tipo) === "Criaturas")
     .sort(ordem);
+  if (sortear) {
+    const principais = [...candidatas].sort(ordem).slice(0, 10);
+    return principais[Math.floor(Math.random() * principais.length)]?.c;
+  }
   return (criaturas[0] ?? candidatas.sort(ordem)[0])?.c;
 }
 
@@ -127,7 +133,7 @@ export function PaginaDeck({
   const terrenos = qtd("Terrenos");
   const criaturas = qtd("Criaturas");
 
-  const destaque = cartaDestaque(principal, cartas);
+  const destaque = cartaDestaque(principal, cartas, true);
   const arteFundo =
     destaque?.imagem_grande?.replace("/normal/", "/art_crop/") ?? null;
   const lista = listaEmTexto(principal, sideboard);

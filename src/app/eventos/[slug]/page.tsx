@@ -15,7 +15,8 @@ import { BotaoLink, Etiqueta } from "@/components/Botao";
 import { DeckDoEvento } from "@/components/DeckDoEvento";
 import { EtiquetaLiga } from "@/components/Eventos";
 import { FotoJogador, NomeJogador } from "@/components/Jogador";
-import { BannerPatrocinado } from "@/components/Parceiros";
+import { BannerLateral } from "@/components/Parceiros";
+import { bannerPara } from "@/lib/parceiros";
 import { LequeBoosters } from "@/components/Booster";
 import { LequeCartas, SeloLocal } from "@/components/Deck";
 import { Palco } from "@/components/Palco";
@@ -69,13 +70,14 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados, decks, partidas, premiosExtras] =
+  const [inscritos, resultados, decks, partidas, premiosExtras, banner] =
     await Promise.all([
       listarInscritos(evento.id),
       listarResultados(evento.id),
       decksDaClassificacao(evento.id),
       listarPartidas(evento.id),
       premiosDoEventoParceiros(evento.id),
+      bannerPara("evento"),
     ]);
   const temResultado = resultados.length > 0;
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
@@ -275,7 +277,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
       </nav>
 
       <div
-        className={`mx-auto grid max-w-6xl gap-10 px-6 py-10 ${aba === "detalhes" ? "" : "lg:grid-cols-[minmax(0,1fr)_280px]"}`}
+        className={`mx-auto grid max-w-6xl gap-10 px-6 py-10 ${aba === "detalhes" && !banner ? "" : "lg:grid-cols-[minmax(0,1fr)_280px]"}`}
       >
         <div className="min-w-0">
           {aba === "resultados" &&
@@ -806,9 +808,18 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
           )}
         </div>
 
-        {aba !== "detalhes" && (
+        {(aba !== "detalhes" || banner) && (
           <aside className="flex flex-col gap-4">
-            {fatias.length > 0 && (
+            {/* Banner da loja parceira: no topo da coluna, acompanha a rolagem */}
+            {banner && (
+              <div className="order-last lg:sticky lg:top-24 lg:self-start">
+                <BannerLateral
+                  banner={banner}
+                  pagina={`/eventos/${evento.slug}`}
+                />
+              </div>
+            )}
+            {aba !== "detalhes" && fatias.length > 0 && (
               <section className="flex flex-col gap-3 rounded-md bg-grafite p-5 ring-1 ring-borda">
                 <h2 className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Metagame da etapa
@@ -837,30 +848,24 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 </Link>
               </section>
             )}
-            <section className="flex flex-col gap-2 rounded-md bg-grafite p-5 ring-1 ring-borda">
-              <span className="font-semibold">Ranking {nomeLiga}</span>
-              <span className="text-sm text-texto2">
-                Veja quem lidera o trimestre e a corrida para o Player of the
-                Year.
-              </span>
-              <BotaoLink
-                href={`/ranking?liga=${evento.liga.slug}`}
-                variante="texto"
-                className="justify-start"
-              >
-                Ver ranking
-              </BotaoLink>
-            </section>
+            {aba !== "detalhes" && (
+              <section className="flex flex-col gap-2 rounded-md bg-grafite p-5 ring-1 ring-borda">
+                <span className="font-semibold">Ranking {nomeLiga}</span>
+                <span className="text-sm text-texto2">
+                  Veja quem lidera o trimestre e a corrida para o Player of the
+                  Year.
+                </span>
+                <BotaoLink
+                  href={`/ranking?liga=${evento.liga.slug}`}
+                  variante="texto"
+                  className="justify-start"
+                >
+                  Ver ranking
+                </BotaoLink>
+              </section>
+            )}
           </aside>
         )}
-      </div>
-
-      <div className="mx-auto max-w-6xl px-6 pb-12">
-        <BannerPatrocinado
-          posicao="evento"
-          pagina={`/eventos/${evento.slug}`}
-          discreto
-        />
       </div>
     </>
   );

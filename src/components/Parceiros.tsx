@@ -169,6 +169,18 @@ export async function BannerPatrocinado({
   );
 }
 
+/** Banner da coluna lateral (página do evento): vertical, sem espaço reservado quando não há anúncio. */
+export function BannerLateral({
+  banner,
+  pagina,
+}: {
+  banner: Banner | null;
+  pagina: string;
+}) {
+  if (!banner) return null;
+  return <BannerColuna banner={banner} pagina={pagina} />;
+}
+
 function BannerColuna({
   banner,
   pagina,
@@ -190,6 +202,33 @@ function BannerColuna({
           Conheça os planos →
         </span>
       </Link>
+    );
+  }
+  if (banner.imagem_vertical_url) {
+    // Arte vertical da própria loja (600×800), inteira
+    return (
+      <a
+        href={linkRastreado({
+          parceiro: banner.parceiro_id,
+          banner: banner.id,
+          origem: "banner",
+          pagina,
+        })}
+        rel="sponsored noopener"
+        target="_blank"
+        title={banner.titulo}
+        className="group relative block overflow-hidden rounded-md ring-1 ring-borda hover:ring-ciano"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={banner.imagem_vertical_url}
+          alt={`${banner.parceiro?.nome ?? "Parceiro"}: ${banner.titulo}`}
+          className="aspect-[3/4] w-full object-cover"
+        />
+        <span className="absolute right-2 top-2 rounded bg-preto/70 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cinza">
+          Patrocinado
+        </span>
+      </a>
     );
   }
   return (

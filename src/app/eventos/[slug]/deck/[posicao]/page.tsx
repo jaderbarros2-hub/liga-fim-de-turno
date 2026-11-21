@@ -64,7 +64,6 @@ export default async function DeckPublico({ params }: Props) {
       titulo={deck.arquetipo ?? deck.deckNome ?? "Deck"}
       pagina={pagina}
       arteReserva={arteDoEvento(evento)}
-      patrocinio={<BannerPatrocinado posicao="deck" pagina={pagina} />}
       autor={{ nick: deck.nick, avatar: null }}
       detalhe={dataLonga(evento.inicio)}
       caminho={

@@ -29,6 +29,8 @@ export type Banner = {
   posicoes: string[];
   /** "imagem": a arte da loja aparece inteira (aceita GIF). "composto": logo e texto sobre a imagem. */
   formato?: "composto" | "imagem";
+  /** Arte vertical 600×800 para a coluna lateral (opcional). */
+  imagem_vertical_url?: string | null;
   parceiro: { nome: string; logo_url: string | null } | null;
 };
 
@@ -69,7 +71,7 @@ export async function bannerPara(posicao: Posicao): Promise<Banner | null> {
   const { data } = await supabase
     .from("banners")
     .select(
-      "id, parceiro_id, titulo, texto, imagem_url, posicoes, formato, inicio, fim, parceiro:parceiros!inner(nome, logo_url, ativo)",
+      "id, parceiro_id, titulo, texto, imagem_url, posicoes, formato, imagem_vertical_url, inicio, fim, parceiro:parceiros!inner(nome, logo_url, ativo)",
     )
     .eq("ativo", true)
     .eq("parceiro.ativo", true)

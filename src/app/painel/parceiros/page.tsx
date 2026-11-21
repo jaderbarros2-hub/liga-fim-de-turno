@@ -242,10 +242,19 @@ export default async function PainelParceiros({
               />
             </label>
             <label className={ROTULO}>
-              Imagem (até 3 MB; GIF animado aceito)
+              Arte horizontal (1200×200; até 3 MB, GIF aceito)
               <input
                 type="file"
                 name="imagem"
+                accept="image/png,image/webp,image/jpeg,image/gif"
+                className="text-sm"
+              />
+            </label>
+            <label className={ROTULO}>
+              Arte vertical para a coluna lateral (600×800, opcional)
+              <input
+                type="file"
+                name="imagem_vertical"
                 accept="image/png,image/webp,image/jpeg,image/gif"
                 className="text-sm"
               />

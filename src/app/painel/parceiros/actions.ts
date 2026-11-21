@@ -200,6 +200,10 @@ export async function salvarBanner(form: FormData) {
     form.get("imagem") as File | null,
     "banners",
   );
+  const vertical = await subirImagem(
+    form.get("imagem_vertical") as File | null,
+    "banners",
+  );
   await criarClienteAdmin()
     .from("banners")
     .insert({
@@ -211,6 +215,7 @@ export async function salvarBanner(form: FormData) {
       inicio: t("inicio") || null,
       fim: t("fim") || null,
       imagem_url: imagem,
+      imagem_vertical_url: vertical,
       formato:
         form.get("formato") === "imagem" && imagem ? "imagem" : "composto",
     });
