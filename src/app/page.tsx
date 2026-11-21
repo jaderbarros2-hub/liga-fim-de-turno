@@ -14,6 +14,7 @@ import {
 import { CorridaTemporada } from "@/components/CorridaTemporada";
 import { MesaDeCartas } from "@/components/MesaDeCartas";
 import { SecaoArtigos } from "@/components/Artigos";
+import { EncontreSeuJogo } from "@/components/EncontreSeuJogo";
 import { listarArtigos } from "@/lib/blog";
 import {
   listarEventosEncerrados,
@@ -25,40 +26,13 @@ import { dataCurta, dataLonga, hora } from "@/lib/formato";
 
 export const dynamic = "force-dynamic";
 
-const POR_QUE = [
-  {
-    titulo: "Sem precisar ter as cartas",
-    texto:
-      "Jogue no Endstep, de graça e no navegador. Teste qualquer deck sem gastar com cartas.",
-    icone: "M4 6h11v14H4zM9 4h11v14",
-  },
-  {
-    titulo: "80% da inscrição vira prêmio",
-    texto:
-      "O prêmio cai na sua Carteira: saque por Pix, use em ingressos ou envie para lojas parceiras.",
-    icone: "M12 3v18M17 7H9.5a2.5 2.5 0 000 5h5a2.5 2.5 0 010 5H7",
-  },
-  {
-    titulo: "Decks e resultados públicos",
-    texto:
-      "Classificação, arquétipos e as listas do top 8 ficam no portal para todo mundo estudar.",
-    icone: "M4 20V10M10 20V4M16 20v-7M22 20H2",
-  },
-  {
-    titulo: "Temporada com ranking",
-    texto:
-      "Pontos por resultado e por participação, finais trimestrais e Top 8 anual a partir de 2027.",
-    icone:
-      "M7 4h10v4a5 5 0 01-10 0zM12 13v4M8 21h8M7 6H4a3 3 0 003 3M17 6h3a3 3 0 01-3 3",
-  },
-];
-
 export default async function Inicio() {
-  const [proximos, encerrados, artigos] = await Promise.all([
-    listarProximosEventos(6),
+  const [agenda, encerrados, artigos] = await Promise.all([
+    listarProximosEventos(50),
     listarEventosEncerrados(5),
     listarArtigos(4),
   ]);
+  const proximos = agenda.slice(0, 6);
   const destaque = proximos[0];
   const [inscritos, resultadosEncerrados, mesa] = await Promise.all([
     destaque ? listarInscritos(destaque.id) : Promise.resolve([]),
@@ -175,33 +149,8 @@ export default async function Inicio() {
     <>
       <HeroRotativo destaques={destaques} />
 
-      {/* Por que jogar: os diferenciais, para quem não espera o carrossel */}
-      <section className="border-b border-borda bg-fundo2">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
-          {POR_QUE.map((p) => (
-            <div key={p.titulo} className="flex gap-4">
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                className="mt-0.5 shrink-0 text-ciano"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d={p.icone} />
-              </svg>
-              <div className="flex flex-col gap-1">
-                <h2 className="font-semibold">{p.titulo}</h2>
-                <p className="text-sm text-texto2">{p.texto}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Atalhos para a agenda filtrada */}
+      <EncontreSeuJogo eventos={agenda} />
 
       {/* Próximos eventos */}
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">

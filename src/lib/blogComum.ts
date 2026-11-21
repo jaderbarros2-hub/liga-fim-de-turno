@@ -27,17 +27,29 @@ export type Artigo = {
 
 export const CATEGORIAS: Record<string, string> = {
   pauper: "Pauper",
+  premodern: "Premodern",
   limited: "Limited",
   liga: "Liga",
   geral: "Magic",
 };
 
 /** Sugestões para o campo "tipo" (aparece acima do título). */
-export const TIPOS = ["Artigo", "Guia de deck", "Metagame", "Relatório da etapa", "Notícia", "Draft", "Entrevista", "Opinião"];
+export const TIPOS = [
+  "Artigo",
+  "Guia de deck",
+  "Metagame",
+  "Relatório da etapa",
+  "Notícia",
+  "Draft",
+  "Entrevista",
+  "Opinião",
+];
 
-export const nomeDoAutor = (a: Pick<Artigo, "autor" | "autor_nome">) => a.autor?.nome ?? a.autor_nome;
+export const nomeDoAutor = (a: Pick<Artigo, "autor" | "autor_nome">) =>
+  a.autor?.nome ?? a.autor_nome;
 
-export const minutosDeLeitura = (texto: string) => Math.max(1, Math.round(texto.split(/\s+/).length / 200));
+export const minutosDeLeitura = (texto: string) =>
+  Math.max(1, Math.round(texto.split(/\s+/).length / 200));
 
 export const slugificar = (s: string) =>
   s

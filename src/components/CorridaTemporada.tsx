@@ -18,7 +18,7 @@ export async function CorridaTemporada() {
   );
 
   return (
-    <section className="border-y border-borda bg-fundo2">
+    <section className="border-t border-borda">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>

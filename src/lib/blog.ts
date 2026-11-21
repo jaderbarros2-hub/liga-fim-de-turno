@@ -1,4 +1,7 @@
-import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
+import {
+  criarClienteServidor,
+  supabaseConfigurado,
+} from "@/lib/supabase/server";
 import { arteFixa, type ArteBanco } from "@/lib/artes";
 import type { Artigo } from "@/lib/blogComum";
 
@@ -26,7 +29,9 @@ export async function listarArtigos(
   filtro: { categoria?: string; autor?: string; excluir?: string } = {},
 ): Promise<Artigo[]> {
   if (!supabaseConfigurado()) return [];
-  let q = publicados(await criarClienteServidor()).order("publicado_em", { ascending: false }).limit(limite + (filtro.excluir ? 1 : 0));
+  let q = publicados(await criarClienteServidor())
+    .order("publicado_em", { ascending: false })
+    .limit(limite + (filtro.excluir ? 1 : 0));
   if (filtro.categoria) q = q.eq("categoria", filtro.categoria);
   if (filtro.autor) q = q.eq("autor_id", filtro.autor);
   const { data } = await q;
@@ -39,14 +44,19 @@ export async function listarArtigos(
 export async function paginaDeArtigos(pagina: number, categoria?: string) {
   if (!supabaseConfigurado()) return { artigos: [] as Artigo[], total: 0 };
   const de = (pagina - 1) * POR_PAGINA;
-  let q = publicados(await criarClienteServidor()).order("publicado_em", { ascending: false }).range(de, de + POR_PAGINA - 1);
+  let q = publicados(await criarClienteServidor())
+    .order("publicado_em", { ascending: false })
+    .range(de, de + POR_PAGINA - 1);
   if (categoria) q = q.eq("categoria", categoria);
   const { data, count } = await q;
   return { artigos: lista(data), total: count ?? 0 };
 }
 
 /** Mais lidos dos últimos 90 dias. */
-export async function artigosPopulares(limite = 6, excluir?: string): Promise<Artigo[]> {
+export async function artigosPopulares(
+  limite = 6,
+  excluir?: string,
+): Promise<Artigo[]> {
   if (!supabaseConfigurado()) return [];
   const desde = new Date(Date.now() - 90 * 864e5).toISOString();
   const { data } = await publicados(await criarClienteServidor())
@@ -62,7 +72,11 @@ export async function artigosPopulares(limite = 6, excluir?: string): Promise<Ar
 export async function buscarArtigo(slug: string): Promise<Artigo | null> {
   if (!supabaseConfigurado()) return null;
   const supabase = await criarClienteServidor();
-  const { data } = await supabase.from("artigos").select(CAMPOS).eq("slug", slug).maybeSingle();
+  const { data } = await supabase
+    .from("artigos")
+    .select(CAMPOS)
+    .eq("slug", slug)
+    .maybeSingle();
   return (data as Artigo | null) ?? null;
 }
 
@@ -74,5 +88,10 @@ export async function registrarLeitura(slug: string) {
 
 /** Arte de capa quando o artigo não tem imagem própria: fixa por artigo, do banco de artes. */
 export function arteDoArtigo(a: Pick<Artigo, "id" | "categoria">): ArteBanco {
-  return arteFixa(a.id, a.categoria === "pauper" ? "pauper" : "geral");
+  return arteFixa(
+    a.id,
+    a.categoria === "pauper" || a.categoria === "premodern"
+      ? a.categoria
+      : "geral",
+  );
 }
