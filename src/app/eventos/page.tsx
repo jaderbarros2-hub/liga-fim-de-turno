@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ListaEventos } from "@/components/Eventos";
-import { listarProximosEventos } from "@/lib/dados";
+import { EtiquetaLiga } from "@/components/Eventos";
+import { ListaAgenda } from "@/components/ListaAgenda";
+import {
+  listarEventosEncerrados,
+  listarProximosEventos,
+  listarResultados,
+} from "@/lib/dados";
+import { dataCurta } from "@/lib/formato";
 import { TIPOS_EVENTO, tipoEvento } from "@/lib/tiposEvento";
 
 export const metadata: Metadata = { title: "Agenda de eventos" };
 export const dynamic = "force-dynamic";
-
-const FILTROS = [
-  { valor: undefined, rotulo: "Todos" },
-  { valor: "pauper", rotulo: "Pauper" },
-  { valor: "premodern", rotulo: "Premodern" },
-  { valor: "limited", rotulo: "Limited" },
-];
 
 export default async function Agenda({
   searchParams,
@@ -20,48 +19,48 @@ export default async function Agenda({
   searchParams: Promise<{ liga?: string; tipo?: string }>;
 }) {
   const { liga, tipo } = await searchParams;
+  // ?liga= continua valendo para links antigos (ex.: página da liga)
   const ligaValida =
     liga === "pauper" || liga === "premodern" || liga === "limited"
       ? liga
       : undefined;
   const filtroTipo = tipoEvento(tipo);
-  const eventos = (await listarProximosEventos(50, ligaValida)).filter(
-    (e) => !filtroTipo || filtroTipo.filtra(e),
+  const [proximos, encerrados] = await Promise.all([
+    listarProximosEventos(60, ligaValida),
+    listarEventosEncerrados(5),
+  ]);
+  const eventos = proximos.filter((e) => !filtroTipo || filtroTipo.filtra(e));
+  const ultimos = encerrados.filter(
+    (e) =>
+      (!filtroTipo || filtroTipo.filtra(e)) &&
+      (!ligaValida || e.liga.slug === ligaValida),
   );
+  const campeoes = await Promise.all(
+    ultimos.map(async (e) => (await listarResultados(e.id))[0] ?? null),
+  );
+  const nenhumFiltro = !filtroTipo && !ligaValida;
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-12">
-      <h1 className="titulo text-6xl">Agenda</h1>
-      <nav aria-label="Filtrar por liga" className="flex flex-wrap gap-2">
-        {FILTROS.map((f) => {
-          const ativo = f.valor === ligaValida && !filtroTipo;
+    <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
+      <div className="flex flex-col gap-2">
+        <h1 className="titulo text-6xl">Agenda</h1>
+        <p className="text-texto2">
+          Os próximos eventos da liga, mês a mês. Escolha um formato para
+          filtrar.
+        </p>
+      </div>
+
+      <nav aria-label="Filtrar eventos" className="flex flex-wrap gap-2">
+        {[{ valor: "", rotulo: "Todos" }, ...TIPOS_EVENTO].map((t) => {
+          const ativo = t.valor ? t.valor === filtroTipo?.valor : nenhumFiltro;
           return (
             <Link
-              key={f.rotulo}
-              href={f.valor ? `/eventos?liga=${f.valor}` : "/eventos"}
-              className={`inline-flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold no-underline ${
+              key={t.rotulo}
+              href={t.valor && !ativo ? `/eventos?tipo=${t.valor}` : "/eventos"}
+              className={`inline-flex min-h-10 items-center rounded-full px-4 text-sm font-semibold no-underline ring-1 ${
                 ativo
-                  ? "bg-azul text-white"
-                  : "border border-borda-forte text-gelo"
-              }`}
-              aria-current={ativo ? "page" : undefined}
-            >
-              {f.rotulo}
-            </Link>
-          );
-        })}
-      </nav>
-      <nav aria-label="Filtrar por tipo" className="-mt-2 flex flex-wrap gap-2">
-        {TIPOS_EVENTO.map((t) => {
-          const ativo = t.valor === filtroTipo?.valor;
-          return (
-            <Link
-              key={t.valor}
-              href={ativo ? "/eventos" : `/eventos?tipo=${t.valor}`}
-              className={`inline-flex min-h-9 items-center rounded-full px-3 text-sm font-semibold no-underline ring-1 ${
-                ativo
-                  ? "bg-ciano text-preto ring-ciano"
-                  : "text-texto2 ring-borda hover:text-gelo"
+                  ? "bg-azul text-white ring-azul"
+                  : "text-texto2 ring-borda-forte hover:text-gelo hover:ring-ciano"
               }`}
               aria-current={ativo ? "page" : undefined}
             >
@@ -70,13 +69,55 @@ export default async function Agenda({
           );
         })}
       </nav>
+
       {eventos.length ? (
-        <ListaEventos eventos={eventos} />
+        <ListaAgenda eventos={eventos} />
       ) : (
         <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
-          Nenhum evento {filtroTipo ? `de ${filtroTipo.rotulo}` : ""} na agenda
-          agora. <Link href="/eventos">Ver todos os eventos →</Link>
+          Nenhum evento {filtroTipo ? `de ${filtroTipo.rotulo} ` : ""}na agenda
+          agora. A próxima etapa é anunciada primeiro no Discord.{" "}
+          {!nenhumFiltro && <Link href="/eventos">Ver todos os eventos →</Link>}
         </p>
+      )}
+
+      {ultimos.length > 0 && (
+        <section className="flex flex-col gap-3 border-t border-borda pt-8">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="titulo text-4xl">Últimos eventos</h2>
+            <Link href="/resultados" className="text-sm font-semibold">
+              Todos os resultados →
+            </Link>
+          </div>
+          <ul className="flex flex-col divide-y divide-borda">
+            {ultimos.map((e, i) => (
+              <li key={e.id}>
+                <Link
+                  href={`/eventos/${e.slug}?aba=resultados`}
+                  className="group flex flex-wrap items-center gap-x-5 gap-y-1 py-3 text-gelo no-underline"
+                >
+                  <span className="w-14 text-sm font-semibold text-cinza">
+                    {dataCurta(e.inicio)}
+                  </span>
+                  <span className="min-w-48 flex-1 font-semibold group-hover:text-ciano">
+                    {e.titulo}
+                  </span>
+                  {campeoes[i] && (
+                    <span className="text-sm text-texto2">
+                      Campeão:{" "}
+                      <span className="font-semibold text-gelo">
+                        {campeoes[i].nick_endstep}
+                      </span>
+                    </span>
+                  )}
+                  <EtiquetaLiga evento={e} />
+                  <span className="text-sm font-semibold text-ciano">
+                    Resultado →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );
