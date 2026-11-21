@@ -1,5 +1,31 @@
 # Pendências e ideias para tratar depois
 
+## Plano até o lançamento (combinado em 20/11/2026)
+
+**Agora: automações e testes reais**
+- Automações: lembretes por e-mail (24h antes do evento, deck pendente, aviso de saque automático), avisos no Discord (etapa aberta, resultado) — o Jader cria o canal/servidor no Discord —, botão "Repetir semanalmente" para etapas, pagamento de saques/lojas pela API do Mercado Pago, cartão de crédito no ingresso.
+- Eventos de teste com a comunidade: uma etapa de Pauper, uma de Premodern e uma de Limited, para validar o fluxo completo e coletar opiniões.
+- Validar o pós-evento: copiar classificação e rodadas do Endstep e importar no painel (ajustar o leitor ao formato real); se não funcionar bem, pensar em outra forma.
+- Página de metagame (arquétipos mais jogados, decks em alta, por formato e período).
+
+**Dezembro: base de demonstração e produção**
+- Dados fictícios por cima dos dados reais dos testes: pelo menos 4 meses de temporada simulada (~60 jogadores, etapas dos três formatos, resultados, decks e rankings), para mostrar o portal funcionando. Tudo marcado para limpar antes da produção.
+- Final de dezembro: banco de produção em São Paulo, domínio próprio (no nome do Jader, pessoa física, por enquanto), Resend com domínio, Mercado Pago de produção.
+- Documento de planejamento da empresa: como seria abrir a empresa se o projeto der certo (formato, custos, contas, contratos).
+
+**Por último, antes de lançar**
+- Terminar todas as páginas do portal.
+- Revisão de todos os textos do site e da documentação/regras da liga.
+- Regras do circuito a decidir (vagas do Player of the Year, melhores resultados do trimestre etc.).
+- Media Kit em PDF e reorganização da página de Parceiros; depois, enviar para as lojas.
+
+**Depois do lançamento: roadmap**
+- Criar o roadmap de melhorias.
+- Página de Novidades (releases) para ser transparente com as atualizações.
+- Seja apoiador: orçar brindes com o parceiro, definir valores (hoje sugeridos R$ 19,90/mês e R$ 199/ano) e ver o que sobra para a liga.
+- Orçamento do evento de final de ano.
+
+
 ## 0. Próximos passos combinados (20/11/2026)
 - Home: decidir a faixa abaixo do topo (ponto 2) e revisar os textos das chamadas do topo.
 - Anunciante fictício de exemplo no banner "Anuncie aqui" (home), para mostrar aos parceiros.

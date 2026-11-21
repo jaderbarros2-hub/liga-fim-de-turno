@@ -161,19 +161,8 @@ export default async function Inicio() {
         }))}
       />
 
-      {/* Próximos eventos */}
-      <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="titulo text-5xl">Próximos eventos</h2>
-          <Link href="/eventos" className="text-sm font-semibold">
-            Agenda completa →
-          </Link>
-        </div>
-        <ListaEventos eventos={proximos} />
-      </section>
-
       {/* As ligas, cada uma com sua arte */}
-      <section className="border-t border-borda">
+      <section>
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -213,6 +202,19 @@ export default async function Inicio() {
       <div className="mx-auto max-w-6xl px-6 pb-16">
         <BannerPatrocinado posicao="home" pagina="/" />
       </div>
+
+      {/* Próximos eventos */}
+      <section className="border-t border-borda">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="titulo text-5xl">Próximos eventos</h2>
+            <Link href="/eventos" className="text-sm font-semibold">
+              Agenda completa →
+            </Link>
+          </div>
+          <ListaEventos eventos={proximos} />
+        </div>
+      </section>
 
       {/* Prévia do ranking: top 5 de cada liga */}
       <CorridaTemporada />
