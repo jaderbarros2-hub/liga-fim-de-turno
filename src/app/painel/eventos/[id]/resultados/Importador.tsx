@@ -9,6 +9,7 @@ import {
   type Inscrito,
   type LinhaResultado,
 } from "@/lib/resultados";
+import { lerPartidas, porRodada, type Partida } from "@/lib/partidas";
 import { salvarResultados, type EstadoResultados } from "./actions";
 
 const reais = (c: number) =>
@@ -24,6 +25,7 @@ export function Importador({
   formato,
   distribuicaoInicial,
   linhasIniciais,
+  partidasIniciais,
   bloqueado,
 }: {
   eventoId: string;
@@ -32,9 +34,13 @@ export function Importador({
   formato: string;
   distribuicaoInicial: string;
   linhasIniciais: LinhaResultado[];
+  partidasIniciais: Partida[];
   bloqueado: boolean;
 }) {
   const [texto, setTexto] = useState("");
+  const [textoRodadas, setTextoRodadas] = useState("");
+  const [partidas, setPartidas] = useState<Partida[]>(partidasIniciais);
+  const [ignoradas, setIgnoradas] = useState<string[]>([]);
   const [linhas, setLinhas] = useState<LinhaResultado[]>(linhasIniciais);
   const [distribuicao, setDistribuicao] = useState(distribuicaoInicial);
   const [estado, acao, enviando] = useActionState<EstadoResultados, FormData>(
@@ -54,6 +60,17 @@ export function Importador({
 
   function ler() {
     setLinhas(lerClassificacao(texto, inscritos));
+  }
+
+  function lerRodadas() {
+    // Nicks conhecidos: os da classificação (com o cadastro associado) e os inscritos
+    const conhecidos = [
+      ...linhas.map((l) => ({ nick: l.nick, jogadorId: l.jogadorId })),
+      ...inscritos.map((i) => ({ nick: i.nick, jogadorId: i.jogadorId })),
+    ];
+    const r = lerPartidas(textoRodadas, conhecidos);
+    setPartidas(r.partidas);
+    setIgnoradas(r.ignoradas);
   }
 
   function associar(indice: number, jogadorId: string) {
@@ -94,6 +111,7 @@ export function Importador({
     dados.set("evento_id", eventoId);
     dados.set("distribuicao", distribuicao);
     dados.set("linhas", JSON.stringify(linhas));
+    dados.set("partidas", JSON.stringify(partidas));
     dados.set("publicar", publicar ? "sim" : "nao");
     startTransition(() => acao(dados));
   }
@@ -125,6 +143,88 @@ export function Importador({
           >
             Ler classificação
           </button>
+        </section>
+      )}
+
+      {!bloqueado && (
+        <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
+          <h2 className="titulo text-2xl">
+            1b · Rodadas{" "}
+            <span className="text-base font-normal text-cinza">
+              (histórico de partidas)
+            </span>
+          </h2>
+          <p className="text-sm text-texto2">
+            Depois da classificação, cole as rodadas do Endstep: quem jogou
+            contra quem e o placar. Pode colar todas de uma vez, com os títulos
+            (Round 1, Round 2, Semifinal, Final). Fica público na página do
+            evento.
+          </p>
+          <textarea
+            value={textoRodadas}
+            onChange={(e) => setTextoRodadas(e.target.value)}
+            rows={8}
+            placeholder={
+              "Round 1\nTable 1  fulano  2-1  ciclano\nTable 2  beltrano  0-2  outro\nRound 2\n..."
+            }
+            className={`${campo} py-2 font-mono text-sm`}
+          />
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={lerRodadas}
+              disabled={!textoRodadas.trim()}
+              className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-gelo hover:border-ciano disabled:opacity-50"
+            >
+              Ler rodadas
+            </button>
+            {!linhas.length && (
+              <span className="text-xs text-alerta">
+                Leia a classificação primeiro: ela ensina os nicks ao leitor.
+              </span>
+            )}
+          </div>
+          {ignoradas.length > 0 && (
+            <div className="rounded-lg border border-alerta/50 p-3 text-sm">
+              <p className="font-semibold text-alerta">
+                {ignoradas.length}{" "}
+                {ignoradas.length === 1
+                  ? "linha não reconhecida"
+                  : "linhas não reconhecidas"}{" "}
+                (nick fora da classificação ou sem placar):
+              </p>
+              <ul className="mt-1 font-mono text-xs text-texto2">
+                {ignoradas.slice(0, 8).map((l, i) => (
+                  <li key={i}>{l}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {partidas.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {porRodada(partidas).map((g) => (
+                <div
+                  key={g.rodada}
+                  className="rounded-lg border border-borda p-3 text-sm"
+                >
+                  <p className="mb-1 font-semibold text-ciano">{g.rotulo}</p>
+                  <ul className="flex flex-col gap-0.5 text-texto2">
+                    {g.partidas.map((p, i) => (
+                      <li key={i}>
+                        {p.jogadorA}{" "}
+                        <span className="font-semibold text-gelo">
+                          {p.jogadorB
+                            ? `${p.vitoriasA}-${p.vitoriasB}${p.empates ? `-${p.empates}` : ""}`
+                            : "bye"}
+                        </span>{" "}
+                        {p.jogadorB ?? ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 

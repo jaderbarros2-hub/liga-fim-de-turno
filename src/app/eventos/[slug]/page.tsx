@@ -25,7 +25,13 @@ import { GaleriaCartas, type CartaGaleria } from "@/components/GaleriaCartas";
 import { capaDoEvento } from "@/lib/artes";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { NOMES_TIPO, periodo, TABELA_PONTOS } from "@/lib/circuito";
-import { buscarEvento, listarInscritos, listarResultados } from "@/lib/dados";
+import {
+  buscarEvento,
+  listarInscritos,
+  listarPartidas,
+  listarResultados,
+} from "@/lib/dados";
+import { Rodadas } from "@/components/Rodadas";
 import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
 import {
   dataCurta,
@@ -61,10 +67,11 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados, decks] = await Promise.all([
+  const [inscritos, resultados, decks, partidas] = await Promise.all([
     listarInscritos(evento.id),
     listarResultados(evento.id),
     decksDaClassificacao(evento.id),
+    listarPartidas(evento.id),
   ]);
   const temResultado = resultados.length > 0;
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
@@ -397,6 +404,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   {TOP_PUBLICO} ficam públicas depois do resultado; o arquétipo
                   de todos entra no metagame.
                 </p>
+                <Rodadas partidas={partidas} />
               </div>
             ))}
 

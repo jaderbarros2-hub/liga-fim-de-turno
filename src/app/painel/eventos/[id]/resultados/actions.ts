@@ -6,6 +6,7 @@ import {
   premiosDoEvento,
   type LinhaResultado,
 } from "@/lib/resultados";
+import type { Partida } from "@/lib/partidas";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { criarClienteServidor } from "@/lib/supabase/server";
 
@@ -116,6 +117,37 @@ export async function salvarResultados(
       erro: `Não foi possível gravar a classificação: ${erroRes.message}`,
     };
 
+  // Rodadas (opcional): substitui o histórico de partidas do evento
+  let partidas: Partida[] = [];
+  try {
+    partidas = JSON.parse(String(form.get("partidas") ?? "[]"));
+  } catch {
+    partidas = [];
+  }
+  await db.from("partidas").delete().eq("evento_id", eventoId);
+  if (partidas.length) {
+    const { error } = await db.from("partidas").insert(
+      partidas.map((p) => ({
+        evento_id: eventoId,
+        rodada: p.rodada,
+        fase: p.fase,
+        rotulo: p.rotulo,
+        mesa: p.mesa,
+        jogador_a: p.jogadorA,
+        jogador_b: p.jogadorB,
+        jogador_a_id: p.jogadorAId,
+        jogador_b_id: p.jogadorBId,
+        vitorias_a: p.vitoriasA,
+        vitorias_b: p.vitoriasB,
+        empates: p.empates,
+      })),
+    );
+    if (error)
+      return {
+        erro: `Classificação salva, mas as rodadas não: ${error.message}. Confira se a migração 0019 foi aplicada.`,
+      };
+  }
+
   await db.from("premios").delete().eq("evento_id", eventoId);
   const premios = valores
     .map((v, i) => ({
@@ -147,7 +179,11 @@ export async function salvarResultados(
     acao: publicar ? "resultados_publicados" : "resultados_salvos",
     entidade: "eventos",
     entidade_id: eventoId,
-    detalhes: { jogadores: linhas.length, premio_total: total },
+    detalhes: {
+      jogadores: linhas.length,
+      partidas: partidas.length,
+      premio_total: total,
+    },
   });
 
   revalidatePath(`/painel/eventos/${eventoId}/resultados`);
@@ -155,8 +191,8 @@ export async function salvarResultados(
   revalidatePath("/resultados");
   return {
     ok: publicar
-      ? "Resultados publicados no site."
-      : "Classificação salva (ainda não publicada).",
+      ? `Resultados publicados no site${partidas.length ? `, com ${partidas.length} partidas` : ""}.`
+      : `Classificação salva${partidas.length ? ` com ${partidas.length} partidas` : ""} (ainda não publicada).`,
   };
 }
 
@@ -192,14 +228,12 @@ export async function liberarPremiosNaCarteira(form: FormData) {
     .single();
   const { liberarPremios } = await import("@/lib/carteira");
   const n = await liberarPremios(eventoId, evento?.titulo ?? "Etapa");
-  await db
-    .from("registro_atividades")
-    .insert({
-      ator_id: ator,
-      acao: "premios_liberados",
-      entidade: "eventos",
-      entidade_id: eventoId,
-      detalhes: { premios: n },
-    });
+  await db.from("registro_atividades").insert({
+    ator_id: ator,
+    acao: "premios_liberados",
+    entidade: "eventos",
+    entidade_id: eventoId,
+    detalhes: { premios: n },
+  });
   revalidatePath(`/painel/eventos/${eventoId}/resultados`);
 }

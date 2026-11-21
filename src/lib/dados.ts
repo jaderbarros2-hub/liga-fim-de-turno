@@ -232,3 +232,18 @@ export async function eventosDaLoja(
     passados: (r as Evento[] | null) ?? [],
   };
 }
+
+/** Partidas do evento (rodadas e eliminatórias), públicas quando o resultado sai. */
+export async function listarPartidas(eventoId: string) {
+  if (!supabaseConfigurado()) return [];
+  const supabase = await criarClienteServidor();
+  const { data } = await supabase
+    .from("partidas")
+    .select(
+      "rodada, fase, rotulo, mesa, jogador_a, jogador_b, vitorias_a, vitorias_b, empates",
+    )
+    .eq("evento_id", eventoId)
+    .order("rodada")
+    .order("mesa");
+  return data ?? [];
+}

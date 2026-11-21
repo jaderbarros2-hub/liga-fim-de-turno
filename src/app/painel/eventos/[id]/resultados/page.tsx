@@ -2,6 +2,7 @@ import { BotaoEnviar } from "@/components/BotaoEnviar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { reais } from "@/lib/formato";
+import { type Partida } from "@/lib/partidas";
 import { type Inscrito, type LinhaResultado } from "@/lib/resultados";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { liberarPremiosNaCarteira } from "./actions";
@@ -40,28 +41,53 @@ export default async function ResultadosEvento({
     .maybeSingle();
   if (!evento) notFound();
 
-  const [{ data: inscricoes }, { data: resultados }, { data: premios }] =
-    await Promise.all([
-      supabase
-        .from("inscricoes")
-        .select("jogador_id, jogador:jogadores(nick_endstep, nome)")
-        .eq("evento_id", id)
-        .eq("status", "confirmada"),
-      supabase
-        .from("resultados")
-        .select(
-          "posicao, nick_endstep, jogador_id, pontos, vitorias, empates, derrotas",
-        )
-        .eq("evento_id", id)
-        .order("posicao"),
-      supabase
-        .from("premios")
-        .select(
-          "id, posicao, valor_centavos, status, pago_em, jogador:jogadores(nick_endstep, nome, chave_pix, responsavel_nome)",
-        )
-        .eq("evento_id", id)
-        .order("posicao"),
-    ]);
+  const [
+    { data: inscricoes },
+    { data: resultados },
+    { data: premios },
+    { data: partidasSalvas },
+  ] = await Promise.all([
+    supabase
+      .from("inscricoes")
+      .select("jogador_id, jogador:jogadores(nick_endstep, nome)")
+      .eq("evento_id", id)
+      .eq("status", "confirmada"),
+    supabase
+      .from("resultados")
+      .select(
+        "posicao, nick_endstep, jogador_id, pontos, vitorias, empates, derrotas",
+      )
+      .eq("evento_id", id)
+      .order("posicao"),
+    supabase
+      .from("premios")
+      .select(
+        "id, posicao, valor_centavos, status, pago_em, jogador:jogadores(nick_endstep, nome, chave_pix, responsavel_nome)",
+      )
+      .eq("evento_id", id)
+      .order("posicao"),
+    supabase
+      .from("partidas")
+      .select(
+        "rodada, fase, rotulo, mesa, jogador_a, jogador_b, jogador_a_id, jogador_b_id, vitorias_a, vitorias_b, empates",
+      )
+      .eq("evento_id", id)
+      .order("rodada")
+      .order("mesa"),
+  ]);
+  const partidasIniciais: Partida[] = (partidasSalvas ?? []).map((p) => ({
+    rodada: p.rodada,
+    fase: p.fase,
+    rotulo: p.rotulo ?? `Rodada ${p.rodada}`,
+    mesa: p.mesa,
+    jogadorA: p.jogador_a,
+    jogadorB: p.jogador_b,
+    jogadorAId: p.jogador_a_id,
+    jogadorBId: p.jogador_b_id,
+    vitoriasA: p.vitorias_a,
+    vitoriasB: p.vitorias_b,
+    empates: p.empates,
+  }));
 
   type InscricaoLinha = {
     jogador_id: string;
@@ -107,6 +133,7 @@ export default async function ResultadosEvento({
         formato={evento.formato}
         distribuicaoInicial={(evento.distribuicao_premio ?? []).join("/")}
         linhasIniciais={linhasIniciais}
+        partidasIniciais={partidasIniciais}
         bloqueado={algumPago}
       />
 
