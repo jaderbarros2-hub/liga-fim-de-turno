@@ -24,25 +24,20 @@ export function PremiosExtras({
       {premios.map((p) => (
         <li
           key={p.id}
-          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-dashed border-ciano/40 px-4 py-2.5 text-sm"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-dashed border-[#ffc24a]/60 bg-[#ffc24a]/5 px-4 py-2.5 text-sm"
         >
-          <span className="font-bold uppercase tracking-wider text-ciano">
+          <span className="font-bold uppercase tracking-wider text-[#ffc24a]">
             + Bônus
           </span>
-          {p.parceiro?.logo_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={p.parceiro.logo_url}
-              alt=""
-              className="h-5 w-auto max-w-16 object-contain"
-            />
-          )}
           <span className="text-texto2">
             <span className="font-semibold text-gelo">{p.descricao}</span>{" "}
             {p.parceiro?.slug ? (
               <>
                 na{" "}
-                <Link href={`/parceiros/${p.parceiro.slug}`}>
+                <Link
+                  href={`/parceiros/${p.parceiro.slug}`}
+                  className="text-[#ffc24a] hover:text-[#ffd57f]"
+                >
                   {p.parceiro.nome}
                 </Link>
               </>
@@ -55,7 +50,7 @@ export function PremiosExtras({
               : `para o ${p.posicao ?? 1}º lugar`}
           </span>
           {mostrarGanhador && p.entregue_em && (
-            <span className="font-semibold text-ciano">
+            <span className="font-semibold text-[#ffc24a]">
               · Ganhador:{" "}
               {p.jogador?.nick_endstep || p.jogador?.nome || "jogador"}
             </span>

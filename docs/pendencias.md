@@ -69,4 +69,5 @@ Tudo marcado no banco de teste para limpar com um comando antes da produção.
 - Futuro da Carteira: desconto em ingressos e lojinha de brindes da liga.
 - Termo simples de parceria com as lojas (prazo de 2 dias úteis, bônus, dados do cliente).
 
+- Limpeza: apagar a "Loja Exemplo" (parceiro fictício) e o banner de demonstração; o arquivo public/exemplos/banner-loja-exemplo.jpg.
 - Limpeza: apagar o ajuste "Saldo de teste (apagar depois)" de R$ 50 da Carteira do Infinity420.
