@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { capaDoArtigo } from "@/components/Artigos";
 import { ArtigoCompleto } from "@/components/ArtigoCompleto";
-import { artigosPopulares, buscarArtigo, listarArtigos, registrarLeitura } from "@/lib/blog";
-import { lojaParaDeck } from "@/lib/parceiros";
+import {
+  artigosPopulares,
+  buscarArtigo,
+  listarArtigos,
+  registrarLeitura,
+} from "@/lib/blog";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +19,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: artigo.titulo,
     description: artigo.resumo ?? undefined,
-    openGraph: { title: artigo.titulo, description: artigo.resumo ?? undefined, type: "article", images: [capaDoArtigo(artigo).src] },
+    openGraph: {
+      title: artigo.titulo,
+      description: artigo.resumo ?? undefined,
+      type: "article",
+      images: [capaDoArtigo(artigo).src],
+    },
   };
 }
 
@@ -23,14 +32,18 @@ export default async function PaginaArtigo({ params }: Props) {
   const { slug } = await params;
   const artigo = await buscarArtigo(slug);
   if (!artigo) notFound();
-  const publicado = artigo.status === "publicado" && !!artigo.publicado_em && artigo.publicado_em <= new Date().toISOString();
+  const publicado =
+    artigo.status === "publicado" &&
+    !!artigo.publicado_em &&
+    artigo.publicado_em <= new Date().toISOString();
 
-  const [populares, doAutor, ultimos, mesmaCategoria, loja] = await Promise.all([
+  const [populares, doAutor, ultimos, mesmaCategoria] = await Promise.all([
     artigosPopulares(6, artigo.id),
-    artigo.autor_id ? listarArtigos(5, { autor: artigo.autor_id, excluir: artigo.id }) : Promise.resolve([]),
+    artigo.autor_id
+      ? listarArtigos(5, { autor: artigo.autor_id, excluir: artigo.id })
+      : Promise.resolve([]),
     listarArtigos(4, { excluir: artigo.id }),
     listarArtigos(4, { categoria: artigo.categoria, excluir: artigo.id }),
-    lojaParaDeck(),
     publicado ? registrarLeitura(artigo.slug) : Promise.resolve(),
   ]);
 
@@ -42,7 +55,7 @@ export default async function PaginaArtigo({ params }: Props) {
       doAutor={doAutor}
       ultimos={ultimos}
       mesmaCategoria={mesmaCategoria}
-      loja={loja ? { id: loja.id, nome: loja.nome } : null}
+      loja={null}
     />
   );
 }

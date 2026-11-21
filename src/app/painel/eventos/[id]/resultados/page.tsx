@@ -7,6 +7,8 @@ import { type Inscrito, type LinhaResultado } from "@/lib/resultados";
 import { criarClienteServidor } from "@/lib/supabase/server";
 import { liberarPremiosNaCarteira } from "./actions";
 import { Importador } from "./Importador";
+import { PremiosParceirosPainel } from "../PremiosParceiros";
+import { premiosDoEventoParceiros } from "@/lib/premiosParceiros";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +28,14 @@ type Premio = {
 
 export default async function ResultadosEvento({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ sorteado?: string; erro_sorteio?: string }>;
 }) {
   const { id } = await params;
+  const aviso = await searchParams;
+  const premiosExtras = await premiosDoEventoParceiros(id);
   const supabase = await criarClienteServidor();
 
   const { data: evento } = await supabase
@@ -136,6 +142,26 @@ export default async function ResultadosEvento({
         partidasIniciais={partidasIniciais}
         bloqueado={algumPago}
       />
+
+      {premiosExtras.length > 0 && (
+        <PremiosParceirosPainel
+          eventoId={id}
+          premios={premiosExtras}
+          parceiros={[]}
+          modo="resultado"
+          mensagem={
+            aviso.sorteado
+              ? {
+                  tipo: "ok",
+                  texto:
+                    "Sorteio feito: o prêmio foi para a Carteira do jogador e ele recebeu um e-mail.",
+                }
+              : aviso.erro_sorteio
+                ? { tipo: "erro", texto: aviso.erro_sorteio }
+                : null
+          }
+        />
+      )}
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <h2 className="titulo text-2xl">3 · Liberar prêmios na Carteira</h2>

@@ -233,7 +233,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
           [
             "compra_deck",
             "Vende cartas",
-            "Aparece no botão “Comprar este deck”.",
+            "Só informativo, para a organização.",
             papeis.venda,
             "venda",
           ],

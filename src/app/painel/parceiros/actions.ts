@@ -29,8 +29,17 @@ async function subirImagem(
 ): Promise<string | null> {
   if (!arquivo || !arquivo.size) return null;
   if (arquivo.size > 3 * 1024 * 1024) throw new Error("Imagem maior que 3 MB.");
-  if (!/^image\/(png|jpe?g|webp|svg\+xml)$/.test(arquivo.type))
-    throw new Error("Use PNG, JPG, WebP ou SVG.");
+  // GIF só nos banners (arte animada da loja)
+  const tipos =
+    pasta === "banners"
+      ? /^image\/(png|jpe?g|webp|gif)$/
+      : /^image\/(png|jpe?g|webp|svg\+xml)$/;
+  if (!tipos.test(arquivo.type))
+    throw new Error(
+      pasta === "banners"
+        ? "Use PNG, JPG, WebP ou GIF."
+        : "Use PNG, JPG, WebP ou SVG.",
+    );
   const ext = arquivo.type
     .split("/")[1]
     .replace("svg+xml", "svg")
@@ -202,6 +211,8 @@ export async function salvarBanner(form: FormData) {
       inicio: t("inicio") || null,
       fim: t("fim") || null,
       imagem_url: imagem,
+      formato:
+        form.get("formato") === "imagem" && imagem ? "imagem" : "composto",
     });
   revalidatePath("/", "layout");
   redirect("/painel/parceiros");

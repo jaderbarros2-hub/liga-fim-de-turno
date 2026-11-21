@@ -27,6 +27,7 @@ import {
   SAQUE_MINIMO,
 } from "@/lib/carteira";
 import { CarteiraAcoes } from "./CarteiraAcoes";
+import { meusPremiosParceiros } from "@/lib/premiosParceiros";
 import { FormularioCadastro } from "../cadastro/Formulario";
 import { FormularioPerfil } from "./FormularioPerfil";
 import { linkJogador, type Redes } from "@/lib/perfil";
@@ -181,6 +182,7 @@ export default async function MinhaArea({
     movimentosDaCarteira(user.id),
   ]);
   const movimentos = dCred;
+  const cupons = aba === "carteira" ? await meusPremiosParceiros(user.id) : [];
   const saldo = movimentos
     .filter((m) => m.status !== "cancelado")
     .reduce((s, m) => s + m.valor_centavos, 0);
@@ -844,6 +846,51 @@ export default async function MinhaArea({
               }
               lojas={lojasCredito}
             />
+
+            {cupons.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <h2 className="titulo text-3xl">Cupons e brindes</h2>
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {cupons.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex flex-col gap-2 rounded-md bg-grafite p-4 ring-1 ring-borda"
+                    >
+                      <span className="flex items-center gap-3">
+                        {c.parceiro?.logo_url && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={c.parceiro.logo_url}
+                            alt=""
+                            className="h-9 w-12 rounded bg-white/5 object-contain p-0.5"
+                          />
+                        )}
+                        <span className="flex flex-col">
+                          <span className="font-semibold">{c.descricao}</span>
+                          <span className="text-xs text-cinza">
+                            {c.parceiro?.nome} · {c.evento?.titulo}
+                          </span>
+                        </span>
+                      </span>
+                      {c.codigo ? (
+                        <span className="rounded border border-dashed border-ciano/60 px-3 py-2 text-center font-mono text-lg font-bold tracking-wider text-ciano">
+                          {c.codigo}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-texto2">
+                          A organização combina a entrega com você.
+                        </span>
+                      )}
+                      {c.validade && (
+                        <span className="text-xs text-cinza">
+                          Válido até {c.validade.split("-").reverse().join("/")}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="flex flex-col gap-3">
               <h2 className="titulo text-3xl">Histórico</h2>

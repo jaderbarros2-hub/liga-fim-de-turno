@@ -7,6 +7,8 @@ import { criarClienteServidor } from "@/lib/supabase/server";
 import { FormularioEvento } from "../FormularioEvento";
 import { escreverPerguntas } from "@/lib/eventoInfo";
 import { confirmarManual } from "./inscritos";
+import { PremiosParceirosPainel } from "./PremiosParceiros";
+import { premiosDoEventoParceiros } from "@/lib/premiosParceiros";
 
 type Inscrito = {
   id: string;
@@ -36,10 +38,13 @@ function paraCampo(iso: string) {
 
 export default async function EditarEvento({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ ok_premio?: string; erro_premio?: string }>;
 }) {
   const { id } = await params;
+  const aviso = await searchParams;
   const supabase = await criarClienteServidor();
   const [{ data: evento }, { data: ligas }, { data: link }, { data: lojas }] =
     await Promise.all([
@@ -64,6 +69,15 @@ export default async function EditarEvento({
         .order("nome"),
     ]);
   if (!evento) notFound();
+
+  const [premiosExtras, { data: todosParceiros }] = await Promise.all([
+    premiosDoEventoParceiros(id),
+    supabase
+      .from("parceiros")
+      .select("id, nome")
+      .eq("ativo", true)
+      .order("nome"),
+  ]);
 
   const { data: inscricoes } = await supabase
     .from("inscricoes")
@@ -90,6 +104,22 @@ export default async function EditarEvento({
           <Link href={`/eventos/${evento.slug}`}>Ver página pública</Link>
         </div>
       </div>
+      <PremiosParceirosPainel
+        eventoId={evento.id}
+        premios={premiosExtras}
+        parceiros={todosParceiros ?? []}
+        modo="cadastro"
+        mensagem={
+          aviso.ok_premio
+            ? { tipo: "ok", texto: "Prêmio adicionado." }
+            : aviso.erro_premio
+              ? {
+                  tipo: "erro",
+                  texto: "Escolha a loja e escreva a descrição do prêmio.",
+                }
+              : null
+        }
+      />
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="titulo text-3xl">Inscritos</h2>

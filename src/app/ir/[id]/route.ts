@@ -55,6 +55,10 @@ async function redirecionar(req: Request, { params }: { params: Promise<{ id: st
   }
   alvo.searchParams.set("utm_source", "ligafimdeturno");
   alvo.searchParams.set("utm_medium", origem);
-  alvo.searchParams.set("utm_campaign", pagina?.startsWith("/eventos") ? "evento" : origem === "deck" ? "deck" : "portal");
+  // Campanha: o evento (slug) quando o clique vem da página de um evento; senão a seção do portal
+  const evento = pagina?.match(/^\/eventos\/([^/?#]+)/)?.[1];
+  const secao = pagina?.split("/")[1] || "home";
+  alvo.searchParams.set("utm_campaign", evento ?? secao);
+  if (pagina) alvo.searchParams.set("utm_content", pagina.slice(0, 100));
   return NextResponse.redirect(alvo, 302);
 }

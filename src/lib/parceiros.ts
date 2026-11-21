@@ -1,4 +1,7 @@
-import { criarClienteServidor, supabaseConfigurado } from "@/lib/supabase/server";
+import {
+  criarClienteServidor,
+  supabaseConfigurado,
+} from "@/lib/supabase/server";
 
 export type Parceiro = {
   id: string;
@@ -24,13 +27,20 @@ export type Banner = {
   texto: string | null;
   imagem_url: string | null;
   posicoes: string[];
+  /** "imagem": a arte da loja aparece inteira (aceita GIF). "composto": logo e texto sobre a imagem. */
+  formato?: "composto" | "imagem";
   parceiro: { nome: string; logo_url: string | null } | null;
 };
 
 export type Posicao = "home" | "evento" | "deck";
 
 /** Link rastreado: passa por /ir, que conta o clique e redireciona com UTM. */
-export const linkRastreado = (p: { parceiro: string; banner?: string; origem: "logo" | "banner" | "deck"; pagina?: string }) => {
+export const linkRastreado = (p: {
+  parceiro: string;
+  banner?: string;
+  origem: "logo" | "banner" | "deck";
+  pagina?: string;
+}) => {
   const q = new URLSearchParams({ o: p.origem });
   if (p.banner) q.set("b", p.banner);
   if (p.pagina) q.set("p", p.pagina);
@@ -42,7 +52,9 @@ export async function listarParceiros(): Promise<Parceiro[]> {
   const supabase = await criarClienteServidor();
   const { data } = await supabase
     .from("parceiros")
-    .select("id, nome, descricao, logo_url, site_url, url_compra_lista, compra_deck, slug, mostrar_logo, sede_eventos, aceita_credito, bonus_credito_pct, cidade, uf")
+    .select(
+      "id, nome, descricao, logo_url, site_url, url_compra_lista, compra_deck, slug, mostrar_logo, sede_eventos, aceita_credito, bonus_credito_pct, cidade, uf",
+    )
     .eq("ativo", true)
     .order("ordem")
     .order("nome");
@@ -56,13 +68,18 @@ export async function bannerPara(posicao: Posicao): Promise<Banner | null> {
   const hoje = new Date().toISOString().slice(0, 10);
   const { data } = await supabase
     .from("banners")
-    .select("id, parceiro_id, titulo, texto, imagem_url, posicoes, inicio, fim, parceiro:parceiros!inner(nome, logo_url, ativo)")
+    .select(
+      "id, parceiro_id, titulo, texto, imagem_url, posicoes, formato, inicio, fim, parceiro:parceiros!inner(nome, logo_url, ativo)",
+    )
     .eq("ativo", true)
     .eq("parceiro.ativo", true)
     .contains("posicoes", [posicao]);
-  const validos = ((data as unknown as (Banner & { inicio: string | null; fim: string | null })[]) ?? []).filter(
-    (b) => (!b.inicio || b.inicio <= hoje) && (!b.fim || b.fim >= hoje),
-  );
+  const validos = (
+    (data as unknown as (Banner & {
+      inicio: string | null;
+      fim: string | null;
+    })[]) ?? []
+  ).filter((b) => (!b.inicio || b.inicio <= hoje) && (!b.fim || b.fim >= hoje));
   if (!validos.length) return null;
   return validos[Math.floor(Math.random() * validos.length)];
 }

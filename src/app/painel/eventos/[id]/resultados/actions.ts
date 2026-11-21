@@ -174,6 +174,13 @@ export async function salvarResultados(
     })
     .eq("id", eventoId);
 
+  // Prêmios extras dos parceiros por posição: entregues ao publicar
+  if (publicar) {
+    const { entregarPremiosPorPosicao } =
+      await import("@/lib/premiosParceiros");
+    await entregarPremiosPorPosicao(eventoId, linhas);
+  }
+
   await db.from("registro_atividades").insert({
     ator_id: ator,
     acao: publicar ? "resultados_publicados" : "resultados_salvos",

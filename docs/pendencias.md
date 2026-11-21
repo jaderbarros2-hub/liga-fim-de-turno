@@ -3,7 +3,8 @@
 ## 0. Próximos passos combinados (20/11/2026)
 - Home: decidir a faixa abaixo do topo (ponto 2) e revisar os textos das chamadas do topo.
 - Anunciante fictício de exemplo no banner "Anuncie aqui" (home), para mostrar aos parceiros.
-- Media Kit para lojas e parceiros: onde cada anúncio aparece, formatos, tamanhos e alcance.
+- Media Kit (PDF na página de Parceiros) — deixar para as últimas etapas: depende da comunicação e da definição final da dinâmica de parceria (permuta: prêmios/cupons e divulgação em troca de visibilidade; níveis Apoiador, Parceiro oficial e Sede; especificações dos banners 1200×200, GIF; relatório de cliques com UTM).
+- Testar "comprar por lista" das lojas na plataforma LigaMagic antes de voltar a pensar em botão de compra (hoje removido).
 
 Lista viva do que ficou combinado para fases futuras. Atualizada em 18/11/2026.
 

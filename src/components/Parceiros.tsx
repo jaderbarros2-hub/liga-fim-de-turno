@@ -94,6 +94,33 @@ export async function BannerPatrocinado({
       </Link>
     );
   }
+  if (banner.formato === "imagem" && banner.imagem_url) {
+    // Arte da própria loja, inteira (JPG, PNG, WebP ou GIF), proporção 6:1 (ex.: 1200×200)
+    return (
+      <a
+        href={linkRastreado({
+          parceiro: banner.parceiro_id,
+          banner: banner.id,
+          origem: "banner",
+          pagina,
+        })}
+        rel="sponsored noopener"
+        target="_blank"
+        title={banner.titulo}
+        className="group relative block overflow-hidden rounded-lg ring-1 ring-borda hover:ring-ciano"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={banner.imagem_url}
+          alt={`${banner.parceiro?.nome ?? "Parceiro"}: ${banner.titulo}`}
+          className="aspect-[6/1] w-full object-cover"
+        />
+        <span className="absolute right-2 top-2 rounded bg-preto/70 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cinza">
+          Patrocinado
+        </span>
+      </a>
+    );
+  }
   return (
     <a
       href={linkRastreado({

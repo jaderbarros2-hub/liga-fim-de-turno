@@ -12,6 +12,7 @@ const NOMES: Record<string, string> = {
   saque_pago: "Saque pago",
   resgate_solicitado: "Resgate em loja (jogador)",
   resgate_loja: "Resgate em loja (loja)",
+  premio_parceiro: "Prêmio de parceiro",
   organizacao: "Aviso à organização",
   teste: "Teste",
 };

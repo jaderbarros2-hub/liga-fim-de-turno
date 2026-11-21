@@ -64,7 +64,7 @@ export async function Cabecalho() {
 
         <nav
           aria-label="Principal"
-          className="order-last flex w-full items-center justify-between text-[13px] font-semibold uppercase sm:justify-start sm:gap-6 md:order-none md:mr-auto md:w-auto md:text-sm"
+          className="order-last flex w-full flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[13px] font-semibold uppercase sm:justify-start sm:gap-6 md:order-none md:mr-auto md:w-auto md:text-sm"
         >
           <MenuSuspenso
             gatilho="Formatos"
@@ -84,6 +84,9 @@ export async function Cabecalho() {
           </Link>
           <Link href="/sobre" className={linkMenu}>
             Sobre
+          </Link>
+          <Link href="/parceiros" className={linkMenu}>
+            Parceiros
           </Link>
         </nav>
 

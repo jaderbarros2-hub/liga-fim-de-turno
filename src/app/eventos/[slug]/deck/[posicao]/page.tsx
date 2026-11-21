@@ -9,7 +9,6 @@ import { NOMES_TIPO } from "@/lib/circuito";
 import { buscarEvento } from "@/lib/dados";
 import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
 import { dataLonga } from "@/lib/formato";
-import { lojaParaDeck } from "@/lib/parceiros";
 import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
@@ -45,9 +44,8 @@ export default async function DeckPublico({ params }: Props) {
   if (!deck?.principal) notFound();
   const sideboard = deck.sideboard ?? [];
 
-  const [cartas, loja, { data: res }] = await Promise.all([
+  const [cartas, { data: res }] = await Promise.all([
     buscarCartas([...deck.principal, ...sideboard].map((i) => i.nome)),
-    lojaParaDeck(),
     criarClienteAdmin()
       .from("resultados")
       .select("vitorias, derrotas, empates")
@@ -66,15 +64,7 @@ export default async function DeckPublico({ params }: Props) {
       titulo={deck.arquetipo ?? deck.deckNome ?? "Deck"}
       pagina={pagina}
       arteReserva={arteDoEvento(evento)}
-      loja={
-        loja
-          ? {
-              id: loja.id,
-              nome: loja.nome,
-              aceitaLista: !!loja.url_compra_lista,
-            }
-          : null
-      }
+      patrocinio={<BannerPatrocinado posicao="deck" pagina={pagina} />}
       autor={{ nick: deck.nick, avatar: null }}
       detalhe={dataLonga(evento.inicio)}
       caminho={

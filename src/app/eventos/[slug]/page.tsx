@@ -32,6 +32,8 @@ import {
   listarResultados,
 } from "@/lib/dados";
 import { Rodadas } from "@/components/Rodadas";
+import { PremiosExtras } from "@/components/PremiosExtras";
+import { premiosDoEventoParceiros } from "@/lib/premiosParceiros";
 import { decksDaClassificacao, TOP_PUBLICO } from "@/lib/decksEvento";
 import {
   dataCurta,
@@ -67,12 +69,14 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
   const evento = await buscarEvento(slug);
   if (!evento) notFound();
 
-  const [inscritos, resultados, decks, partidas] = await Promise.all([
-    listarInscritos(evento.id),
-    listarResultados(evento.id),
-    decksDaClassificacao(evento.id),
-    listarPartidas(evento.id),
-  ]);
+  const [inscritos, resultados, decks, partidas, premiosExtras] =
+    await Promise.all([
+      listarInscritos(evento.id),
+      listarResultados(evento.id),
+      decksDaClassificacao(evento.id),
+      listarPartidas(evento.id),
+      premiosDoEventoParceiros(evento.id),
+    ]);
   const temResultado = resultados.length > 0;
   const aba = q.aba ?? (temResultado ? "resultados" : "detalhes");
   const deckPorPosicao = new Map(decks.map((d) => [d.posicao, d]));
@@ -404,6 +408,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   {TOP_PUBLICO} ficam públicas depois do resultado; o arquétipo
                   de todos entra no metagame.
                 </p>
+                <PremiosExtras premios={premiosExtras} mostrarGanhador />
                 <Rodadas partidas={partidas} />
               </div>
             ))}
@@ -631,6 +636,20 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 ))}
               </ul>
 
+              {premiosExtras.length > 0 && (
+                <div className="pb-8">
+                  <PremiosExtras premios={premiosExtras} />
+                </div>
+              )}
+
+              {/* Banner de parceiro no momento de decidir o ingresso */}
+              <div className="pb-8">
+                <BannerPatrocinado
+                  posicao="evento"
+                  pagina={`/eventos/${evento.slug}`}
+                />
+              </div>
+
               <Secao titulo="Onde vai ser">
                 {presencial ? (
                   evento.loja ? (
@@ -844,12 +863,14 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
         )}
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 pb-12">
-        <BannerPatrocinado
-          posicao="evento"
-          pagina={`/eventos/${evento.slug}`}
-        />
-      </div>
+      {aba !== "detalhes" && (
+        <div className="mx-auto max-w-6xl px-6 pb-12">
+          <BannerPatrocinado
+            posicao="evento"
+            pagina={`/eventos/${evento.slug}`}
+          />
+        </div>
+      )}
     </>
   );
 }

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PaginaDeck } from "@/components/PaginaDeck";
 import { arteFixa } from "@/lib/artes";
-import { lojaParaDeck } from "@/lib/parceiros";
 import type { ItemLista } from "@/lib/decklist";
 import { buscarCartas } from "@/lib/scryfall";
 import { criarClienteServidor } from "@/lib/supabase/server";
@@ -80,9 +79,8 @@ export default async function Deck({
     );
   }
 
-  const [cartas, loja, { data: eu }] = await Promise.all([
+  const [cartas, { data: eu }] = await Promise.all([
     buscarCartas([...principal, ...sideboard].map((i) => i.nome)),
-    lojaParaDeck(),
     supabase
       .from("jogadores")
       .select("nick_endstep, discord_nome, avatar_url")
@@ -98,15 +96,6 @@ export default async function Deck({
       titulo={deck.nome}
       pagina={`/minha-area/decks/${id}`}
       arteReserva={arteFixa(id, "pauper")}
-      loja={
-        loja
-          ? {
-              id: loja.id,
-              nome: loja.nome,
-              aceitaLista: !!loja.url_compra_lista,
-            }
-          : null
-      }
       autor={{
         nick: eu?.nick_endstep || eu?.discord_nome || "Você",
         avatar: eu?.avatar_url ?? null,

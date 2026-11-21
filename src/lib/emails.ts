@@ -272,6 +272,73 @@ export const emailPremio = (
     });
   });
 
+/** Prêmio extra de parceiro (cupom, booster, brinde) entregue ao jogador. */
+export const emailPremioParceiro = (premioId: string) =>
+  seguro(async () => {
+    const { data: p } = await criarClienteAdmin()
+      .from("premios_parceiros")
+      .select(
+        "id, tipo, descricao, codigo, validade, criterio, posicao, jogador:jogadores(id, email, nick_endstep, nome), parceiro:parceiros(nome, slug, foto_url), evento:eventos(titulo, slug)",
+      )
+      .eq("id", premioId)
+      .maybeSingle();
+    const premio = p as unknown as {
+      tipo: string;
+      descricao: string;
+      codigo: string | null;
+      validade: string | null;
+      criterio: string;
+      posicao: number | null;
+      jogador: {
+        id: string;
+        email: string | null;
+        nick_endstep: string | null;
+        nome: string | null;
+      } | null;
+      parceiro: {
+        nome: string;
+        slug: string | null;
+        foto_url: string | null;
+      } | null;
+      evento: { titulo: string; slug: string } | null;
+    } | null;
+    if (!premio?.jogador) return;
+    const loja = premio.parceiro?.nome ?? "uma loja parceira";
+    const sorteio = premio.criterio === "sorteio";
+    await enviarEmail({
+      para: premio.jogador.email,
+      tipo: "premio_parceiro",
+      jogadorId: premio.jogador.id,
+      assunto: `${sorteio ? "Você foi sorteado" : "Prêmio extra"}: ${premio.descricao}`,
+      conteudo: {
+        imagem: premio.parceiro?.foto_url
+          ? { url: premio.parceiro.foto_url, credito: loja }
+          : imagemFixa(`parceiro-${premioId}`),
+        selo: { texto: sorteio ? "Sorteio" : `${premio.posicao ?? 1}º lugar` },
+        titulo: sorteio
+          ? `${nomeDe(premio.jogador)}, você foi sorteado!`
+          : `Parabéns, ${nomeDe(premio.jogador)}!`,
+        previa: `${premio.descricao}, oferecido por ${loja}.`,
+        paragrafos: [
+          `Em **${premio.evento?.titulo ?? "um evento da liga"}** você ganhou **${premio.descricao}**, oferecido por **${loja}**, parceira da liga.`,
+          premio.codigo
+            ? "Use o código abaixo na loja. Ele também fica guardado na sua Carteira."
+            : "A organização vai combinar a entrega com você pelo Discord ou por e-mail.",
+        ],
+        codigo: premio.codigo
+          ? { rotulo: "Código do cupom", valor: premio.codigo }
+          : undefined,
+        aviso: premio.validade
+          ? `Válido até ${new Date(`${premio.validade}T12:00:00Z`).toLocaleDateString("pt-BR")}.`
+          : undefined,
+        botao: {
+          texto: "Ver na minha Carteira",
+          url: `${SITE}/minha-area?aba=carteira`,
+        },
+      },
+    });
+  });
+
 type Mov = {
   id: string;
   tipo: string;

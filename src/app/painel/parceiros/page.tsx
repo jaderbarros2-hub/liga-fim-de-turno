@@ -242,13 +242,24 @@ export default async function PainelParceiros({
               />
             </label>
             <label className={ROTULO}>
-              Imagem (opcional, 1200×200 ou similar)
+              Imagem (até 3 MB; GIF animado aceito)
               <input
                 type="file"
                 name="imagem"
-                accept="image/png,image/webp,image/jpeg"
+                accept="image/png,image/webp,image/jpeg,image/gif"
                 className="text-sm"
               />
+            </label>
+            <label className={ROTULO}>
+              Formato
+              <select name="formato" className={CAMPO}>
+                <option value="imagem">
+                  Arte da loja inteira (1200×200, proporção 6:1)
+                </option>
+                <option value="composto">
+                  Logo e texto sobre a imagem (montado pelo site)
+                </option>
+              </select>
             </label>
             <fieldset className="flex flex-col gap-1 text-sm">
               <legend className="font-semibold">Onde aparece</legend>
