@@ -150,7 +150,16 @@ export default async function Inicio() {
       <HeroRotativo destaques={destaques} />
 
       {/* Atalhos para a agenda filtrada */}
-      <EncontreSeuJogo eventos={agenda} />
+      <EncontreSeuJogo
+        eventos={agenda.map((e) => ({
+          slug: e.slug,
+          titulo: e.titulo,
+          inicio: e.inicio,
+          formato: e.formato,
+          modalidade: e.modalidade,
+          cidade: e.loja?.cidade ?? null,
+        }))}
+      />
 
       {/* Próximos eventos */}
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
