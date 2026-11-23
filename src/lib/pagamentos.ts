@@ -4,10 +4,15 @@ import { emailIngressoConfirmado } from "@/lib/emails";
 import { buscarPedido } from "@/lib/mercadopago";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 
-export type SituacaoPagamento = "pendente" | "aprovado" | "expirado" | "cancelado" | "reembolsado";
+export type SituacaoPagamento =
+  "pendente" | "aprovado" | "expirado" | "cancelado" | "reembolsado";
 
 /** Marca o pagamento como aprovado e confirma a inscrição. Idempotente. */
-export async function confirmarPagamento(pagamentoId: string, pagoEm?: string, origem = "mercadopago") {
+export async function confirmarPagamento(
+  pagamentoId: string,
+  pagoEm?: string,
+  origem = "mercadopago",
+) {
   const db = criarClienteAdmin();
   const { data: pag } = await db
     .from("pagamentos")
@@ -18,7 +23,10 @@ export async function confirmarPagamento(pagamentoId: string, pagoEm?: string, o
 
   const quando = pagoEm ?? new Date().toISOString();
   if (pag.status !== "aprovado") {
-    await db.from("pagamentos").update({ status: "aprovado", pago_em: quando }).eq("id", pag.id);
+    await db
+      .from("pagamentos")
+      .update({ status: "aprovado", pago_em: quando })
+      .eq("id", pag.id);
   }
   // Confirma mesmo que o Pix tenha chegado depois da expiração da tela: o dinheiro entrou.
   const { data: confirmadas } = await db
@@ -28,7 +36,8 @@ export async function confirmarPagamento(pagamentoId: string, pagoEm?: string, o
     .neq("status", "confirmada")
     .select("id");
   // E-mail só na primeira confirmação (webhook e consulta podem chegar juntos)
-  if (confirmadas?.length) after(() => emailIngressoConfirmado(pag.inscricao_id));
+  if (confirmadas?.length)
+    after(() => emailIngressoConfirmado(pag.inscricao_id));
 
   await db.from("registro_atividades").insert({
     acao: "pagamento_confirmado",
@@ -42,7 +51,9 @@ export async function confirmarPagamento(pagamentoId: string, pagoEm?: string, o
  * Consulta o Mercado Pago e atualiza o pagamento e a inscrição.
  * Chamado pela tela de pagamento (consulta periódica) e pelo webhook.
  */
-export async function sincronizarPagamento(pagamentoId: string): Promise<SituacaoPagamento | null> {
+export async function sincronizarPagamento(
+  pagamentoId: string,
+): Promise<SituacaoPagamento | null> {
   const db = criarClienteAdmin();
   const { data: pag } = await db
     .from("pagamentos")
@@ -59,22 +70,37 @@ export async function sincronizarPagamento(pagamentoId: string): Promise<Situaca
       return "aprovado";
     }
     if (pedido && ["canceled", "expired", "failed"].includes(pedido.status)) {
-      await expirar(pag.id, pag.inscricao_id, pedido.status === "canceled" ? "cancelado" : "expirado");
+      await expirar(
+        pag.id,
+        pag.inscricao_id,
+        pedido.status === "canceled" ? "cancelado" : "expirado",
+      );
       return pedido.status === "canceled" ? "cancelado" : "expirado";
     }
   }
 
   // Passou do prazo do Pix (com folga de 2 min para avisos atrasados)
-  if (pag.expira_em && new Date(pag.expira_em).getTime() + 120_000 < Date.now()) {
+  if (
+    pag.expira_em &&
+    new Date(pag.expira_em).getTime() + 120_000 < Date.now()
+  ) {
     await expirar(pag.id, pag.inscricao_id, "expirado");
     return "expirado";
   }
   return "pendente";
 }
 
-async function expirar(pagamentoId: string, inscricaoId: string, status: "expirado" | "cancelado") {
+async function expirar(
+  pagamentoId: string,
+  inscricaoId: string,
+  status: "expirado" | "cancelado",
+) {
   const db = criarClienteAdmin();
-  await db.from("pagamentos").update({ status }).eq("id", pagamentoId).eq("status", "pendente");
+  await db
+    .from("pagamentos")
+    .update({ status })
+    .eq("id", pagamentoId)
+    .eq("status", "pendente");
   await db
     .from("inscricoes")
     .update({ status: "expirada" })
@@ -85,6 +111,10 @@ async function expirar(pagamentoId: string, inscricaoId: string, status: "expira
 /** Usado pelo webhook: o Mercado Pago avisa com o id do pedido. */
 export async function sincronizarPorIdExterno(idExterno: string) {
   const db = criarClienteAdmin();
-  const { data } = await db.from("pagamentos").select("id").eq("id_externo", idExterno).maybeSingle();
+  const { data } = await db
+    .from("pagamentos")
+    .select("id")
+    .eq("id_externo", idExterno)
+    .maybeSingle();
   if (data) await sincronizarPagamento(data.id);
 }

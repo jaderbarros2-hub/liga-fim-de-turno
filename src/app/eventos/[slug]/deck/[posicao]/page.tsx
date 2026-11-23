@@ -77,15 +77,17 @@ export default async function DeckPublico({ params }: Props) {
       }
       etiquetas={
         <>
-          <span className={`${etiqueta} bg-azul text-white`}>{pos}º lugar</span>
+          <span className={`${etiqueta} bg-vermelho text-white`}>
+            {pos}º lugar
+          </span>
           {evento.tipo !== "etapa" && (
-            <span className={`${etiqueta} bg-ciano/20 text-ciano`}>
+            <span className={`${etiqueta} bg-brasa/20 text-brasa`}>
               {NOMES_TIPO[evento.tipo]}
             </span>
           )}
           {res && (
             <span
-              className={`${etiqueta} bg-preto/60 text-gelo ring-1 ring-borda`}
+              className={`${etiqueta} bg-preto/60 text-marfim ring-1 ring-borda`}
             >
               {res.vitorias}-{res.derrotas}
               {res.empates ? `-${res.empates}` : ""}
@@ -98,20 +100,20 @@ export default async function DeckPublico({ params }: Props) {
           <BannerPatrocinado posicao="deck" pagina={pagina} />
           {top.length > 1 && (
             <section className="flex flex-col gap-4 border-t border-borda pt-8">
-              <h2 className="titulo text-3xl">Top 8 de {evento.titulo}</h2>
+              <h2 className="titulo text-2xl">Top 8 de {evento.titulo}</h2>
               <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {top.map((d) => (
                   <li key={d.posicao}>
                     <Link
                       href={`/eventos/${slug}/deck/${d.posicao}`}
                       aria-current={d.posicao === pos ? "page" : undefined}
-                      className={`flex items-center gap-3 rounded-md p-3 text-gelo no-underline ring-1 hover:text-gelo hover:ring-ciano ${
+                      className={`flex items-center gap-3 rounded-md p-3 text-marfim no-underline ring-1 hover:text-marfim hover:ring-brasa ${
                         d.posicao === pos
-                          ? "bg-azul/15 ring-azul"
+                          ? "bg-vermelho/15 ring-vermelho"
                           : "bg-grafite ring-borda"
                       }`}
                     >
-                      <span className="titulo w-8 text-2xl text-cinza">
+                      <span className="titulo w-8 text-xl text-cinza">
                         {d.posicao}º
                       </span>
                       <span className="flex min-w-0 flex-col">

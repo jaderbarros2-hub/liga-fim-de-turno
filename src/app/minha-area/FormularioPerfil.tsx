@@ -5,7 +5,7 @@ import { REDES, type Redes } from "@/lib/perfil";
 import { salvarPerfil } from "./perfil";
 
 const campo =
-  "w-full rounded-md border border-borda bg-fundo2 px-3 py-2 text-gelo outline-none focus:border-azul";
+  "w-full rounded-md border border-borda bg-fundo2 px-3 py-2 text-marfim outline-none focus:border-vermelho";
 
 type Inicial = {
   bio: string;
@@ -110,7 +110,7 @@ export function FormularioPerfil({
               type="checkbox"
               name={c.nome}
               defaultChecked={c.valor}
-              className="mt-1 h-4 w-4 accent-azul"
+              className="mt-1 h-4 w-4 accent-vermelho"
             />
             <span className="flex flex-col">
               <span className="font-semibold">{c.rotulo}</span>
@@ -130,7 +130,7 @@ export function FormularioPerfil({
         </p>
       )}
       {estado.ok && (
-        <p className="rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano">
+        <p className="rounded-md border border-brasa/50 bg-brasa/10 p-3 text-sm font-semibold text-brasa">
           Perfil salvo.
         </p>
       )}
@@ -138,7 +138,7 @@ export function FormularioPerfil({
       <div className="flex flex-wrap items-center gap-4">
         <button
           disabled={enviando}
-          className="rounded-md bg-azul px-5 py-2.5 font-semibold text-white hover:bg-azul-escuro disabled:opacity-60"
+          className="rounded-md bg-vermelho px-5 py-2.5 font-semibold text-white hover:bg-vermelho-escuro disabled:opacity-60"
         >
           {enviando ? "Salvando…" : "Salvar perfil"}
         </button>

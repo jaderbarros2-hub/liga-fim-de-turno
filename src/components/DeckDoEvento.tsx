@@ -35,7 +35,7 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
         {insc.deck_nome ? (
           <>
             Deck registrado:{" "}
-            <strong className="text-gelo">{insc.deck_nome}</strong>
+            <strong className="text-marfim">{insc.deck_nome}</strong>
           </>
         ) : (
           <span className="text-alerta">
@@ -57,11 +57,11 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-4 text-sm">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <strong className="text-gelo">Seu deck para este evento</strong>
+        <strong className="text-marfim">Seu deck para este evento</strong>
         <span className="text-xs text-cinza">pode trocar até o início</span>
       </div>
       {insc.deck_nome ? (
-        <p className="text-ciano">✓ {insc.deck_nome}</p>
+        <p className="text-brasa">✓ {insc.deck_nome}</p>
       ) : (
         <p className="text-alerta">Escolha o deck que você vai jogar.</p>
       )}
@@ -71,7 +71,7 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
           <select
             name="deck_id"
             defaultValue={insc.deck_id ?? legais[0].id}
-            className="min-h-10 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-2 text-gelo"
+            className="min-h-10 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-2 text-marfim"
           >
             {legais.map((d) => (
               <option key={d.id} value={d.id}>
@@ -79,7 +79,7 @@ export async function DeckDoEvento({ evento }: { evento: Evento }) {
               </option>
             ))}
           </select>
-          <BotaoEnviar className="min-h-10 rounded-lg border border-borda-forte px-4 font-semibold hover:border-ciano">
+          <BotaoEnviar className="min-h-10 rounded-lg border border-borda-forte px-4 font-semibold hover:border-brasa">
             {insc.deck_nome ? "Trocar" : "Registrar"}
           </BotaoEnviar>
         </form>

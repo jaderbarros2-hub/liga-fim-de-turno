@@ -11,7 +11,7 @@ export default async function Resultados() {
   const eventos = await listarEventosEncerrados(100);
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-12">
-      <h1 className="titulo text-6xl">Últimos eventos</h1>
+      <h1 className="titulo text-5xl">Últimos eventos</h1>
       {eventos.length === 0 ? (
         <p className="rounded-xl border border-borda bg-grafite p-6 text-texto2">
           Os resultados das etapas aparecem aqui depois de cada evento.
@@ -28,7 +28,7 @@ export default async function Resultados() {
               </span>
               <Link
                 href={`/eventos/${e.slug}?aba=resultados`}
-                className="min-w-56 flex-1 font-semibold text-gelo no-underline hover:text-ciano"
+                className="min-w-56 flex-1 font-semibold text-marfim no-underline hover:text-brasa"
               >
                 {e.titulo}
               </Link>

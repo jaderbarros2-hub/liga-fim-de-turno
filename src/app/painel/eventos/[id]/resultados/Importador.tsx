@@ -16,7 +16,7 @@ const reais = (c: number) =>
   (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const campo =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 export function Importador({
   eventoId,
@@ -120,7 +120,7 @@ export function Importador({
     <div className="flex flex-col gap-6">
       {!bloqueado && (
         <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-          <h2 className="titulo text-2xl">1 · Classificação do Endstep</h2>
+          <h2 className="titulo text-xl">1 · Classificação do Endstep</h2>
           <p className="text-sm text-texto2">
             No Endstep, abra a classificação final, selecione a tabela inteira,
             copie e cole aqui. Uma linha por jogador, na ordem final. Os nicks
@@ -139,7 +139,7 @@ export function Importador({
             type="button"
             onClick={ler}
             disabled={!texto.trim()}
-            className="inline-flex min-h-11 items-center self-start rounded-lg border border-borda-forte px-5 text-sm font-semibold text-gelo hover:border-ciano disabled:opacity-50"
+            className="inline-flex min-h-11 items-center self-start rounded-lg border border-borda-forte px-5 text-sm font-semibold text-marfim hover:border-brasa disabled:opacity-50"
           >
             Ler classificação
           </button>
@@ -148,7 +148,7 @@ export function Importador({
 
       {!bloqueado && (
         <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-          <h2 className="titulo text-2xl">
+          <h2 className="titulo text-xl">
             1b · Rodadas{" "}
             <span className="text-base font-normal text-cinza">
               (histórico de partidas)
@@ -174,7 +174,7 @@ export function Importador({
               type="button"
               onClick={lerRodadas}
               disabled={!textoRodadas.trim()}
-              className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-gelo hover:border-ciano disabled:opacity-50"
+              className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-marfim hover:border-brasa disabled:opacity-50"
             >
               Ler rodadas
             </button>
@@ -207,12 +207,12 @@ export function Importador({
                   key={g.rodada}
                   className="rounded-lg border border-borda p-3 text-sm"
                 >
-                  <p className="mb-1 font-semibold text-ciano">{g.rotulo}</p>
+                  <p className="mb-1 font-semibold text-brasa">{g.rotulo}</p>
                   <ul className="flex flex-col gap-0.5 text-texto2">
                     {g.partidas.map((p, i) => (
                       <li key={i}>
                         {p.jogadorA}{" "}
-                        <span className="font-semibold text-gelo">
+                        <span className="font-semibold text-marfim">
                           {p.jogadorB
                             ? `${p.vitoriasA}-${p.vitoriasB}${p.empates ? `-${p.empates}` : ""}`
                             : "bye"}
@@ -230,7 +230,7 @@ export function Importador({
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="titulo text-2xl">2 · Conferir e premiar</h2>
+          <h2 className="titulo text-xl">2 · Conferir e premiar</h2>
           <label className="flex items-center gap-2 text-sm">
             <span className="text-cinza">Divisão personalizada (%)</span>
             <input
@@ -288,7 +288,7 @@ export function Importador({
                       key={`${l.nick}-${i}`}
                       className="border-t border-borda"
                     >
-                      <td className="p-2 font-semibold text-ciano">{i + 1}</td>
+                      <td className="p-2 font-semibold text-brasa">{i + 1}</td>
                       <td className="p-2">{l.nick}</td>
                       <td className="p-2">
                         <select
@@ -298,7 +298,7 @@ export function Importador({
                           className={`min-h-9 rounded-md border bg-fundo2 px-2 text-sm ${
                             !l.jogadorId && premiado
                               ? "border-erro text-erro"
-                              : "border-borda-forte text-gelo"
+                              : "border-borda-forte text-marfim"
                           }`}
                         >
                           <option value="">
@@ -318,7 +318,7 @@ export function Importador({
                         {l.empates ? `-${l.empates}` : ""}
                       </td>
                       <td className="p-2">{l.pontos}</td>
-                      <td className="p-2 text-ciano">
+                      <td className="p-2 text-brasa">
                         {premiado ? reais(valores[i]) : ""}
                       </td>
                       {!bloqueado && (
@@ -327,7 +327,7 @@ export function Importador({
                             type="button"
                             onClick={() => mover(i, -1)}
                             aria-label="Subir"
-                            className="px-1 hover:text-gelo"
+                            className="px-1 hover:text-marfim"
                           >
                             ↑
                           </button>
@@ -335,7 +335,7 @@ export function Importador({
                             type="button"
                             onClick={() => mover(i, 1)}
                             aria-label="Descer"
-                            className="px-1 hover:text-gelo"
+                            className="px-1 hover:text-marfim"
                           >
                             ↓
                           </button>
@@ -363,7 +363,7 @@ export function Importador({
               type="button"
               onClick={() => enviar(true)}
               disabled={enviando || !linhas.length || !distValida}
-              className="inline-flex min-h-11 items-center rounded-lg bg-azul px-6 text-sm font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:opacity-50"
+              className="inline-flex min-h-11 items-center rounded-lg bg-vermelho px-6 text-sm font-semibold uppercase tracking-wide text-white hover:bg-vermelho-escuro disabled:opacity-50"
             >
               {enviando ? "Salvando…" : "Publicar resultados"}
             </button>
@@ -371,7 +371,7 @@ export function Importador({
               type="button"
               onClick={() => enviar(false)}
               disabled={enviando || !linhas.length || !distValida}
-              className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-gelo hover:border-ciano disabled:opacity-50"
+              className="inline-flex min-h-11 items-center rounded-lg border border-borda-forte px-5 text-sm font-semibold text-marfim hover:border-brasa disabled:opacity-50"
             >
               Salvar sem publicar
             </button>
@@ -381,7 +381,7 @@ export function Importador({
           <div
             role={estado.erro ? "alert" : "status"}
             className={`rounded-lg border px-4 py-3 text-sm font-semibold ${
-              estado.erro ? "border-erro text-erro" : "border-ciano text-ciano"
+              estado.erro ? "border-erro text-erro" : "border-brasa text-brasa"
             }`}
           >
             {estado.erro ?? estado.ok}

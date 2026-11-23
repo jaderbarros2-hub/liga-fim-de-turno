@@ -62,7 +62,7 @@ export default async function Deck({
         <Link href={`/minha-area/decks/${id}`} className="text-sm">
           ← {deck.nome}
         </Link>
-        <h1 className="titulo text-5xl">Editar deck</h1>
+        <h1 className="titulo text-4xl">Editar deck</h1>
         <FormularioDeck
           arquetipos={(arquetipos ?? []).sort((a, b) =>
             a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0,
@@ -110,7 +110,7 @@ export default async function Deck({
       }
       etiquetas={
         <span
-          className={`rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${deck.legal ? "bg-ciano/20 text-ciano" : "bg-alerta/20 text-alerta"}`}
+          className={`rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${deck.legal ? "bg-brasa/20 text-brasa" : "bg-alerta/20 text-alerta"}`}
         >
           {deck.legal ? "Legal no Pauper" : "Com pendências"}
         </span>

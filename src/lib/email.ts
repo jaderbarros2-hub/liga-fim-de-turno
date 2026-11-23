@@ -14,12 +14,12 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
  */
 
 export const SITE = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://liga-fim-de-turno.vercel.app"
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.ligafirststrike.com.br"
 ).replace(/\/$/, "");
 export const EMAIL_CONTATO =
   process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO || "";
 const REMETENTE =
-  process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
+  process.env.EMAIL_REMETENTE || "First Strike <onboarding@resend.dev>";
 
 /**
  * Modo de teste: enquanto não houver domínio verificado no Resend (remetente @resend.dev) ou com
@@ -40,7 +40,7 @@ export type Conteudo = {
   titulo: string;
   previa?: string; // linha que aparece na caixa de entrada
   imagem?: Imagem; // arte no topo (JPG leve em /public/email/artes ou arte da coleção)
-  selo?: { texto: string; tom?: "ciano" | "alerta" | "erro" }; // situação: Confirmado, Cancelado…
+  selo?: { texto: string; tom?: "sucesso" | "alerta" | "erro" }; // situação: Confirmado, Cancelado…
   destaque?: { valor: string; rotulo: string }; // número principal (valor do prêmio, do crédito…)
   paragrafos: string[]; // aceita **negrito**
   detalhes?: [string, string][]; // rótulo → valor
@@ -83,23 +83,24 @@ const escapar = (s: string) =>
 const negrito = (s: string) =>
   escapar(s).replace(
     /\*\*(.+?)\*\*/g,
-    '<strong style="color:#eef2f8">$1</strong>',
+    '<strong style="color:#f4efe6">$1</strong>',
   );
 
 const C = {
   fundo: "#06070a",
-  cartao: "#10141c",
-  borda: "#1e2533",
-  texto: "#eef2f8",
-  texto2: "#c9d2e0",
-  cinza: "#9aa6b8",
-  azul: "#2e6bff",
-  ciano: "#5cc8ff",
+  cartao: "#12151c",
+  borda: "#262b36",
+  texto: "#f4efe6",
+  texto2: "#c9c2b6",
+  cinza: "#9a938a",
+  vermelho: "#d8392a",
+  brasa: "#ff5a47",
+  sucesso: "#7fd69a",
   alerta: "#f2b84b",
   erro: "#ff6b6b",
 };
 const FONTE = "Inter,'Segoe UI',Helvetica,Arial,sans-serif";
-const TITULO = "'Barlow Condensed','Arial Narrow',Arial,sans-serif";
+const TITULO = "Unbounded,'Arial Black',Arial,sans-serif";
 
 /** HTML com o visual da liga: arte no topo, título, número em destaque, detalhes e um botão. */
 export function montarEmail(
@@ -114,12 +115,12 @@ export function montarEmail(
       ? C.erro
       : c.selo?.tom === "alerta"
         ? C.alerta
-        : C.ciano;
+        : C.sucesso;
   const selo = c.selo
     ? `<div style="margin:0 0 14px"><span style="display:inline-block;padding:5px 10px;border-radius:999px;border:1px solid ${tomSelo};font:600 12px ${FONTE};color:${tomSelo}">${escapar(c.selo.texto)}</span></div>`
     : "";
   const destaque = c.destaque
-    ? `<div style="margin:4px 0 20px"><div style="font:700 44px/1 ${TITULO};color:${C.ciano}">${escapar(c.destaque.valor)}</div><div style="margin-top:6px;font:14px ${FONTE};color:${C.cinza}">${escapar(c.destaque.rotulo)}</div></div>`
+    ? `<div style="margin:4px 0 20px"><div style="font:800 40px/1 ${TITULO};color:${C.brasa}">${escapar(c.destaque.valor)}</div><div style="margin-top:6px;font:14px ${FONTE};color:${C.cinza}">${escapar(c.destaque.rotulo)}</div></div>`
     : "";
   const p = c.paragrafos
     .map(
@@ -136,19 +137,19 @@ export function montarEmail(
         .join("")}</table>`
     : "";
   const codigo = c.codigo
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td align="center" style="padding:16px;border:1px dashed ${C.ciano};border-radius:10px;background:#0b0e14"><div style="font:600 12px ${FONTE};color:${C.cinza}">${escapar(c.codigo.rotulo)}</div><div style="margin-top:6px;font:700 30px ${TITULO};letter-spacing:4px;color:${C.ciano}">${escapar(c.codigo.valor)}</div></td></tr></table>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td align="center" style="padding:16px;border:1px dashed ${C.brasa};border-radius:10px;background:#0c0e12"><div style="font:600 12px ${FONTE};color:${C.cinza}">${escapar(c.codigo.rotulo)}</div><div style="margin-top:6px;font:700 30px ${TITULO};letter-spacing:4px;color:${C.brasa}">${escapar(c.codigo.valor)}</div></td></tr></table>`
     : "";
   const aviso = c.aviso
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td style="padding:14px 16px;border-left:4px solid ${C.azul};background:#0b0e14;font:14px/1.55 ${FONTE};color:${C.texto2}">${negrito(c.aviso)}</td></tr></table>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px"><tr><td style="padding:14px 16px;border-left:4px solid ${C.vermelho};background:#0c0e12;font:14px/1.55 ${FONTE};color:${C.texto2}">${negrito(c.aviso)}</td></tr></table>`
     : "";
   const botao = c.botao
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 0"><tr><td align="center" style="border-radius:10px;background:${C.azul}"><a href="${escapar(c.botao.url)}" style="display:block;padding:15px 24px;font:700 16px ${FONTE};color:#ffffff;text-decoration:none">${escapar(c.botao.texto)}</a></td></tr></table>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 0"><tr><td align="center" style="border-radius:10px;background:${C.vermelho}"><a href="${escapar(c.botao.url)}" style="display:block;padding:15px 24px;font:700 16px ${FONTE};color:#ffffff;text-decoration:none">${escapar(c.botao.texto)}</a></td></tr></table>`
     : "";
   const credito = c.imagem?.credito
-    ? `<div style="margin-top:22px;font:11px ${FONTE};color:#5b6576">Arte: ${escapar(c.imagem.credito)}</div>`
+    ? `<div style="margin-top:22px;font:11px ${FONTE};color:#6b655d">Arte: ${escapar(c.imagem.credito)}</div>`
     : "";
   const contato = EMAIL_CONTATO
-    ? `Dúvidas? Responda este e-mail ou escreva para <a href="mailto:${escapar(EMAIL_CONTATO)}" style="color:${C.ciano}">${escapar(EMAIL_CONTATO)}</a>.`
+    ? `Dúvidas? Responda este e-mail ou escreva para <a href="mailto:${escapar(EMAIL_CONTATO)}" style="color:${C.brasa}">${escapar(EMAIL_CONTATO)}</a>.`
     : "Dúvidas? Responda este e-mail.";
 
   const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="supported-color-schemes" content="dark light"><title>${escapar(c.titulo)}</title></head>
@@ -157,7 +158,7 @@ export function montarEmail(
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.fundo}"><tr><td align="center" style="padding:28px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
 ${desviadoDe ? `<tr><td style="padding:0 0 16px"><div style="padding:12px 14px;border:1px dashed ${C.alerta};border-radius:10px;font:13px/1.5 ${FONTE};color:${C.alerta}"><strong>Modo de teste.</strong> Este e-mail iria para <strong>${escapar(desviadoDe)}</strong> e foi desviado para você. Nada foi enviado a essa pessoa.</div></td></tr>` : ""}
-<tr><td style="padding:0 4px 18px"><a href="${SITE}" style="text-decoration:none"><img src="${SITE}/email/logo.png" width="32" height="32" alt="" style="vertical-align:middle;border:0"><span style="margin-left:10px;vertical-align:middle;font:700 20px ${TITULO};letter-spacing:.5px;color:${C.texto}">LIGA FIM DE TURNO</span></a></td></tr>
+<tr><td style="padding:0 4px 18px"><a href="${SITE}" style="text-decoration:none"><img src="${SITE}/email/marca.png" width="190" height="27" alt="First Strike" style="display:block;border:0"></a></td></tr>
 <tr><td style="background:${C.cartao};border:1px solid ${C.borda};border-radius:12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${imagem}
 <tr><td style="padding:28px 28px 30px">
@@ -165,7 +166,7 @@ ${selo}<h1 style="margin:0 0 16px;font:700 28px/1.2 ${FONTE};letter-spacing:-.3p
 ${destaque}${p}${detalhes}${codigo}${aviso}${botao}${credito}
 </td></tr></table>
 </td></tr>
-<tr><td style="padding:20px 6px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>${escapar(c.motivo ?? "Você recebe este e-mail porque tem cadastro na Liga Fim de Turno")} · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
+<tr><td style="padding:20px 6px;font:12px/1.6 ${FONTE};color:${C.cinza}">${contato}<br>${escapar(c.motivo ?? "Você recebe este e-mail porque tem cadastro na First Strike")} · <a href="${SITE}" style="color:${C.cinza}">${SITE.replace(/^https?:\/\//, "")}</a></td></tr>
 </table></td></tr></table></body></html>`;
 
   const texto = [

@@ -7,9 +7,9 @@ import { ListaProblemas } from "@/components/Diagnostico";
 import { problemasDaLoja, type LojaDiag } from "@/lib/diagnostico";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim";
 const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
-const BOTAO = "min-h-11 rounded-lg bg-azul px-5 font-semibold text-white";
+const BOTAO = "min-h-11 rounded-lg bg-vermelho px-5 font-semibold text-white";
 
 type P = LojaForm & {
   id: string;
@@ -61,14 +61,14 @@ export default async function PainelParceiros({
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-5xl">Lojas e parceiros</h1>
+        <h1 className="titulo text-4xl">Lojas e parceiros</h1>
         <p className="text-sm text-texto2">
           Um cadastro só para patrocinadores, sedes de eventos presenciais,
           lojas que recebem resgate de prêmios e lojas que vendem cartas.
           Cliques dos últimos 30 dias.
         </p>
         {salvo && (
-          <p className="rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano">
+          <p className="rounded-md border border-brasa/50 bg-brasa/10 p-3 text-sm font-semibold text-brasa">
             Loja salva.
             {atual && problemas.get(atual.id)?.length
               ? " Ainda falta completar o que aparece abaixo."
@@ -176,7 +176,7 @@ export default async function PainelParceiros({
       <FormularioLoja key={atual?.id ?? "nova"} atual={atual ?? null} />
 
       <section className="flex flex-col gap-4">
-        <h2 className="titulo text-3xl">Banners</h2>
+        <h2 className="titulo text-2xl">Banners</h2>
         <ul className="flex flex-col border-t border-borda text-sm">
           {(banners ?? []).length === 0 && (
             <li className="py-3 text-texto2">Nenhum banner ainda.</li>

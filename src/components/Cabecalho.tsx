@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 import { MenuSuspenso, type ItemMenu } from "@/components/MenuSuspenso";
 import { listarFormatos, usuarioAtual } from "@/lib/dados";
 
-const linkMenu = "shrink-0 py-1 text-gelo no-underline hover:text-ciano";
+const linkMenu = "shrink-0 py-1 text-marfim no-underline hover:text-brasa";
 
 export async function Cabecalho() {
   const [jogador, formatos] = await Promise.all([
@@ -90,16 +90,16 @@ export async function Cabecalho() {
         <div className="flex items-center gap-4">
           <Link
             href="/apoie"
-            className="group hidden items-center gap-2 text-sm font-semibold text-texto2 no-underline hover:text-gelo sm:inline-flex"
+            className="group hidden items-center gap-2 text-sm font-semibold text-texto2 no-underline hover:text-marfim sm:inline-flex"
           >
             <span>Apoie</span>
-            <Diamante className="text-ciano transition group-hover:rotate-45 group-hover:text-gelo" />
+            <Diamante className="text-brasa transition group-hover:rotate-45 group-hover:text-marfim" />
           </Link>
           {jogador ? (
             <MenuSuspenso
               alinhar="direita"
               rotuloAcessivel={`Conta de ${nome}`}
-              classeGatilho="rounded-full py-1 pl-1 pr-3 text-sm font-semibold text-gelo ring-1 ring-borda-forte hover:ring-ciano"
+              classeGatilho="rounded-full py-1 pl-1 pr-3 text-sm font-semibold text-marfim ring-1 ring-borda-forte hover:ring-brasa"
               gatilho={
                 <>
                   {jogador.avatar_url ? (
@@ -112,7 +112,7 @@ export async function Cabecalho() {
                       className="h-7 w-7 rounded-full"
                     />
                   ) : (
-                    <span className="grid h-7 w-7 place-items-center rounded-full bg-azul text-xs font-bold text-white">
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-vermelho text-xs font-bold text-white">
                       {nome.slice(0, 1).toUpperCase()}
                     </span>
                   )}
@@ -122,7 +122,7 @@ export async function Cabecalho() {
               itens={itensConta}
               rodape={
                 <form action={sair}>
-                  <BotaoEnviar className="w-full py-1.5 text-left text-sm text-cinza hover:text-gelo">
+                  <BotaoEnviar className="w-full py-1.5 text-left text-sm text-cinza hover:text-marfim">
                     Sair
                   </BotaoEnviar>
                 </form>
@@ -131,7 +131,7 @@ export async function Cabecalho() {
           ) : (
             <Link
               href="/entrar"
-              className="inline-flex min-h-10 items-center rounded-lg px-4 text-sm font-semibold text-gelo no-underline ring-1 ring-borda-forte hover:ring-ciano"
+              className="inline-flex min-h-10 items-center rounded-lg px-4 text-sm font-semibold text-marfim no-underline ring-1 ring-borda-forte hover:ring-brasa"
             >
               Entrar
             </Link>

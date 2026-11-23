@@ -33,7 +33,7 @@ export default async function NovoDeck({
       <Link href="/minha-area?aba=decks" className="text-sm">
         ← Meus decks
       </Link>
-      <h1 className="titulo text-5xl">Novo deck</h1>
+      <h1 className="titulo text-4xl">Novo deck</h1>
       <FormularioDeck
         arquetipos={lista}
         formatoInicial={formato === "premodern" ? "premodern" : "pauper"}

@@ -4,7 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 
-export type ItemMenu = { href: string; rotulo: string; descricao?: string; separar?: boolean };
+export type ItemMenu = {
+  href: string;
+  rotulo: string;
+  descricao?: string;
+  separar?: boolean;
+};
 
 /** Menu suspenso acessível: abre no clique, fecha ao clicar fora, com Esc ou ao navegar. */
 export function MenuSuspenso({
@@ -54,8 +59,19 @@ export function MenuSuspenso({
         className={`flex items-center gap-1.5 ${classeGatilho}`}
       >
         {gatilho}
-        <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className={`transition ${aberto ? "rotate-180" : ""}`}>
-          <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.6" fill="none" />
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          aria-hidden="true"
+          className={`transition ${aberto ? "rotate-180" : ""}`}
+        >
+          <path
+            d="M1 3l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            fill="none"
+          />
         </svg>
       </button>
       {aberto && (
@@ -69,15 +85,23 @@ export function MenuSuspenso({
             <Link
               key={i.href}
               href={i.href}
-              className={`block px-4 py-2 text-sm normal-case text-gelo no-underline hover:bg-fundo2 hover:text-ciano ${
+              className={`block px-4 py-2 text-sm normal-case text-marfim no-underline hover:bg-fundo2 hover:text-brasa ${
                 i.separar ? "mt-1.5 border-t border-borda pt-3" : ""
               }`}
             >
               <span className="font-semibold">{i.rotulo}</span>
-              {i.descricao && <span className="block text-xs font-normal text-cinza">{i.descricao}</span>}
+              {i.descricao && (
+                <span className="block text-xs font-normal text-cinza">
+                  {i.descricao}
+                </span>
+              )}
             </Link>
           ))}
-          {rodape && <div className="mt-1.5 border-t border-borda px-4 pt-2">{rodape}</div>}
+          {rodape && (
+            <div className="mt-1.5 border-t border-borda px-4 pt-2">
+              {rodape}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -7,7 +7,7 @@ import { arteFixa, creditoArte, srcArte } from "@/lib/artes";
 export const metadata: Metadata = {
   title: "Seja apoiador",
   description:
-    "Em breve: o programa de apoiadores da Liga Fim de Turno, com brindes e benefícios para quem ajuda a liga a crescer.",
+    "Em breve: o programa de apoiadores da First Strike, com brindes e benefícios para quem ajuda a liga a crescer.",
 };
 
 // Página provisória. O esboço completo do programa está em /apoie/esboco.
@@ -24,10 +24,10 @@ export default function Apoie() {
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/30" />
       <div className="mx-auto flex min-h-[70vh] max-w-6xl flex-col justify-center gap-6 px-6 py-24">
-        <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-ciano">
+        <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-brasa">
           <Diamante /> Seja apoiador · em breve
         </span>
-        <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
+        <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
           Em breve, você vai poder fazer parte da liga de um jeito novo.
         </h1>
         <p className="max-w-xl text-lg text-texto2">

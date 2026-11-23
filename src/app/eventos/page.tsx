@@ -43,7 +43,7 @@ export default async function Agenda({
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-6xl">Agenda</h1>
+        <h1 className="titulo text-5xl">Agenda</h1>
         <p className="text-texto2">
           Os próximos eventos da liga, mês a mês. Escolha um formato para
           filtrar.
@@ -59,8 +59,8 @@ export default async function Agenda({
               href={t.valor && !ativo ? `/eventos?tipo=${t.valor}` : "/eventos"}
               className={`inline-flex min-h-10 items-center rounded-full px-4 text-sm font-semibold no-underline ring-1 ${
                 ativo
-                  ? "bg-azul text-white ring-azul"
-                  : "text-texto2 ring-borda-forte hover:text-gelo hover:ring-ciano"
+                  ? "bg-vermelho text-white ring-vermelho"
+                  : "text-texto2 ring-borda-forte hover:text-marfim hover:ring-brasa"
               }`}
               aria-current={ativo ? "page" : undefined}
             >
@@ -73,7 +73,7 @@ export default async function Agenda({
       {eventos.length ? (
         <ListaAgenda eventos={eventos} />
       ) : (
-        <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+        <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
           Nenhum evento {filtroTipo ? `de ${filtroTipo.rotulo} ` : ""}na agenda
           agora. A próxima etapa é anunciada primeiro no Discord.{" "}
           {!nenhumFiltro && <Link href="/eventos">Ver todos os eventos →</Link>}
@@ -83,7 +83,7 @@ export default async function Agenda({
       {ultimos.length > 0 && (
         <section className="flex flex-col gap-3 border-t border-borda pt-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-4xl">Últimos eventos</h2>
+            <h2 className="titulo text-3xl">Últimos eventos</h2>
             <Link href="/resultados" className="text-sm font-semibold">
               Todos os resultados →
             </Link>
@@ -93,24 +93,24 @@ export default async function Agenda({
               <li key={e.id}>
                 <Link
                   href={`/eventos/${e.slug}?aba=resultados`}
-                  className="group flex flex-wrap items-center gap-x-5 gap-y-1 py-3 text-gelo no-underline"
+                  className="group flex flex-wrap items-center gap-x-5 gap-y-1 py-3 text-marfim no-underline"
                 >
                   <span className="w-14 text-sm font-semibold text-cinza">
                     {dataCurta(e.inicio)}
                   </span>
-                  <span className="min-w-48 flex-1 font-semibold group-hover:text-ciano">
+                  <span className="min-w-48 flex-1 font-semibold group-hover:text-brasa">
                     {e.titulo}
                   </span>
                   {campeoes[i] && (
                     <span className="text-sm text-texto2">
                       Campeão:{" "}
-                      <span className="font-semibold text-gelo">
+                      <span className="font-semibold text-marfim">
                         {campeoes[i].nick_endstep}
                       </span>
                     </span>
                   )}
                   <EtiquetaLiga evento={e} />
-                  <span className="text-sm font-semibold text-ciano">
+                  <span className="text-sm font-semibold text-brasa">
                     Resultado →
                   </span>
                 </Link>

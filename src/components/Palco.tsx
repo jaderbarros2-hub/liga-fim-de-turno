@@ -5,7 +5,7 @@
 export function Palco({
   arte,
   foco = "50% 30%",
-  cor = "#5cc8ff",
+  cor = "#ff5a47",
   children,
 }: {
   arte: string;

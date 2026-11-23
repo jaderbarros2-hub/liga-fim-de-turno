@@ -31,7 +31,9 @@ export function HeroRotativo({ destaques }: { destaques: Destaque[] }) {
   const ir = useCallback((i: number) => setAtual((i + total) % total), [total]);
 
   useEffect(() => {
-    reduzido.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reduzido.current = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
   }, []);
 
   useEffect(() => {
@@ -70,26 +72,40 @@ export function HeroRotativo({ destaques }: { destaques: Destaque[] }) {
           <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-preto to-transparent" />
 
           <div className="mx-auto flex min-h-[540px] max-w-6xl flex-col justify-center gap-6 px-6 pb-24 pt-16">
-            {d.etiqueta && <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-texto2">{d.etiqueta}</div>}
-            <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">{d.titulo}</h1>
+            {d.etiqueta && (
+              <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-texto2">
+                {d.etiqueta}
+              </div>
+            )}
+            <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+              {d.titulo}
+            </h1>
             <p className="max-w-xl text-lg text-texto2">{d.texto}</p>
             <div className="flex flex-wrap items-center gap-6">
               <Link
                 href={d.acao.href}
                 tabIndex={i === atual ? 0 : -1}
-                className="corte inline-flex min-h-12 items-center bg-azul px-8 font-semibold uppercase tracking-wide text-white no-underline hover:bg-azul-escuro hover:text-white"
+                className="corte inline-flex min-h-12 items-center bg-vermelho px-8 font-semibold uppercase tracking-wide text-white no-underline hover:bg-vermelho-escuro hover:text-white"
               >
                 {d.acao.rotulo}
               </Link>
               {d.acaoSecundaria && (
-                <Link href={d.acaoSecundaria.href} tabIndex={i === atual ? 0 : -1} className="text-sm font-semibold">
+                <Link
+                  href={d.acaoSecundaria.href}
+                  tabIndex={i === atual ? 0 : -1}
+                  className="text-sm font-semibold"
+                >
                   {d.acaoSecundaria.rotulo} →
                 </Link>
               )}
-              {d.rodape && <span className="text-sm text-cinza">{d.rodape}</span>}
+              {d.rodape && (
+                <span className="text-sm text-cinza">{d.rodape}</span>
+              )}
             </div>
           </div>
-          <span className="absolute bottom-4 right-4 hidden text-[11px] text-white/50 sm:block">{d.credito}</span>
+          <span className="absolute bottom-4 right-4 hidden text-[11px] text-white/50 sm:block">
+            {d.credito}
+          </span>
         </div>
       ))}
 
@@ -107,18 +123,54 @@ export function HeroRotativo({ destaques }: { destaques: Destaque[] }) {
               >
                 <span
                   className={`block h-1 rounded-full transition-all duration-500 ${
-                    i === atual ? "w-10 bg-ciano" : "w-5 bg-white/30 group-hover:bg-white/60"
+                    i === atual
+                      ? "w-10 bg-brasa"
+                      : "w-5 bg-white/30 group-hover:bg-white/60"
                   }`}
                 />
               </button>
             ))}
           </div>
           <div className="ml-2 flex gap-1">
-            <button type="button" onClick={() => ir(atual - 1)} aria-label="Destaque anterior" className="grid h-8 w-8 place-items-center rounded-full text-white/70 ring-1 ring-white/20 hover:text-white hover:ring-ciano">
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.8" fill="none" /></svg>
+            <button
+              type="button"
+              onClick={() => ir(atual - 1)}
+              aria-label="Destaque anterior"
+              className="grid h-8 w-8 place-items-center rounded-full text-white/70 ring-1 ring-white/20 hover:text-white hover:ring-brasa"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+              >
+                <path
+                  d="M8 2L4 6l4 4"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  fill="none"
+                />
+              </svg>
             </button>
-            <button type="button" onClick={() => ir(atual + 1)} aria-label="Próximo destaque" className="grid h-8 w-8 place-items-center rounded-full text-white/70 ring-1 ring-white/20 hover:text-white hover:ring-ciano">
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" strokeWidth="1.8" fill="none" /></svg>
+            <button
+              type="button"
+              onClick={() => ir(atual + 1)}
+              aria-label="Próximo destaque"
+              className="grid h-8 w-8 place-items-center rounded-full text-white/70 ring-1 ring-white/20 hover:text-white hover:ring-brasa"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 2l4 4-4 4"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  fill="none"
+                />
+              </svg>
             </button>
           </div>
         </div>

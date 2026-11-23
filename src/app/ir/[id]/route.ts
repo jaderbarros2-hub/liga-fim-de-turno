@@ -5,9 +5,12 @@ export const dynamic = "force-dynamic";
 
 /**
  * Redirecionamento rastreado para parceiros: conta o clique e envia para a loja
- * com UTM (utm_source=ligafimdeturno). Só redireciona para endereços cadastrados no Painel.
+ * com UTM (utm_source=firststrike). Só redireciona para endereços cadastrados no Painel.
  */
-export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
+export async function GET(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> },
+) {
   try {
     return await redirecionar(req, ctx);
   } catch {
@@ -15,10 +18,17 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   }
 }
 
-async function redirecionar(req: Request, { params }: { params: Promise<{ id: string }> }) {
+async function redirecionar(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const { id } = await params;
   const url = new URL(req.url);
-  const origem = ["logo", "banner", "deck"].includes(url.searchParams.get("o") ?? "") ? url.searchParams.get("o")! : "logo";
+  const origem = ["logo", "banner", "deck"].includes(
+    url.searchParams.get("o") ?? "",
+  )
+    ? url.searchParams.get("o")!
+    : "logo";
   const bannerId = url.searchParams.get("b");
   const pagina = url.searchParams.get("p")?.slice(0, 200) ?? null;
   const lista = origem === "deck" ? url.searchParams.get("lista") : null;
@@ -29,9 +39,14 @@ async function redirecionar(req: Request, { params }: { params: Promise<{ id: st
     .select("id, slug, site_url, instagram, url_compra_lista, ativo")
     .eq("id", id)
     .maybeSingle();
-  if (!parceiro?.ativo) return NextResponse.redirect(new URL("/parceiros", url.origin));
+  if (!parceiro?.ativo)
+    return NextResponse.redirect(new URL("/parceiros", url.origin));
 
-  let destino = parceiro.site_url ?? (parceiro.instagram ? `https://instagram.com/${parceiro.instagram}` : `${url.origin}/parceiros/${parceiro.slug ?? ""}`);
+  let destino =
+    parceiro.site_url ??
+    (parceiro.instagram
+      ? `https://instagram.com/${parceiro.instagram}`
+      : `${url.origin}/parceiros/${parceiro.slug ?? ""}`);
   if (bannerId) {
     const { data: banner } = await db
       .from("banners")
@@ -41,11 +56,20 @@ async function redirecionar(req: Request, { params }: { params: Promise<{ id: st
       .maybeSingle();
     if (banner?.destino_url) destino = banner.destino_url;
   }
-  if (origem === "deck" && lista && parceiro.url_compra_lista?.includes("{lista}")) {
-    destino = parceiro.url_compra_lista.replace("{lista}", encodeURIComponent(lista.slice(0, 4000)));
+  if (
+    origem === "deck" &&
+    lista &&
+    parceiro.url_compra_lista?.includes("{lista}")
+  ) {
+    destino = parceiro.url_compra_lista.replace(
+      "{lista}",
+      encodeURIComponent(lista.slice(0, 4000)),
+    );
   }
 
-  await db.from("cliques").insert({ parceiro_id: id, banner_id: bannerId, origem, pagina });
+  await db
+    .from("cliques")
+    .insert({ parceiro_id: id, banner_id: bannerId, origem, pagina });
 
   let alvo: URL;
   try {
@@ -53,7 +77,7 @@ async function redirecionar(req: Request, { params }: { params: Promise<{ id: st
   } catch {
     return NextResponse.redirect(new URL("/parceiros", url.origin));
   }
-  alvo.searchParams.set("utm_source", "ligafimdeturno");
+  alvo.searchParams.set("utm_source", "firststrike");
   alvo.searchParams.set("utm_medium", origem);
   // Campanha: o evento (slug) quando o clique vem da página de um evento; senão a seção do portal
   const evento = pagina?.match(/^\/eventos\/([^/?#]+)/)?.[1];

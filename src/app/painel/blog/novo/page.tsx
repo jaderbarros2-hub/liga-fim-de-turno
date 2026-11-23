@@ -13,7 +13,7 @@ export default async function NovoArtigo() {
       <Link href="/painel/blog" className="text-sm">
         ← Blog
       </Link>
-      <h1 className="titulo text-5xl">Novo artigo</h1>
+      <h1 className="titulo text-4xl">Novo artigo</h1>
       <Editor autores={(data as Autor[] | null) ?? []} />
     </div>
   );

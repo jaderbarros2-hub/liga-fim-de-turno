@@ -5,11 +5,11 @@ import { enderecoLinha, linkMapa } from "@/lib/lojas";
 import { salvarParceiro, type EstadoLoja } from "./actions";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
 const DICA = "text-xs font-normal text-cinza";
 const BLOCO = "grid gap-4 rounded-xl border border-borda p-5 sm:grid-cols-2";
-const LEGENDA = "px-2 text-sm font-bold uppercase tracking-wider text-ciano";
+const LEGENDA = "px-2 text-sm font-bold uppercase tracking-wider text-brasa";
 
 export type LojaForm = {
   id?: string;
@@ -136,7 +136,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
       }}
       className="flex scroll-mt-20 flex-col gap-5"
     >
-      <h2 className="titulo text-3xl">
+      <h2 className="titulo text-2xl">
         {atual?.id ? `Editar ${atual.nome}` : "Nova loja ou parceiro"}
       </h2>
       {atual?.id && <input type="hidden" name="id" value={atual.id} />}
@@ -255,7 +255,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
                       })
                   : undefined
               }
-              className="mt-1 h-4 w-4 accent-[#2e6bff]"
+              className="mt-1 h-4 w-4 accent-[#d8392a]"
             />
             <span className="flex flex-col">
               <span className="font-semibold">{rotulo as string}</span>
@@ -268,7 +268,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
             type="checkbox"
             name="ativo"
             defaultChecked={atual?.ativo ?? true}
-            className="h-4 w-4 accent-[#2e6bff]"
+            className="h-4 w-4 accent-[#d8392a]"
           />{" "}
           Ativa (desmarque para esconder do site)
         </label>
@@ -541,7 +541,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
         <button
           type="submit"
           disabled={salvando}
-          className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white disabled:opacity-60"
+          className="min-h-11 rounded-lg bg-vermelho px-5 font-semibold text-white disabled:opacity-60"
         >
           {salvando ? "Salvando…" : "Salvar loja"}
         </button>

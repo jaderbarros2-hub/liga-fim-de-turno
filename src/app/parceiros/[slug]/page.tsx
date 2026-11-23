@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: loja.nome,
     description:
-      loja.descricao ?? `${loja.nome}, loja parceira da Liga Fim de Turno.`,
+      loja.descricao ?? `${loja.nome}, loja parceira da First Strike.`,
   };
 }
 
@@ -86,12 +86,12 @@ export default async function PaginaLoja({ params }: Props) {
                 className="h-20 w-20 rounded-lg bg-white object-contain p-2"
               />
             ) : (
-              <span className="grid h-20 w-20 place-items-center rounded-lg bg-azul text-4xl font-bold">
+              <span className="grid h-20 w-20 place-items-center rounded-lg bg-vermelho text-4xl font-bold">
                 {loja.nome.charAt(0)}
               </span>
             )}
             <div className="flex flex-col gap-1">
-              <h1 className="titulo text-5xl sm:text-6xl">{loja.nome}</h1>
+              <h1 className="titulo text-4xl sm:text-5xl">{loja.nome}</h1>
               <span className="text-texto2">
                 {[loja.bairro, [loja.cidade, loja.uf].filter(Boolean).join("/")]
                   .filter(Boolean)
@@ -113,7 +113,7 @@ export default async function PaginaLoja({ params }: Props) {
               .map((r) => (
                 <span
                   key={r as string}
-                  className="rounded bg-azul/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-ciano"
+                  className="rounded bg-vermelho/20 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-brasa"
                 >
                   {r}
                 </span>
@@ -129,7 +129,7 @@ export default async function PaginaLoja({ params }: Props) {
                 })}
                 target="_blank"
                 rel="noopener"
-                className={`${botao} bg-azul text-white hover:bg-azul-escuro hover:text-white`}
+                className={`${botao} bg-vermelho text-white hover:bg-vermelho-escuro hover:text-white`}
               >
                 {loja.site_url ? "Visitar o site" : "Ver no Instagram"}
               </a>
@@ -139,7 +139,7 @@ export default async function PaginaLoja({ params }: Props) {
                 href={insta}
                 target="_blank"
                 rel="noopener"
-                className={`${botao} text-gelo ring-1 ring-borda-forte hover:text-gelo hover:ring-ciano`}
+                className={`${botao} text-marfim ring-1 ring-borda-forte hover:text-marfim hover:ring-brasa`}
               >
                 Instagram
               </a>
@@ -149,7 +149,7 @@ export default async function PaginaLoja({ params }: Props) {
                 href={zap}
                 target="_blank"
                 rel="noopener"
-                className={`${botao} text-gelo ring-1 ring-borda-forte hover:text-gelo hover:ring-ciano`}
+                className={`${botao} text-marfim ring-1 ring-borda-forte hover:text-marfim hover:ring-brasa`}
               >
                 WhatsApp
               </a>
@@ -166,7 +166,7 @@ export default async function PaginaLoja({ params }: Props) {
       <div className="mx-auto flex max-w-6xl flex-col gap-14 px-6 py-14">
         {temEndereco && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-4xl">Onde fica</h2>
+            <h2 className="titulo text-3xl">Onde fica</h2>
             <LocalDaLoja loja={loja} comNome={false} />
             {loja.mesas && (
               <p className="text-sm text-cinza">
@@ -178,7 +178,7 @@ export default async function PaginaLoja({ params }: Props) {
 
         {loja.sede_eventos && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-4xl">Próximos eventos aqui</h2>
+            <h2 className="titulo text-3xl">Próximos eventos aqui</h2>
             <ListaEventos
               eventos={proximos}
               vazio="Nenhum evento presencial marcado nesta loja por enquanto. Fique de olho na agenda."
@@ -189,14 +189,14 @@ export default async function PaginaLoja({ params }: Props) {
         {loja.aceita_credito && (
           <section className="grid gap-6 rounded-md bg-grafite p-6 ring-1 ring-borda md:grid-cols-[1fr_1.2fr] md:p-8">
             <div className="flex flex-col gap-3">
-              <h2 className="titulo text-4xl">Use seus prêmios aqui</h2>
+              <h2 className="titulo text-3xl">Use seus prêmios aqui</h2>
               <p className="text-texto2">
                 Troque o saldo da sua Carteira por crédito na {loja.nome}
                 {loja.bonus_credito_pct ? (
                   <>
                     {" "}
                     com{" "}
-                    <strong className="text-ciano">
+                    <strong className="text-brasa">
                       +{loja.bonus_credito_pct}% de bônus
                     </strong>
                   </>
@@ -205,7 +205,7 @@ export default async function PaginaLoja({ params }: Props) {
               </p>
               <Link
                 href="/minha-area?aba=carteira"
-                className={`${botao} self-start bg-azul text-white hover:bg-azul-escuro hover:text-white`}
+                className={`${botao} self-start bg-vermelho text-white hover:bg-vermelho-escuro hover:text-white`}
               >
                 Resgatar na Carteira
               </Link>
@@ -219,7 +219,7 @@ export default async function PaginaLoja({ params }: Props) {
                   "Você recebe o código do resgate por e-mail.",
               ].map((t, i) => (
                 <li key={t} className="flex gap-3">
-                  <span className="titulo grid h-7 w-7 shrink-0 place-items-center rounded-full bg-azul text-base text-white">
+                  <span className="titulo grid h-7 w-7 shrink-0 place-items-center rounded-full bg-vermelho text-base text-white">
                     {i + 1}
                   </span>
                   <span className="pt-1">{t}</span>
@@ -231,7 +231,7 @@ export default async function PaginaLoja({ params }: Props) {
 
         {passados.length > 0 && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-4xl">Já aconteceu aqui</h2>
+            <h2 className="titulo text-3xl">Já aconteceu aqui</h2>
             <ListaEventos eventos={passados} />
           </section>
         )}

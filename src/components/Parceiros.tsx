@@ -21,9 +21,9 @@ export async function FaixaParceiros() {
         <div className="mx-auto max-w-6xl px-6 pt-5">
           <Link
             href="/parceiros#anuncie"
-            className="flex items-center justify-center rounded-lg border border-dashed border-borda-forte py-6 text-sm font-semibold text-cinza no-underline hover:border-ciano hover:text-gelo"
+            className="flex items-center justify-center rounded-lg border border-dashed border-borda-forte py-6 text-sm font-semibold text-cinza no-underline hover:border-brasa hover:text-marfim"
           >
-            Sua loja aqui · apoie a Liga Fim de Turno
+            Sua loja aqui · apoie a First Strike
           </Link>
         </div>
       ) : (
@@ -92,7 +92,7 @@ export async function BannerPatrocinado({
     return (
       <Link
         href="/parceiros#anuncie"
-        className="flex min-h-24 items-center justify-center rounded-lg bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] px-6 text-center text-sm font-semibold text-cinza no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+        className="flex min-h-24 items-center justify-center rounded-lg bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] px-6 text-center text-sm font-semibold text-cinza no-underline ring-1 ring-borda hover:text-marfim hover:ring-brasa"
       >
         Anuncie aqui para jogadores de Magic · conheça os planos de parceria
       </Link>
@@ -111,7 +111,7 @@ export async function BannerPatrocinado({
         rel="sponsored noopener"
         target="_blank"
         title={banner.titulo}
-        className="group relative block overflow-hidden rounded-lg ring-1 ring-borda hover:ring-ciano"
+        className="group relative block overflow-hidden rounded-lg ring-1 ring-borda hover:ring-brasa"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -135,7 +135,7 @@ export async function BannerPatrocinado({
       })}
       rel="sponsored noopener"
       target="_blank"
-      className={`group relative flex items-center gap-5 overflow-hidden rounded-lg bg-grafite px-6 text-gelo no-underline ring-1 ring-borda hover:ring-ciano ${discreto ? "min-h-16 py-2" : "min-h-24 py-4"}`}
+      className={`group relative flex items-center gap-5 overflow-hidden rounded-lg bg-grafite px-6 text-marfim no-underline ring-1 ring-borda hover:ring-brasa ${discreto ? "min-h-16 py-2" : "min-h-24 py-4"}`}
     >
       {banner.imagem_url && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -162,7 +162,7 @@ export async function BannerPatrocinado({
           <span className="text-sm text-texto2">{banner.texto}</span>
         )}
       </span>
-      <span className="relative z-10 hidden text-sm font-semibold text-ciano sm:block">
+      <span className="relative z-10 hidden text-sm font-semibold text-brasa sm:block">
         Ver na loja →
       </span>
     </a>
@@ -192,13 +192,13 @@ function BannerColuna({
     return (
       <Link
         href="/parceiros#anuncie"
-        className="flex aspect-[3/4] flex-col items-center justify-center gap-3 rounded-md bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] p-6 text-center text-cinza no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+        className="flex aspect-[3/4] flex-col items-center justify-center gap-3 rounded-md bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] p-6 text-center text-cinza no-underline ring-1 ring-borda hover:text-marfim hover:ring-brasa"
       >
-        <span className="titulo text-3xl text-gelo">Sua loja aqui</span>
+        <span className="titulo text-2xl text-marfim">Sua loja aqui</span>
         <span className="text-sm">
           Anuncie para quem joga Magic toda semana
         </span>
-        <span className="text-sm font-semibold text-ciano">
+        <span className="text-sm font-semibold text-brasa">
           Conheça os planos →
         </span>
       </Link>
@@ -217,7 +217,7 @@ function BannerColuna({
         rel="sponsored noopener"
         target="_blank"
         title={banner.titulo}
-        className="group relative block overflow-hidden rounded-md ring-1 ring-borda hover:ring-ciano"
+        className="group relative block overflow-hidden rounded-md ring-1 ring-borda hover:ring-brasa"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -241,7 +241,7 @@ function BannerColuna({
       })}
       rel="sponsored noopener"
       target="_blank"
-      className="group relative isolate flex aspect-[3/4] flex-col items-center justify-end gap-3 overflow-hidden rounded-md bg-grafite p-5 text-center text-gelo no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+      className="group relative isolate flex aspect-[3/4] flex-col items-center justify-end gap-3 overflow-hidden rounded-md bg-grafite p-5 text-center text-marfim no-underline ring-1 ring-borda hover:text-marfim hover:ring-brasa"
     >
       {banner.imagem_url && (
         // eslint-disable-next-line @next/next/no-img-element

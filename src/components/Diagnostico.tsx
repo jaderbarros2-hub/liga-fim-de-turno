@@ -11,7 +11,7 @@ export function ListaProblemas({
 }) {
   if (!problemas.length)
     return vazio ? (
-      <p className="rounded-md border border-ciano/40 bg-ciano/10 p-3 text-sm font-semibold text-ciano">
+      <p className="rounded-md border border-brasa/40 bg-brasa/10 p-3 text-sm font-semibold text-brasa">
         {vazio}
       </p>
     ) : null;
@@ -28,7 +28,7 @@ export function ListaProblemas({
             {p.nivel === "erro" ? "Corrigir" : "Atenção"}
           </span>
           <span className="flex min-w-60 flex-1 flex-col">
-            <span className="font-semibold text-gelo">{p.titulo}</span>
+            <span className="font-semibold text-marfim">{p.titulo}</span>
             <span className="text-texto2">{p.detalhe}</span>
           </span>
           {p.link && (

@@ -41,7 +41,7 @@ export type Insignia = {
   id: string;
   titulo: string;
   texto: string;
-  nivel: "ouro" | "prata" | "bronze" | "azul";
+  nivel: "ouro" | "prata" | "bronze" | "brasa";
   icone:
     | "trofeu"
     | "coroa"
@@ -221,7 +221,7 @@ export async function insigniasDoJogador(
         id: `poty-${liga}`,
         titulo: `Classificado POTY ${nome}`,
         texto: `${vaga.motivo} · temporada ${agora.temporada}`,
-        nivel: "azul",
+        nivel: "brasa",
         icone: "escudo",
       });
     if (rank[0]?.id === perfil.id)
@@ -229,7 +229,7 @@ export async function insigniasDoJogador(
         id: `lider-${liga}`,
         titulo: `Líder do ranking ${nome}`,
         texto: `${agora.trimestre}º trimestre de ${agora.temporada}`,
-        nivel: "azul",
+        nivel: "brasa",
         icone: "chama",
       });
   }
@@ -293,7 +293,7 @@ export async function insigniasDoJogador(
       id: "autor",
       titulo: "Autor do blog",
       texto: "Escreve para o portal da liga",
-      nivel: "azul",
+      nivel: "brasa",
       icone: "pena",
     });
   if (new Date(perfil.desde).getFullYear() <= 2026)

@@ -35,8 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${p.nick} · Perfil`,
     description:
-      p.bio ??
-      `Resultados, decks e conquistas de ${p.nick} na Liga Fim de Turno.`,
+      p.bio ?? `Resultados, decks e conquistas de ${p.nick} na First Strike.`,
   };
 }
 
@@ -121,7 +120,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
             avatar={perfil.avatar}
             tamanho={112}
           />
-          <h1 className="titulo text-5xl sm:text-6xl">{perfil.nick}</h1>
+          <h1 className="titulo text-4xl sm:text-5xl">{perfil.nick}</h1>
           {insignias.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">
               {insignias.slice(0, 6).map((i) => (
@@ -143,7 +142,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
               </a>
             ))}
             <Compartilhar
-              titulo={`${perfil.nick} na Liga Fim de Turno`}
+              titulo={`${perfil.nick} na First Strike`}
               caminho={caminho}
             />
           </div>
@@ -154,7 +153,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                   key={r as string}
                   className="flex min-w-20 flex-col bg-preto/70 px-4 py-3 backdrop-blur sm:min-w-28"
                 >
-                  <dd className="titulo text-3xl">{n}</dd>
+                  <dd className="titulo text-2xl">{n}</dd>
                   <dt className="text-xs text-cinza">{r}</dt>
                 </div>
               ))}
@@ -185,7 +184,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
               key={a.id}
               href={`${caminho}?aba=${a.id}`}
               aria-current={aba === a.id ? "page" : undefined}
-              className={`shrink-0 py-4 no-underline ${aba === a.id ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
+              className={`shrink-0 py-4 no-underline ${aba === a.id ? "border-b-2 border-vermelho text-marfim" : "text-cinza hover:text-marfim"}`}
             >
               {a.rotulo}
             </Link>
@@ -218,12 +217,12 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                     <td className="p-3">
                       <Link
                         href={`/eventos/${r.evento.slug}?aba=resultados`}
-                        className="font-semibold text-gelo no-underline hover:text-ciano"
+                        className="font-semibold text-marfim no-underline hover:text-brasa"
                       >
                         {r.evento.titulo}
                       </Link>
                       {r.evento.tipo !== "etapa" && (
-                        <span className="ml-2 text-xs font-bold uppercase text-ciano">
+                        <span className="ml-2 text-xs font-bold uppercase text-brasa">
                           {NOMES_TIPO[r.evento.tipo]}
                         </span>
                       )}
@@ -243,7 +242,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                       )}
                     </td>
                     <td
-                      className={`p-3 text-center font-bold ${r.posicao === 1 ? "text-ciano" : ""}`}
+                      className={`p-3 text-center font-bold ${r.posicao === 1 ? "text-brasa" : ""}`}
                     >
                       {r.posicao}º
                     </td>
@@ -276,7 +275,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                 <li key={d.evento.id}>
                   <Link
                     href={`/eventos/${d.evento.slug}/deck/${d.posicao}`}
-                    className="group flex flex-col overflow-hidden rounded-md bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:-translate-y-0.5 hover:text-gelo hover:ring-ciano"
+                    className="group flex flex-col overflow-hidden rounded-md bg-grafite text-marfim no-underline ring-1 ring-borda transition hover:-translate-y-0.5 hover:text-marfim hover:ring-brasa"
                   >
                     <div className="relative aspect-[2/1] overflow-hidden bg-fundo2">
                       {c?.imagem_grande && (
@@ -295,7 +294,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                       <span className="absolute bottom-2.5 left-3 text-lg font-bold">
                         {d.arquetipo ?? "Deck"}
                       </span>
-                      <span className="absolute right-3 top-2.5 rounded bg-azul px-2 py-0.5 text-xs font-bold">
+                      <span className="absolute right-3 top-2.5 rounded bg-vermelho px-2 py-0.5 text-xs font-bold">
                         {d.posicao}º
                       </span>
                     </div>
@@ -337,7 +336,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
               ))}
             </ul>
           ) : (
-            <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+            <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
               As insígnias aparecem com as conquistas na liga: títulos, top 8,
               finais e mais.
             </p>

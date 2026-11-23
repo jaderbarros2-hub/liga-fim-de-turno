@@ -25,7 +25,7 @@ export function FotoJogador({
     );
   }
   const cores = [
-    "#2e6bff",
+    "#d8392a",
     "#1f8a70",
     "#8a4fff",
     "#c2410c",
@@ -61,7 +61,7 @@ export function NomeJogador({
   return (
     <Link
       href={linkJogador(nick)}
-      className={`text-inherit no-underline hover:text-ciano hover:underline ${className}`}
+      className={`text-inherit no-underline hover:text-brasa hover:underline ${className}`}
     >
       {nick}
     </Link>

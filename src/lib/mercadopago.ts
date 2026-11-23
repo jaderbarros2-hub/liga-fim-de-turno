@@ -45,7 +45,9 @@ function converter(o: RespostaOrder): PedidoPix {
   const p = o.transactions?.payments?.[0];
   // Pago quando o pedido foi processado ou a transação Pix foi aprovada (no modo de teste o
   // Mercado Pago às vezes atualiza só a transação antes do pedido)
-  const pago = o.status === "processed" || ["approved", "processed"].includes(p?.status ?? "");
+  const pago =
+    o.status === "processed" ||
+    ["approved", "processed"].includes(p?.status ?? "");
   return {
     idExterno: o.id,
     status: o.status,
@@ -55,7 +57,9 @@ function converter(o: RespostaOrder): PedidoPix {
     copiaCola: p?.payment_method?.qr_code,
     qrBase64: p?.payment_method?.qr_code_base64,
     expiraEm: p?.date_of_expiration,
-    pagoEm: pago ? (o.last_updated_date ?? new Date().toISOString()) : undefined,
+    pagoEm: pago
+      ? (o.last_updated_date ?? new Date().toISOString())
+      : undefined,
   };
 }
 
@@ -71,7 +75,9 @@ export async function criarPedidoPix(dados: {
   // Modo de teste (credenciais de teste): o nome "APRO" faz o Mercado Pago aprovar o Pix sozinho,
   // o que dispara o aviso (webhook) sem precisar pagar. Liga com MERCADO_PAGO_TESTE_APROVAR=1.
   const aprovarTeste = process.env.MERCADO_PAGO_TESTE_APROVAR === "1";
-  const [primeiro, ...resto] = (aprovarTeste ? "APRO" : (dados.nome ?? "")).trim().split(/\s+/);
+  const [primeiro, ...resto] = (aprovarTeste ? "APRO" : (dados.nome ?? ""))
+    .trim()
+    .split(/\s+/);
   const corpo = {
     type: "online",
     external_reference: dados.referencia,
@@ -89,8 +95,12 @@ export async function criarPedidoPix(dados: {
     },
     payer: {
       email: dados.email,
-      ...(primeiro ? { first_name: primeiro, last_name: resto.join(" ") || undefined } : {}),
-      ...(dados.cpf ? { identification: { type: "CPF", number: dados.cpf } } : {}),
+      ...(primeiro
+        ? { first_name: primeiro, last_name: resto.join(" ") || undefined }
+        : {}),
+      ...(dados.cpf
+        ? { identification: { type: "CPF", number: dados.cpf } }
+        : {}),
     },
   };
 
@@ -107,19 +117,27 @@ export async function criarPedidoPix(dados: {
   if (!r.ok) {
     const texto = await r.text();
     console.error("Mercado Pago: falha ao criar Pix", r.status, texto);
-    throw new Error("Não foi possível gerar o Pix agora. Tente de novo em instantes.");
+    throw new Error(
+      "Não foi possível gerar o Pix agora. Tente de novo em instantes.",
+    );
   }
   return converter(await r.json());
 }
 
-export async function buscarPedido(idExterno: string): Promise<PedidoPix | null> {
+export async function buscarPedido(
+  idExterno: string,
+): Promise<PedidoPix | null> {
   const r = await fetch(`${API}/${encodeURIComponent(idExterno)}`, {
     headers: { Authorization: `Bearer ${token()}` },
     cache: "no-store",
   });
   if (r.status === 404) return null;
   if (!r.ok) {
-    console.error("Mercado Pago: falha ao consultar pedido", r.status, await r.text());
+    console.error(
+      "Mercado Pago: falha ao consultar pedido",
+      r.status,
+      await r.text(),
+    );
     return null;
   }
   return converter(await r.json());
@@ -130,18 +148,26 @@ export async function buscarPedido(idExterno: string): Promise<PedidoPix | null>
  * Mesmo sem segredo configurado o aviso é seguro: a confirmação sempre
  * consulta o pedido direto na API antes de mudar qualquer coisa.
  */
-export function assinaturaValida(cabecalhoAssinatura: string | null, requestId: string | null, dataId: string) {
+export function assinaturaValida(
+  cabecalhoAssinatura: string | null,
+  requestId: string | null,
+  dataId: string,
+) {
   const segredo = process.env.MERCADO_PAGO_WEBHOOK_SECRET?.trim();
   if (!segredo) return true;
   if (!cabecalhoAssinatura) return false;
   const partes = Object.fromEntries(
-    cabecalhoAssinatura.split(",").map((p) => p.trim().split("=", 2) as [string, string]),
+    cabecalhoAssinatura
+      .split(",")
+      .map((p) => p.trim().split("=", 2) as [string, string]),
   );
   const ts = partes.ts;
   const v1 = partes.v1;
   if (!ts || !v1) return false;
   const manifesto = `id:${dataId.toLowerCase()};request-id:${requestId ?? ""};ts:${ts};`;
-  const esperado = createHmac("sha256", segredo).update(manifesto).digest("hex");
+  const esperado = createHmac("sha256", segredo)
+    .update(manifesto)
+    .digest("hex");
   try {
     return timingSafeEqual(Buffer.from(esperado), Buffer.from(v1));
   } catch {

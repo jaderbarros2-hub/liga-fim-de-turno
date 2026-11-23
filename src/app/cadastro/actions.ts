@@ -4,13 +4,21 @@ import { after } from "next/server";
 import { emailBoasVindas } from "@/lib/emails";
 import { redirect } from "next/navigation";
 import { criarClienteServidor } from "@/lib/supabase/server";
-import { cpfValido, idadeEm, soDigitos, validarChavePix } from "@/lib/validacao";
+import {
+  cpfValido,
+  idadeEm,
+  soDigitos,
+  validarChavePix,
+} from "@/lib/validacao";
 
 export type EstadoCadastro = { erro?: string };
 
 const IDADE_MINIMA = 13;
 
-export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise<EstadoCadastro> {
+export async function salvarCadastro(
+  _: EstadoCadastro,
+  form: FormData,
+): Promise<EstadoCadastro> {
   const supabase = await criarClienteServidor();
   const {
     data: { user },
@@ -30,20 +38,37 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
   const voltarBruto = texto("voltar") || "/minha-area";
   const voltar = voltarBruto.startsWith("/") ? voltarBruto : "/minha-area";
 
-  if (!nome || !email || !nascimento || !nick || !chavePix) return { erro: "Preencha todos os campos obrigatórios." };
+  if (!nome || !email || !nascimento || !nick || !chavePix)
+    return { erro: "Preencha todos os campos obrigatórios." };
   if (!/^\S+@\S+\.\S+$/.test(email)) return { erro: "E-mail inválido." };
   if (!cpfValido(cpf)) return { erro: "CPF inválido." };
   const idade = idadeEm(nascimento);
-  if (Number.isNaN(idade) || idade < 0 || idade > 120) return { erro: "Data de nascimento inválida." };
-  if (idade < IDADE_MINIMA) return { erro: `A idade mínima para participar é ${IDADE_MINIMA} anos.` };
+  if (Number.isNaN(idade) || idade < 0 || idade > 120)
+    return { erro: "Data de nascimento inválida." };
+  if (idade < IDADE_MINIMA)
+    return { erro: `A idade mínima para participar é ${IDADE_MINIMA} anos.` };
   if (idade < 18 && (!responsavelNome || !cpfValido(responsavelCpf)))
-    return { erro: "Menores de 18 anos precisam informar nome e CPF do responsável." };
-  if (!aceite) return { erro: "É preciso aceitar os Termos de uso e a Política de privacidade." };
+    return {
+      erro: "Menores de 18 anos precisam informar nome e CPF do responsável.",
+    };
+  if (!aceite)
+    return {
+      erro: "É preciso aceitar os Termos de uso e a Política de privacidade.",
+    };
   const pixTipo = texto("pix_tipo");
-  const pix = validarChavePix(pixTipo, chavePix, [cpf, responsavelCpf].filter(Boolean));
+  const pix = validarChavePix(
+    pixTipo,
+    chavePix,
+    [cpf, responsavelCpf].filter(Boolean),
+  );
   if (pix.erro) return { erro: pix.erro };
-  if (form.get("pix_titular") !== "on") return { erro: "Confirme que a chave Pix está no seu nome." };
-  const { data: atual } = await supabase.from("jogadores").select("chave_pix, aceite_termos_em").eq("id", user.id).maybeSingle();
+  if (form.get("pix_titular") !== "on")
+    return { erro: "Confirme que a chave Pix está no seu nome." };
+  const { data: atual } = await supabase
+    .from("jogadores")
+    .select("chave_pix, aceite_termos_em")
+    .eq("id", user.id)
+    .maybeSingle();
 
   const { error } = await supabase
     .from("jogadores")
@@ -65,7 +90,10 @@ export async function salvarCadastro(_: EstadoCadastro, form: FormData): Promise
     .eq("id", user.id);
 
   if (error) {
-    if (error.code === "23505") return { erro: "Este CPF já está cadastrado em outra conta. Fale com a organização." };
+    if (error.code === "23505")
+      return {
+        erro: "Este CPF já está cadastrado em outra conta. Fale com a organização.",
+      };
     return { erro: "Não foi possível salvar. Tente de novo." };
   }
   if (!atual?.aceite_termos_em) after(() => emailBoasVindas(user.id));

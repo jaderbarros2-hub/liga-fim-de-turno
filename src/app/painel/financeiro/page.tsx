@@ -133,7 +133,7 @@ export default async function Financeiro({
   return (
     <div className="flex max-w-5xl flex-col gap-10">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-5xl">Financeiro</h1>
+        <h1 className="titulo text-4xl">Financeiro</h1>
         <p className="text-sm text-texto2">
           Saques por Pix, envios para lojas parceiras e o total guardado nas
           Carteiras.
@@ -141,7 +141,7 @@ export default async function Financeiro({
         {ok && CONFIRMACOES[ok] && (
           <p
             role="status"
-            className="flex items-center gap-2 rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano"
+            className="flex items-center gap-2 rounded-md border border-brasa/50 bg-brasa/10 p-3 text-sm font-semibold text-brasa"
           >
             <svg
               width="18"
@@ -184,14 +184,14 @@ export default async function Financeiro({
             <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
               {r}
             </dt>
-            <dd className="titulo text-3xl">{v}</dd>
+            <dd className="titulo text-2xl">{v}</dd>
             <span className="text-sm text-texto2">{t}</span>
           </div>
         ))}
       </dl>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Saques por Pix</h2>
+        <h2 className="titulo text-2xl">Saques por Pix</h2>
         <p className="text-sm text-cinza">
           Faça o Pix pelo app do banco e confira se o nome do titular bate com o
           cadastro. Marque a conferência na primeira vez: a chave fica
@@ -221,7 +221,7 @@ export default async function Financeiro({
                       {s.descricao}
                       {s.automatico && " · automático"} · {quando(s.criado_em)}
                     </span>
-                    <strong className="titulo text-2xl text-ciano">
+                    <strong className="titulo text-xl text-brasa">
                       {reais(-s.valor_centavos)}
                     </strong>
                   </div>
@@ -233,7 +233,7 @@ export default async function Financeiro({
                       </strong>
                     </span>
                     {s.jogador?.pix_verificado_em ? (
-                      <span className="text-ciano">✓ titular conferido</span>
+                      <span className="text-brasa">✓ titular conferido</span>
                     ) : (
                       <span className="text-alerta">
                         titular ainda não conferido
@@ -249,7 +249,7 @@ export default async function Financeiro({
                           <input
                             type="checkbox"
                             name="titular_conferido"
-                            className="h-4 w-4 accent-[#2e6bff]"
+                            className="h-4 w-4 accent-[#d8392a]"
                           />{" "}
                           Conferi o nome do titular
                         </label>
@@ -284,11 +284,11 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Resgates em lojas parceiras</h2>
+        <h2 className="titulo text-2xl">Resgates em lojas parceiras</h2>
         <p className="text-sm text-cinza">
           Faça o Pix do valor para a chave da loja (o bônus é por conta da loja)
           e clique em{" "}
-          <strong className="text-gelo">Confirmar Pix enviado</strong>: a loja
+          <strong className="text-marfim">Confirmar Pix enviado</strong>: a loja
           recebe por e-mail o pedido para gerar o crédito em até 2 dias úteis. O
           jogador já recebeu o código quando pediu.
         </p>
@@ -320,7 +320,7 @@ export default async function Financeiro({
                   </span>
                   <span className="text-sm">
                     Total a enviar:{" "}
-                    <strong className="text-ciano">
+                    <strong className="text-brasa">
                       {reais(-itens.reduce((s, m) => s + m.valor_centavos, 0))}
                     </strong>
                   </span>
@@ -347,7 +347,7 @@ export default async function Financeiro({
                         Pix {reais(-e.valor_centavos)}
                         {e.credito_centavos &&
                         e.credito_centavos !== -e.valor_centavos ? (
-                          <span className="text-ciano">
+                          <span className="text-brasa">
                             {" "}
                             → {reais(e.credito_centavos)} de crédito
                           </span>
@@ -382,7 +382,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Concluídos recentemente</h2>
+        <h2 className="titulo text-2xl">Concluídos recentemente</h2>
         {(recentes ?? []).length === 0 ? (
           <p className="text-texto2">Nada concluído ainda.</p>
         ) : (
@@ -424,7 +424,7 @@ export default async function Financeiro({
                 </span>
                 <span>{reais(Math.abs(r.valor_centavos))}</span>
                 <span
-                  className={`rounded px-2 py-0.5 text-xs font-bold ${r.status === "concluido" ? "bg-ciano/15 text-ciano" : "bg-erro/15 text-erro"}`}
+                  className={`rounded px-2 py-0.5 text-xs font-bold ${r.status === "concluido" ? "bg-brasa/15 text-brasa" : "bg-erro/15 text-erro"}`}
                 >
                   {r.status === "concluido"
                     ? r.tipo === "saque"
@@ -450,7 +450,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Pix aguardando pagamento</h2>
+        <h2 className="titulo text-2xl">Pix aguardando pagamento</h2>
         {(pixPendentes ?? []).length === 0 ? (
           <p className="text-texto2">Nenhum Pix em aberto.</p>
         ) : (
@@ -496,7 +496,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-3xl">Avisos do Mercado Pago</h2>
+        <h2 className="titulo text-2xl">Avisos do Mercado Pago</h2>
         <p className="text-sm text-cinza">
           Últimos avisos automáticos (webhook) e pagamentos confirmados. Útil
           para conferir os testes.

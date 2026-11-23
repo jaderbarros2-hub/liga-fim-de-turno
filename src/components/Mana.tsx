@@ -8,14 +8,27 @@ const CORES: Record<string, string> = {
 };
 
 /** Custo de mana em bolinhas ({1}{U}{U} → ① 🔵 🔵), sem depender de fontes de símbolos. */
-export function Mana({ custo, tamanho = 16 }: { custo: string | null; tamanho?: number }) {
+export function Mana({
+  custo,
+  tamanho = 16,
+}: {
+  custo: string | null;
+  tamanho?: number;
+}) {
   if (!custo) return null;
   const simbolos = custo.match(/\{[^}]+\}/g) ?? [];
   return (
-    <span className="inline-flex shrink-0 items-center gap-0.5" aria-label={`Custo ${custo}`}>
+    <span
+      className="inline-flex shrink-0 items-center gap-0.5"
+      aria-label={`Custo ${custo}`}
+    >
       {simbolos.map((s, i) => {
         const v = s.slice(1, -1).toUpperCase();
-        const cor = CORES[v] ?? (v.includes("/") ? CORES[v.split("/").find((x) => CORES[x]) ?? "C"] : "bg-[#cbc2bf] text-[#262222]");
+        const cor =
+          CORES[v] ??
+          (v.includes("/")
+            ? CORES[v.split("/").find((x) => CORES[x]) ?? "C"]
+            : "bg-[#cbc2bf] text-[#262222]");
         return (
           <span
             key={i}
@@ -31,5 +44,17 @@ export function Mana({ custo, tamanho = 16 }: { custo: string | null; tamanho?: 
   );
 }
 
-export const NOMES_COR: Record<string, string> = { W: "Branco", U: "Azul", B: "Preto", R: "Vermelho", G: "Verde" };
-export const COR_BARRA: Record<string, string> = { W: "#f3eccb", U: "#4f9fd8", B: "#8e8481", R: "#e0704c", G: "#5fae6c" };
+export const NOMES_COR: Record<string, string> = {
+  W: "Branco",
+  U: "Azul",
+  B: "Preto",
+  R: "Vermelho",
+  G: "Verde",
+};
+export const COR_BARRA: Record<string, string> = {
+  W: "#f3eccb",
+  U: "#4f9fd8",
+  B: "#8e8481",
+  R: "#e0704c",
+  G: "#5fae6c",
+};

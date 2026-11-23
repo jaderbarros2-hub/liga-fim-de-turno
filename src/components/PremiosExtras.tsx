@@ -30,7 +30,7 @@ export function PremiosExtras({
             + Bônus
           </span>
           <span className="text-texto2">
-            <span className="font-semibold text-gelo">{p.descricao}</span>{" "}
+            <span className="font-semibold text-marfim">{p.descricao}</span>{" "}
             {p.parceiro?.slug ? (
               <>
                 na{" "}

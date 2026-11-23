@@ -1,4 +1,11 @@
-import { chaveCarta, grupoDaCarta, ORDEM_GRUPOS, total, type Carta, type ItemLista } from "@/lib/decklist";
+import {
+  chaveCarta,
+  grupoDaCarta,
+  ORDEM_GRUPOS,
+  total,
+  type Carta,
+  type ItemLista,
+} from "@/lib/decklist";
 
 /** Lista do deck organizada por tipo, curva de mana e imagem da carta ao passar o mouse. */
 export function VisualDeck({
@@ -18,7 +25,8 @@ export function VisualDeck({
   const ordenar = (itens: ItemLista[]) =>
     [...itens].sort(
       (a, b) =>
-        (cartas.get(chaveCarta(a.nome))?.cmc ?? 0) - (cartas.get(chaveCarta(b.nome))?.cmc ?? 0) ||
+        (cartas.get(chaveCarta(a.nome))?.cmc ?? 0) -
+          (cartas.get(chaveCarta(b.nome))?.cmc ?? 0) ||
         a.nome.localeCompare(b.nome),
     );
 
@@ -38,24 +46,36 @@ export function VisualDeck({
       <div className="flex flex-wrap items-end gap-8">
         <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-texto2">
           <span>
-            <strong className="text-gelo">{contar("Criaturas")}</strong> criaturas
+            <strong className="text-marfim">{contar("Criaturas")}</strong>{" "}
+            criaturas
           </span>
           <span>
-            <strong className="text-gelo">{total(principal) - contar("Criaturas") - contar("Terrenos")}</strong> outras mágicas
+            <strong className="text-marfim">
+              {total(principal) - contar("Criaturas") - contar("Terrenos")}
+            </strong>{" "}
+            outras mágicas
           </span>
           <span>
-            <strong className="text-gelo">{contar("Terrenos")}</strong> terrenos
+            <strong className="text-marfim">{contar("Terrenos")}</strong>{" "}
+            terrenos
           </span>
           <span>
-            <strong className="text-gelo">{total(principal)}</strong> no deck · <strong className="text-gelo">{total(sideboard)}</strong> no sideboard
+            <strong className="text-marfim">{total(principal)}</strong> no deck
+            · <strong className="text-marfim">{total(sideboard)}</strong> no
+            sideboard
           </span>
         </div>
         <div aria-label="Curva de mana" className="flex items-end gap-1.5">
           {curva.map((q, i) => (
             <div key={i} className="flex flex-col items-center gap-1">
               <span className="text-[10px] text-cinza">{q || ""}</span>
-              <div className="w-6 rounded-sm bg-azul" style={{ height: `${Math.max(2, (q / maxCurva) * 56)}px` }} />
-              <span className="text-[10px] text-cinza">{i === 6 ? "6+" : i}</span>
+              <div
+                className="w-6 rounded-sm bg-vermelho"
+                style={{ height: `${Math.max(2, (q / maxCurva) * 56)}px` }}
+              />
+              <span className="text-[10px] text-cinza">
+                {i === 6 ? "6+" : i}
+              </span>
             </div>
           ))}
         </div>
@@ -63,15 +83,34 @@ export function VisualDeck({
 
       <div className="grid items-start gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
         {ORDEM_GRUPOS.filter((g) => grupos.has(g)).map((g) => (
-          <Bloco key={g} titulo={g} itens={ordenar(grupos.get(g)!)} cartas={cartas} />
+          <Bloco
+            key={g}
+            titulo={g}
+            itens={ordenar(grupos.get(g)!)}
+            cartas={cartas}
+          />
         ))}
-        {sideboard.length > 0 && <Bloco titulo="Sideboard" itens={ordenar(sideboard)} cartas={cartas} />}
+        {sideboard.length > 0 && (
+          <Bloco
+            titulo="Sideboard"
+            itens={ordenar(sideboard)}
+            cartas={cartas}
+          />
+        )}
       </div>
     </div>
   );
 }
 
-function Bloco({ titulo, itens, cartas }: { titulo: string; itens: ItemLista[]; cartas: Map<string, Carta> }) {
+function Bloco({
+  titulo,
+  itens,
+  cartas,
+}: {
+  titulo: string;
+  itens: ItemLista[];
+  cartas: Map<string, Carta>;
+}) {
   return (
     <section className="mb-6">
       <h3 className="mb-2 flex justify-between border-b border-borda pb-1 text-sm font-semibold text-cinza">
@@ -82,10 +121,19 @@ function Bloco({ titulo, itens, cartas }: { titulo: string; itens: ItemLista[]; 
         {itens.map((i) => {
           const c = cartas.get(chaveCarta(i.nome));
           return (
-            <li key={i.nome} className="group relative flex items-center gap-2 py-0.5 text-sm">
-              <span className="w-5 text-right font-semibold text-ciano">{i.qtd}</span>
+            <li
+              key={i.nome}
+              className="group relative flex items-center gap-2 py-0.5 text-sm"
+            >
+              <span className="w-5 text-right font-semibold text-brasa">
+                {i.qtd}
+              </span>
               <span className="flex-1 truncate">{c?.nome ?? i.nome}</span>
-              {c?.custo && <span className="font-mono text-[11px] text-cinza">{c.custo.replace(/[{}]/g, "")}</span>}
+              {c?.custo && (
+                <span className="font-mono text-[11px] text-cinza">
+                  {c.custo.replace(/[{}]/g, "")}
+                </span>
+              )}
               {c?.imagem_grande && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

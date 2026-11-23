@@ -85,9 +85,9 @@ type Deck = {
 
 const STATUS_INSCRICAO: Record<
   string,
-  { rotulo: string; tipo: "ciano" | "alerta" | "contorno" }
+  { rotulo: string; tipo: "sucesso" | "alerta" | "contorno" }
 > = {
-  confirmada: { rotulo: "Confirmada", tipo: "ciano" },
+  confirmada: { rotulo: "Confirmada", tipo: "sucesso" },
   aguardando_pagamento: { rotulo: "Aguardando Pix", tipo: "alerta" },
   expirada: { rotulo: "Pix expirado", tipo: "contorno" },
   cancelada: { rotulo: "Cancelada", tipo: "contorno" },
@@ -368,7 +368,7 @@ export default async function MinhaArea({
         <div className="mx-auto flex max-w-6xl flex-wrap items-end gap-6 px-6 pb-8 pt-12">
           <FotoJogador nick={nick} avatar={jogador.avatar_url} tamanho={88} />
           <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <span className="flex flex-wrap items-center gap-4 text-sm font-semibold uppercase tracking-widest text-ciano">
+            <span className="flex flex-wrap items-center gap-4 text-sm font-semibold uppercase tracking-widest text-brasa">
               Minha área
               <Link
                 href={linkJogador(nick)}
@@ -377,7 +377,7 @@ export default async function MinhaArea({
                 Ver meu perfil público →
               </Link>
             </span>
-            <h1 className="titulo flex flex-wrap items-center gap-3 text-5xl sm:text-6xl">
+            <h1 className="titulo flex flex-wrap items-center gap-3 text-4xl sm:text-5xl">
               {nick}
               {temporada.some((f) => f.vaga) && (
                 <span className="rounded bg-alerta px-2 py-1 font-sans text-xs font-bold uppercase tracking-wider text-preto">
@@ -402,7 +402,7 @@ export default async function MinhaArea({
                 key={r}
                 className="flex min-w-24 flex-col bg-preto/70 px-4 py-3 backdrop-blur"
               >
-                <dd className="titulo text-3xl">{v}</dd>
+                <dd className="titulo text-2xl">{v}</dd>
                 <dt className="text-xs text-cinza">{r}</dt>
               </div>
             ))}
@@ -427,11 +427,11 @@ export default async function MinhaArea({
                 a.id === "visao" ? "/minha-area" : `/minha-area?aba=${a.id}`
               }
               aria-current={aba === a.id ? "page" : undefined}
-              className={`shrink-0 py-4 no-underline ${aba === a.id ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
+              className={`shrink-0 py-4 no-underline ${aba === a.id ? "border-b-2 border-vermelho text-marfim" : "text-cinza hover:text-marfim"}`}
             >
               {a.rotulo}
               {a.id === "carteira" && saldo > 0 && (
-                <span className="ml-1.5 rounded-full bg-ciano px-1.5 text-xs text-preto">
+                <span className="ml-1.5 rounded-full bg-brasa px-1.5 text-xs text-preto">
                   {reais(saldo).replace("R$", "").trim()}
                 </span>
               )}
@@ -445,7 +445,7 @@ export default async function MinhaArea({
           <>
             {/* Sua próxima mesa */}
             <section className="flex flex-col gap-4">
-              <h2 className="titulo text-3xl">Sua próxima mesa</h2>
+              <h2 className="titulo text-2xl">Sua próxima mesa</h2>
               {proxima ? (
                 <ProximaMesa
                   inscricao={proxima}
@@ -470,7 +470,7 @@ export default async function MinhaArea({
                   <CartaoEvento evento={sugestao[0]} />
                 </div>
               ) : (
-                <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+                <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                   Nenhuma etapa aberta agora. Os avisos saem primeiro no
                   Discord.
                 </p>
@@ -479,7 +479,7 @@ export default async function MinhaArea({
 
             {pendencias.length > 0 && (
               <section className="flex flex-col gap-3">
-                <h2 className="titulo text-3xl">Pendências</h2>
+                <h2 className="titulo text-2xl">Pendências</h2>
                 <ul className="flex flex-col gap-2">
                   {pendencias.map((p) => (
                     <li
@@ -500,7 +500,7 @@ export default async function MinhaArea({
               {/* Minha temporada */}
               <section className="flex flex-col gap-4">
                 <div className="flex items-end justify-between">
-                  <h2 className="titulo text-3xl">
+                  <h2 className="titulo text-2xl">
                     Minha temporada {per.temporada}
                   </h2>
                   <Link
@@ -511,7 +511,7 @@ export default async function MinhaArea({
                   </Link>
                 </div>
                 {temporada.length === 0 ? (
-                  <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+                  <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                     Jogue uma etapa para entrar no ranking do circuito.
                   </p>
                 ) : (
@@ -521,7 +521,7 @@ export default async function MinhaArea({
                       className="flex flex-col gap-3 rounded-md bg-grafite p-5 ring-1 ring-borda"
                     >
                       <span className="flex items-center justify-between">
-                        <span className="titulo text-2xl">
+                        <span className="titulo text-xl">
                           Circuito {f.nome}
                         </span>
                         <span className="text-xs font-bold uppercase tracking-wider text-cinza">
@@ -539,7 +539,7 @@ export default async function MinhaArea({
                             key={r as string}
                             className="rounded bg-fundo2 py-2"
                           >
-                            <dd className="titulo text-2xl">{v}</dd>
+                            <dd className="titulo text-xl">{v}</dd>
                             <dt className="text-[11px] text-cinza">{r}</dt>
                           </div>
                         ))}
@@ -564,9 +564,9 @@ export default async function MinhaArea({
 
               {/* Últimos resultados */}
               <section className="flex flex-col gap-4">
-                <h2 className="titulo text-3xl">Últimos resultados</h2>
+                <h2 className="titulo text-2xl">Últimos resultados</h2>
                 {resultados.length === 0 ? (
-                  <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+                  <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                     Seus resultados aparecem aqui depois da primeira etapa.
                   </p>
                 ) : (
@@ -577,14 +577,14 @@ export default async function MinhaArea({
                         className="flex items-center gap-4 px-4 py-3"
                       >
                         <span
-                          className={`titulo w-12 text-3xl ${r.posicao === 1 ? "text-ciano" : "text-cinza"}`}
+                          className={`titulo w-12 text-2xl ${r.posicao === 1 ? "text-brasa" : "text-cinza"}`}
                         >
                           {r.posicao}º
                         </span>
                         <span className="flex min-w-0 flex-1 flex-col">
                           <Link
                             href={`/eventos/${r.evento.slug}?aba=resultados`}
-                            className="truncate font-semibold text-gelo no-underline hover:text-ciano"
+                            className="truncate font-semibold text-marfim no-underline hover:text-brasa"
                           >
                             {r.evento.titulo}
                           </Link>
@@ -618,7 +618,7 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Saldo da Carteira
                 </dt>
-                <dd className="titulo text-3xl">{reais(saldo)}</dd>
+                <dd className="titulo text-2xl">{reais(saldo)}</dd>
                 <span className="text-sm text-texto2">
                   Use na hora de comprar qualquer ingresso.
                 </span>
@@ -627,7 +627,7 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Em processamento
                 </dt>
-                <dd className="titulo text-3xl">
+                <dd className="titulo text-2xl">
                   {reais(Math.abs(totalProcessamento))}
                 </dd>
                 <span className="text-sm text-texto2">
@@ -644,7 +644,7 @@ export default async function MinhaArea({
             ].map((g) =>
               g.lista.length ? (
                 <div key={g.titulo} className="flex flex-col gap-3">
-                  <h2 className="titulo text-3xl">{g.titulo}</h2>
+                  <h2 className="titulo text-2xl">{g.titulo}</h2>
                   <ul className="flex flex-col divide-y divide-borda rounded-md ring-1 ring-borda">
                     {g.lista.map((i) => {
                       const s = STATUS_INSCRICAO[i.status] ?? {
@@ -662,7 +662,7 @@ export default async function MinhaArea({
                           </span>
                           <Link
                             href={`/eventos/${i.evento.slug}`}
-                            className="min-w-48 flex-1 font-semibold text-gelo no-underline hover:text-ciano"
+                            className="min-w-48 flex-1 font-semibold text-marfim no-underline hover:text-brasa"
                           >
                             {i.evento.titulo}
                           </Link>
@@ -726,7 +726,7 @@ export default async function MinhaArea({
               ) : null,
             )}
             {inscricoes.length === 0 && (
-              <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+              <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                 Você ainda não se inscreveu em nenhuma etapa.
               </p>
             )}
@@ -741,11 +741,11 @@ export default async function MinhaArea({
         {aba === "decks" && (
           <section className="flex flex-col gap-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 className="titulo text-3xl">Meus decks</h2>
+              <h2 className="titulo text-2xl">Meus decks</h2>
               <BotaoLink href="/minha-area/decks/novo">Novo deck</BotaoLink>
             </div>
             {decks.length === 0 ? (
-              <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+              <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                 Importe a lista que você montou no Endstep para usar nas etapas
                 de Pauper e Premodern.
               </p>
@@ -757,7 +757,7 @@ export default async function MinhaArea({
                     <li key={d.id}>
                       <Link
                         href={`/minha-area/decks/${d.id}`}
-                        className="group flex flex-col overflow-hidden rounded-md bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:-translate-y-0.5 hover:text-gelo hover:ring-ciano"
+                        className="group flex flex-col overflow-hidden rounded-md bg-grafite text-marfim no-underline ring-1 ring-borda transition hover:-translate-y-0.5 hover:text-marfim hover:ring-brasa"
                       >
                         <div className="relative aspect-[2/1] overflow-hidden bg-fundo2">
                           {arte && (
@@ -771,7 +771,7 @@ export default async function MinhaArea({
                           )}
                           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-grafite to-transparent" />
                           <span className="absolute bottom-2.5 left-3">
-                            <Etiqueta tipo={d.legal ? "ciano" : "alerta"}>
+                            <Etiqueta tipo={d.legal ? "sucesso" : "alerta"}>
                               {d.legal
                                 ? `Legal no ${NOME_LIGA[d.formato] ?? "formato"}`
                                 : "Com pendências"}
@@ -779,12 +779,12 @@ export default async function MinhaArea({
                           </span>
                         </div>
                         <div className="flex flex-col gap-1 px-4 pb-4 pt-3">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-azul">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-vermelho">
                             {d.arquetipo?.nome ??
                               NOME_LIGA[d.formato] ??
                               "Deck"}
                           </span>
-                          <span className="truncate text-lg font-bold group-hover:text-ciano">
+                          <span className="truncate text-lg font-bold group-hover:text-brasa">
                             {d.nome}
                           </span>
                           <span className="text-sm text-cinza">
@@ -830,7 +830,7 @@ export default async function MinhaArea({
                   <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                     {r}
                   </dt>
-                  <dd className="titulo text-3xl">{v}</dd>
+                  <dd className="titulo text-2xl">{v}</dd>
                   <span className="text-sm text-texto2">{t}</span>
                 </div>
               ))}
@@ -849,7 +849,7 @@ export default async function MinhaArea({
 
             {cupons.length > 0 && (
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-3xl">Cupons e brindes</h2>
+                <h2 className="titulo text-2xl">Cupons e brindes</h2>
                 <ul className="grid gap-3 sm:grid-cols-2">
                   {cupons.map((c) => (
                     <li
@@ -873,7 +873,7 @@ export default async function MinhaArea({
                         </span>
                       </span>
                       {c.codigo ? (
-                        <span className="rounded border border-dashed border-ciano/60 px-3 py-2 text-center font-mono text-lg font-bold tracking-wider text-ciano">
+                        <span className="rounded border border-dashed border-brasa/60 px-3 py-2 text-center font-mono text-lg font-bold tracking-wider text-brasa">
                           {c.codigo}
                         </span>
                       ) : (
@@ -893,9 +893,9 @@ export default async function MinhaArea({
             )}
 
             <div className="flex flex-col gap-3">
-              <h2 className="titulo text-3xl">Histórico</h2>
+              <h2 className="titulo text-2xl">Histórico</h2>
               {movimentos.length === 0 ? (
-                <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+                <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                   Prêmios e créditos aparecem aqui.
                 </p>
               ) : (
@@ -918,7 +918,7 @@ export default async function MinhaArea({
                             <>
                               {" "}
                               · código{" "}
-                              <strong className="select-all font-mono text-ciano">
+                              <strong className="select-all font-mono text-brasa">
                                 {m.codigo_loja}
                               </strong>
                             </>
@@ -953,7 +953,7 @@ export default async function MinhaArea({
                       )}
                       <strong
                         className={
-                          m.valor_centavos >= 0 ? "text-ciano" : "text-gelo"
+                          m.valor_centavos >= 0 ? "text-brasa" : "text-marfim"
                         }
                       >
                         {m.valor_centavos >= 0 ? "+" : "−"}{" "}
@@ -977,7 +977,7 @@ export default async function MinhaArea({
               className="grid gap-10 border-b border-borda pb-12 lg:grid-cols-[1fr_1.4fr]"
             >
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-3xl">Perfil público</h2>
+                <h2 className="titulo text-2xl">Perfil público</h2>
                 <p className="text-texto2">
                   Qualquer pessoa que clicar no seu nick vê seu perfil:
                   insígnias, resultados, decks e artigos. Escolha o que mostrar
@@ -998,13 +998,13 @@ export default async function MinhaArea({
             </section>
             <section className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-3xl">Meus dados</h2>
+                <h2 className="titulo text-2xl">Meus dados</h2>
                 <p className="text-texto2">
                   Usados para confirmar inscrições e pagar prêmios. Publicamente
                   aparecem só o seu nick do Endstep e a foto do Discord.
                 </p>
                 {q.salvo && (
-                  <p className="rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano">
+                  <p className="rounded-md border border-brasa/50 bg-brasa/10 p-3 text-sm font-semibold text-brasa">
                     Dados salvos.
                   </p>
                 )}
@@ -1055,11 +1055,11 @@ function ProximaMesa({
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <span className="flex flex-wrap items-center gap-2">
             <EtiquetaLiga evento={e as never} />
-            <Etiqueta tipo={pendente ? "alerta" : "ciano"}>
+            <Etiqueta tipo={pendente ? "alerta" : "sucesso"}>
               {pendente ? "Falta pagar o Pix" : "Inscrição confirmada"}
             </Etiqueta>
           </span>
-          <span className="titulo text-4xl sm:text-5xl">{e.titulo}</span>
+          <span className="titulo text-3xl sm:text-4xl">{e.titulo}</span>
           <span className="text-texto2">
             {dataLonga(e.inicio)} · {hora(e.inicio)} (horário de Brasília)
             {e.modalidade === "presencial" && e.loja ? ` · ${e.loja.nome}` : ""}
@@ -1084,7 +1084,7 @@ function ProximaMesa({
               href={linkMapa(e.loja)}
               target="_blank"
               rel="noopener"
-              className="corte inline-flex min-h-12 items-center bg-azul px-7 font-semibold uppercase tracking-wide text-white no-underline hover:bg-azul-escuro hover:text-white"
+              className="corte inline-flex min-h-12 items-center bg-vermelho px-7 font-semibold uppercase tracking-wide text-white no-underline hover:bg-vermelho-escuro hover:text-white"
             >
               Como chegar ↗
             </a>
@@ -1093,7 +1093,7 @@ function ProximaMesa({
               href={link}
               target="_blank"
               rel="noopener"
-              className="corte inline-flex min-h-12 items-center bg-azul px-7 font-semibold uppercase tracking-wide text-white no-underline hover:bg-azul-escuro hover:text-white"
+              className="corte inline-flex min-h-12 items-center bg-vermelho px-7 font-semibold uppercase tracking-wide text-white no-underline hover:bg-vermelho-escuro hover:text-white"
             >
               Abrir no Endstep ↗
             </a>

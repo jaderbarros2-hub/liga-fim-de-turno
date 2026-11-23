@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { criarCupons, type EstadoCupom } from "./actions";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
 
 export function FormCupom({
@@ -24,7 +24,7 @@ export function FormCupom({
       action={acao}
       className="grid gap-4 rounded-xl border border-borda p-6 sm:grid-cols-2"
     >
-      <h2 className="titulo text-3xl sm:col-span-2">Novo cupom</h2>
+      <h2 className="titulo text-2xl sm:col-span-2">Novo cupom</h2>
       <div className="flex gap-2 sm:col-span-2">
         {[
           [false, "Um código"],
@@ -34,7 +34,7 @@ export function FormCupom({
             key={String(v)}
             type="button"
             onClick={() => setLote(v as boolean)}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold ${lote === v ? "bg-azul text-white" : "text-texto2 ring-1 ring-borda"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold ${lote === v ? "bg-vermelho text-white" : "text-texto2 ring-1 ring-borda"}`}
           >
             {r as string}
           </button>
@@ -147,7 +147,7 @@ export function FormCupom({
         <button
           type="submit"
           disabled={salvando}
-          className="min-h-11 rounded-lg bg-azul px-6 font-semibold text-white disabled:opacity-60"
+          className="min-h-11 rounded-lg bg-vermelho px-6 font-semibold text-white disabled:opacity-60"
         >
           {salvando ? "Criando…" : lote ? "Gerar lote" : "Criar cupom"}
         </button>
@@ -155,7 +155,7 @@ export function FormCupom({
           <span className="text-sm text-erro">{estado.erro}</span>
         )}
         {estado.ok && (
-          <span className="text-sm font-semibold text-ciano">{estado.ok}</span>
+          <span className="text-sm font-semibold text-brasa">{estado.ok}</span>
         )}
       </div>
       {estado.codigos && (

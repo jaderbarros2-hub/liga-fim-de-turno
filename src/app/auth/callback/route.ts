@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
 
   const supabase = await criarClienteServidor();
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-  if (error || !data.user) return NextResponse.redirect(`${origin}/entrar?erro=1`);
+  if (error || !data.user)
+    return NextResponse.redirect(`${origin}/entrar?erro=1`);
 
   const { data: jogador } = await supabase
     .from("jogadores")
@@ -21,7 +22,9 @@ export async function GET(request: NextRequest) {
     .maybeSingle();
 
   if (!jogador?.aceite_termos_em) {
-    return NextResponse.redirect(`${origin}/cadastro?voltar=${encodeURIComponent(voltar)}`);
+    return NextResponse.redirect(
+      `${origin}/cadastro?voltar=${encodeURIComponent(voltar)}`,
+    );
   }
   return NextResponse.redirect(`${origin}${voltar}`);
 }

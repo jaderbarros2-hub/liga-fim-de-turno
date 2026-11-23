@@ -8,7 +8,7 @@ import { useState, useTransition } from "react";
 import { artesDaColecao, buscarColecoes, previsualizarCubo } from "./actions";
 
 const campo =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 type Colecao = {
   codigo: string;
@@ -91,7 +91,7 @@ export function CamposLimited({
                 else setErro(r.erro ?? "Não foi possível carregar.");
               })
             }
-            className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-50"
+            className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-brasa disabled:opacity-50"
           >
             {carregando ? "Carregando…" : "Carregar cubo"}
           </button>
@@ -190,7 +190,7 @@ export function CamposLimited({
                   else setErro(r.erro ?? "Falha na busca.");
                 })
               }
-              className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-50"
+              className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-brasa disabled:opacity-50"
             >
               {carregando ? "Buscando…" : "Buscar"}
             </button>
@@ -202,7 +202,7 @@ export function CamposLimited({
                   <button
                     type="button"
                     onClick={() => setColecao(o)}
-                    className="flex w-full items-center gap-3 rounded-md bg-grafite p-2.5 text-left text-sm ring-1 ring-borda hover:ring-ciano"
+                    className="flex w-full items-center gap-3 rounded-md bg-grafite p-2.5 text-left text-sm ring-1 ring-borda hover:ring-brasa"
                   >
                     {o.icone_svg && (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -250,12 +250,12 @@ export function CamposLimited({
                   else setErro(r.erro ?? "Falha ao buscar as artes.");
                 })
               }
-              className="min-h-10 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-50"
+              className="min-h-10 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-brasa disabled:opacity-50"
             >
               {carregando ? "Buscando…" : "Escolher a arte da coleção"}
             </button>
             {arteEscolhida && (
-              <span className="text-sm text-ciano">
+              <span className="text-sm text-brasa">
                 Arte escolhida: {arteEscolhida.credito.split(" · ")[0]}
               </span>
             )}
@@ -268,7 +268,7 @@ export function CamposLimited({
                     type="button"
                     onClick={() => setArteEscolhida(a)}
                     aria-pressed={arteEscolhida?.url === a.url}
-                    className={`block w-full overflow-hidden rounded-md text-left ring-2 ${arteEscolhida?.url === a.url ? "ring-ciano" : "ring-transparent hover:ring-borda-forte"}`}
+                    className={`block w-full overflow-hidden rounded-md text-left ring-2 ${arteEscolhida?.url === a.url ? "ring-brasa" : "ring-transparent hover:ring-borda-forte"}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

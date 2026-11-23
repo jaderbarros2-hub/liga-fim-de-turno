@@ -8,7 +8,7 @@ import {
 } from "./premiosParceiros";
 
 const CAMPO =
-  "min-h-10 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-sm text-gelo focus:border-ciano focus:outline-none";
+  "min-h-10 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-sm text-marfim focus:border-brasa focus:outline-none";
 const ROTULO = "flex flex-col gap-1 text-sm text-texto2";
 
 /** Prêmios extras dos parceiros no painel do evento (cadastro) e nos resultados (sorteio e entrega). */
@@ -31,7 +31,7 @@ export function PremiosParceirosPainel({
       className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-borda bg-grafite p-5"
     >
       <div>
-        <h2 className="titulo text-3xl">Cupons dos parceiros</h2>
+        <h2 className="titulo text-2xl">Cupons dos parceiros</h2>
         <p className="text-sm text-texto2">
           Cupons de desconto oferecidos pelas lojas, como prêmio extra. Aparecem
           na página do evento com o logo da loja. Por posição: entregue ao
@@ -41,7 +41,7 @@ export function PremiosParceirosPainel({
       {mensagem && (
         <p
           role={mensagem.tipo === "erro" ? "alert" : "status"}
-          className={`rounded-lg border px-4 py-2 text-sm font-semibold ${mensagem.tipo === "erro" ? "border-erro text-erro" : "border-ciano text-ciano"}`}
+          className={`rounded-lg border px-4 py-2 text-sm font-semibold ${mensagem.tipo === "erro" ? "border-erro text-erro" : "border-brasa text-brasa"}`}
         >
           {mensagem.texto}
         </p>
@@ -66,7 +66,7 @@ export function PremiosParceirosPainel({
                 </span>
               </span>
               {p.entregue_em ? (
-                <span className="font-semibold text-ciano">
+                <span className="font-semibold text-brasa">
                   Entregue a{" "}
                   {p.jogador?.nick_endstep || p.jogador?.nome || "jogador"}
                 </span>

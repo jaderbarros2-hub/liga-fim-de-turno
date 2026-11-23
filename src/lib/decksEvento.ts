@@ -19,16 +19,29 @@ export type DeckDoEvento = {
  * Arquétipo de cada posição da classificação (público depois do resultado, alimenta o metagame).
  * A lista de cartas só vem para o top 8.
  */
-export async function decksDaClassificacao(eventoId: string, comListas = false): Promise<DeckDoEvento[]> {
+export async function decksDaClassificacao(
+  eventoId: string,
+  comListas = false,
+): Promise<DeckDoEvento[]> {
   const db = criarClienteAdmin();
-  const { data: evento } = await db.from("eventos").select("status").eq("id", eventoId).single();
+  const { data: evento } = await db
+    .from("eventos")
+    .select("status")
+    .eq("id", eventoId)
+    .single();
   if (evento?.status !== "resultados") return [];
 
   const [{ data: resultados }, { data: inscricoes }] = await Promise.all([
-    db.from("resultados").select("posicao, nick_endstep, jogador_id").eq("evento_id", eventoId).order("posicao"),
+    db
+      .from("resultados")
+      .select("posicao, nick_endstep, jogador_id")
+      .eq("evento_id", eventoId)
+      .order("posicao"),
     db
       .from("inscricoes")
-      .select("jogador_id, deck_nome, deck_principal, deck_sideboard, arquetipo:arquetipos(nome)")
+      .select(
+        "jogador_id, deck_nome, deck_principal, deck_sideboard, arquetipo:arquetipos(nome)",
+      )
       .eq("evento_id", eventoId)
       .eq("status", "confirmada"),
   ]);
@@ -39,7 +52,9 @@ export async function decksDaClassificacao(eventoId: string, comListas = false):
     deck_sideboard: ItemLista[] | null;
     arquetipo: { nome: string } | null;
   };
-  const porJogador = new Map(((inscricoes as unknown as Insc[]) ?? []).map((i) => [i.jogador_id, i]));
+  const porJogador = new Map(
+    ((inscricoes as unknown as Insc[]) ?? []).map((i) => [i.jogador_id, i]),
+  );
 
   return (resultados ?? []).map((r) => {
     const i = r.jogador_id ? porJogador.get(r.jogador_id) : undefined;

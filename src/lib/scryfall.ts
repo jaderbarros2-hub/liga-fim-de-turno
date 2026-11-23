@@ -83,7 +83,7 @@ export async function buscarCartas(
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "User-Agent": "LigaFimDeTurno/1.0",
+          "User-Agent": "LigaFirstStrike/1.0",
         },
         body: JSON.stringify({ identifiers: identificadores }),
         cache: "no-store",

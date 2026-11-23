@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
   title: "Seja apoiador (esboço)",
   description:
-    "Apoie a Liga Fim de Turno todo mês e ganhe brindes exclusivos, insígnia no perfil e voz nas decisões da liga.",
+    "Apoie a First Strike todo mês e ganhe brindes exclusivos, insígnia no perfil e voz nas decisões da liga.",
 };
 
 // Esboço: valores, metas e brindes ainda serão definidos
@@ -143,10 +143,10 @@ export default function Apoie() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/30" />
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-20 sm:py-28">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-ciano">
+          <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-brasa">
             <Diamante /> Seja apoiador
           </span>
-          <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
+          <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
             A liga existe porque a comunidade joga. E cresce porque ela apoia.
           </h1>
           <p className="max-w-xl text-lg text-texto2">
@@ -156,13 +156,13 @@ export default function Apoie() {
           <div className="flex flex-wrap gap-3">
             <a
               href="#planos"
-              className="inline-flex min-h-12 items-center rounded-lg bg-azul px-6 font-semibold text-white no-underline hover:bg-azul-escuro"
+              className="inline-flex min-h-12 items-center rounded-lg bg-vermelho px-6 font-semibold text-white no-underline hover:bg-vermelho-escuro"
             >
               Ver planos
             </a>
             <a
               href="#brindes"
-              className="inline-flex min-h-12 items-center rounded-lg px-6 font-semibold text-gelo no-underline ring-1 ring-borda-forte hover:ring-ciano"
+              className="inline-flex min-h-12 items-center rounded-lg px-6 font-semibold text-marfim no-underline ring-1 ring-borda-forte hover:ring-brasa"
             >
               Conhecer os brindes
             </a>
@@ -177,7 +177,9 @@ export default function Apoie() {
       <section className="border-b border-borda bg-fundo2">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 md:flex-row md:items-center md:gap-10">
           <p className="shrink-0 text-sm text-texto2">
-            <strong className="titulo text-4xl text-gelo">{META.atual}</strong>{" "}
+            <strong className="titulo text-3xl text-marfim">
+              {META.atual}
+            </strong>{" "}
             de {META.alvo} apoiadores
           </p>
           <div className="flex flex-1 flex-col gap-2">
@@ -189,12 +191,12 @@ export default function Apoie() {
               aria-valuemax={100}
             >
               <div
-                className="h-full rounded-full bg-gradient-to-r from-azul to-ciano"
+                className="h-full rounded-full bg-gradient-to-r from-vermelho to-brasa"
                 style={{ width: `${progresso}%` }}
               />
             </div>
             <p className="text-sm text-cinza">
-              Próxima meta: <span className="text-gelo">{META.premio}</span>
+              Próxima meta: <span className="text-marfim">{META.premio}</span>
             </p>
           </div>
         </div>
@@ -204,7 +206,7 @@ export default function Apoie() {
         {/* Para onde vai */}
         <section className="flex flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-4xl sm:text-5xl">
+            <h2 className="titulo text-3xl sm:text-4xl">
               Para onde vai o seu apoio
             </h2>
             <p className="text-texto2">
@@ -215,7 +217,7 @@ export default function Apoie() {
           <ul className="grid gap-px overflow-hidden rounded-md bg-borda ring-1 ring-borda sm:grid-cols-2 lg:grid-cols-4">
             {DESTINOS.map((d, i) => (
               <li key={d.titulo} className="flex flex-col gap-3 bg-grafite p-6">
-                <span className="titulo text-5xl text-azul">
+                <span className="titulo text-4xl text-vermelho">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-lg font-semibold">{d.titulo}</h3>
@@ -228,7 +230,7 @@ export default function Apoie() {
         {/* Planos */}
         <section id="planos" className="flex scroll-mt-24 flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-4xl sm:text-5xl">Escolha como apoiar</h2>
+            <h2 className="titulo text-3xl sm:text-4xl">Escolha como apoiar</h2>
             <p className="text-texto2">
               Os dois planos têm os mesmos benefícios na comunidade. O anual sai
               mais em conta e vem com o kit completo.
@@ -238,7 +240,7 @@ export default function Apoie() {
             {PLANOS.map((p) => (
               <article
                 key={p.id}
-                className={`relative flex flex-col gap-6 rounded-xl p-8 ring-1 ${p.destaque ? "bg-gradient-to-b from-azul/20 to-grafite ring-azul" : "bg-grafite ring-borda"}`}
+                className={`relative flex flex-col gap-6 rounded-xl p-8 ring-1 ${p.destaque ? "bg-gradient-to-b from-vermelho/20 to-grafite ring-vermelho" : "bg-grafite ring-borda"}`}
               >
                 {p.destaque && (
                   <span className="absolute -top-3 left-8 rounded bg-alerta px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-preto">
@@ -248,12 +250,12 @@ export default function Apoie() {
                 <header className="flex flex-col gap-2">
                   <h3 className="flex items-center gap-2 text-lg font-semibold">
                     <Diamante
-                      className={p.destaque ? "text-alerta" : "text-ciano"}
+                      className={p.destaque ? "text-alerta" : "text-brasa"}
                     />{" "}
                     {p.nome}
                   </h3>
                   <p>
-                    <span className="titulo text-6xl">{p.preco}</span>
+                    <span className="titulo text-5xl">{p.preco}</span>
                     <span className="text-cinza">{p.periodo}</span>
                   </p>
                   <p className="text-sm text-texto2">{p.nota}</p>
@@ -268,7 +270,7 @@ export default function Apoie() {
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2.4"
-                        className="mt-0.5 shrink-0 text-ciano"
+                        className="mt-0.5 shrink-0 text-brasa"
                         aria-hidden="true"
                       >
                         <path d="m5 12 5 5L20 7" />
@@ -281,7 +283,7 @@ export default function Apoie() {
                   <button
                     type="button"
                     disabled
-                    className={`min-h-12 rounded-lg font-semibold ${p.destaque ? "bg-azul text-white" : "text-gelo ring-1 ring-borda-forte"} disabled:cursor-not-allowed disabled:opacity-70`}
+                    className={`min-h-12 rounded-lg font-semibold ${p.destaque ? "bg-vermelho text-white" : "text-marfim ring-1 ring-borda-forte"} disabled:cursor-not-allowed disabled:opacity-70`}
                   >
                     {p.destaque
                       ? "Assinar o plano anual"
@@ -299,10 +301,10 @@ export default function Apoie() {
         {/* Brindes */}
         <section id="brindes" className="flex scroll-mt-24 flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-4xl sm:text-5xl">Brindes da liga</h2>
+            <h2 className="titulo text-3xl sm:text-4xl">Brindes da liga</h2>
             <p className="text-texto2">
-              Feitos com a identidade da Liga Fim de Turno, só para apoiadores.
-              Os modelos finais saem a cada temporada.
+              Feitos com a identidade da First Strike, só para apoiadores. Os
+              modelos finais saem a cada temporada.
             </p>
           </div>
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -328,7 +330,7 @@ export default function Apoie() {
         {/* Reconhecimento */}
         <section className="grid items-center gap-10 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
-            <h2 className="titulo text-4xl sm:text-5xl">Seu apoio aparece</h2>
+            <h2 className="titulo text-3xl sm:text-4xl">Seu apoio aparece</h2>
             <p className="text-texto2">
               Apoiadores ganham uma insígnia no perfil público, ao lado dos
               títulos e conquistas, e o losango ao lado do nick em toda a liga:
@@ -340,7 +342,7 @@ export default function Apoie() {
                   id: "apoio-m",
                   titulo: "Apoiador",
                   texto: "Apoia a liga todo mês",
-                  nivel: "azul",
+                  nivel: "brasa",
                   icone: "diamante",
                 }}
               />
@@ -365,13 +367,13 @@ export default function Apoie() {
                   key={n}
                   className="inline-flex items-center gap-2 rounded-full bg-preto py-1 pl-1 pr-3 text-sm ring-1 ring-borda"
                 >
-                  <span className="grid h-6 w-6 place-items-center rounded-full bg-azul text-[11px] font-bold">
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-vermelho text-[11px] font-bold">
                     {n.charAt(0).toUpperCase()}
                   </span>
                   {n}
                   <Diamante
                     tamanho={11}
-                    className={i % 3 === 0 ? "text-alerta" : "text-ciano"}
+                    className={i % 3 === 0 ? "text-alerta" : "text-brasa"}
                   />
                 </li>
               ))}
@@ -384,13 +386,13 @@ export default function Apoie() {
 
         {/* Perguntas */}
         <section className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
-          <h2 className="titulo text-4xl sm:text-5xl">Perguntas frequentes</h2>
+          <h2 className="titulo text-3xl sm:text-4xl">Perguntas frequentes</h2>
           <div className="flex flex-col border-t border-borda">
             {PERGUNTAS.map((q) => (
               <details key={q.p} className="group border-b border-borda py-4">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                   {q.p}
-                  <span className="text-xl text-ciano transition group-open:rotate-45">
+                  <span className="text-xl text-brasa transition group-open:rotate-45">
                     +
                   </span>
                 </summary>
@@ -401,14 +403,14 @@ export default function Apoie() {
         </section>
 
         {/* Chamada final */}
-        <section className="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-br from-azul/25 via-grafite to-grafite px-6 py-14 text-center ring-1 ring-borda">
+        <section className="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-br from-vermelho/25 via-grafite to-grafite px-6 py-14 text-center ring-1 ring-borda">
           <Simbolo tamanho={56} />
-          <h2 className="titulo max-w-2xl text-4xl sm:text-5xl">
-            Passe a vez para a próxima temporada com a gente
+          <h2 className="titulo max-w-2xl text-3xl sm:text-4xl">
+            Chegue primeiro na próxima temporada com a gente
           </h2>
           <a
             href="#planos"
-            className="inline-flex min-h-12 items-center rounded-lg bg-azul px-6 font-semibold text-white no-underline hover:bg-azul-escuro"
+            className="inline-flex min-h-12 items-center rounded-lg bg-vermelho px-6 font-semibold text-white no-underline hover:bg-vermelho-escuro"
           >
             Quero apoiar
           </a>
@@ -425,8 +427,8 @@ export default function Apoie() {
 function Brinde({ tipo }: { tipo: string }) {
   if (tipo === "deckbox")
     return (
-      <div className="relative h-28 w-24 rounded-md bg-gradient-to-br from-[#1b2a52] to-[#0b1124] shadow-[0_10px_30px_rgba(0,0,0,.6)] ring-1 ring-azul/60">
-        <div className="absolute inset-x-0 top-0 h-7 rounded-t-md border-b border-azul/50 bg-[#22345f]" />
+      <div className="relative h-28 w-24 rounded-md bg-gradient-to-br from-[#1b2a52] to-[#0b1124] shadow-[0_10px_30px_rgba(0,0,0,.6)] ring-1 ring-vermelho/60">
+        <div className="absolute inset-x-0 top-0 h-7 rounded-t-md border-b border-vermelho/50 bg-[#22345f]" />
         <div className="absolute inset-0 top-7 grid place-items-center">
           <Simbolo tamanho={36} />
         </div>
@@ -434,11 +436,11 @@ function Brinde({ tipo }: { tipo: string }) {
     );
   if (tipo === "playmat")
     return (
-      <div className="relative h-24 w-[85%] -rotate-3 overflow-hidden rounded-lg bg-[linear-gradient(120deg,#0d1a3a,#2e6bff_55%,#5cc8ff)] shadow-[0_10px_30px_rgba(0,0,0,.6)]">
+      <div className="relative h-24 w-[85%] -rotate-3 overflow-hidden rounded-lg bg-[linear-gradient(120deg,#0d1a3a,#d8392a_55%,#ff5a47)] shadow-[0_10px_30px_rgba(0,0,0,.6)]">
         <div className="absolute inset-0 bg-[repeating-linear-gradient(115deg,transparent_0_18px,rgba(255,255,255,.05)_18px_19px)]" />
         <div className="absolute bottom-2.5 left-3 flex items-center gap-2">
           <Simbolo tamanho={22} />
-          <span className="titulo text-lg text-white">Fim de Turno · 2027</span>
+          <span className="titulo text-lg text-white">First Strike · 2027</span>
         </div>
       </div>
     );
@@ -448,23 +450,23 @@ function Brinde({ tipo }: { tipo: string }) {
         {[-10, 0, 10].map((r, i) => (
           <div
             key={r}
-            className="-mx-2 grid h-24 w-16 place-items-center rounded-md bg-gradient-to-b from-gelo to-[#c9d2e0] text-preto shadow-[0_8px_20px_rgba(0,0,0,.5)] ring-2 ring-[#0b1124]"
+            className="-mx-2 grid h-24 w-16 place-items-center rounded-md bg-gradient-to-b from-marfim to-[#c9d2e0] text-preto shadow-[0_8px_20px_rgba(0,0,0,.5)] ring-2 ring-[#0b1124]"
             style={{
               transform: `rotate(${r}deg) translateY(${i === 1 ? -6 : 0}px)`,
             }}
           >
-            <span className="titulo text-2xl">{["1/1", "+1", "2/2"][i]}</span>
+            <span className="titulo text-xl">{["1/1", "+1", "2/2"][i]}</span>
           </div>
         ))}
       </div>
     );
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-16 w-16 rotate-[-8deg] place-items-center rounded-full bg-azul shadow-lg">
+      <span className="grid h-16 w-16 rotate-[-8deg] place-items-center rounded-full bg-vermelho shadow-lg">
         <Diamante tamanho={28} className="text-white" />
       </span>
-      <span className="rotate-6 rounded-lg bg-gelo px-3 py-2 text-preto shadow-lg">
-        <span className="titulo text-xl">Passe a vez.</span>
+      <span className="rotate-6 rounded-lg bg-marfim px-3 py-2 text-preto shadow-lg">
+        <span className="titulo text-xl">Ataque primeiro.</span>
       </span>
     </div>
   );

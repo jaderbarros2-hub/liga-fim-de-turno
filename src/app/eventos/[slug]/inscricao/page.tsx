@@ -95,7 +95,7 @@ export default async function Inscricao({
           </span>
         </div>
         <div className="flex flex-col gap-3 p-5">
-          <span className="titulo text-3xl">{evento.titulo}</span>
+          <span className="titulo text-2xl">{evento.titulo}</span>
           <span className="text-sm text-texto2">
             {dataLonga(evento.inicio)} · {hora(evento.inicio)} (Brasília) ·{" "}
             {evento.modalidade === "presencial"
@@ -111,7 +111,7 @@ export default async function Inscricao({
             </div>
             <div className="flex justify-between">
               <dt className="text-cinza">Premiação</dt>
-              <dd className="font-semibold text-ciano">
+              <dd className="font-semibold text-brasa">
                 {evento.percentual_premio}% das inscrições
               </dd>
             </div>
@@ -160,7 +160,7 @@ export default async function Inscricao({
         <span>Ingresso</span>
       </nav>
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-5xl sm:text-6xl">{titulo}</h1>
+        <h1 className="titulo text-4xl sm:text-5xl">{titulo}</h1>
         <p className="text-texto2">{subtitulo}</p>
       </div>
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -200,7 +200,7 @@ export default async function Inscricao({
           codigo={codigoIngresso(inscricao.id)}
         />
         <section className="flex flex-col gap-3">
-          <h2 className="titulo text-3xl">Próximos passos</h2>
+          <h2 className="titulo text-2xl">Próximos passos</h2>
           <ul className="grid gap-3 sm:grid-cols-2">
             {evento.modalidade === "presencial" ? (
               <Passo
@@ -310,15 +310,17 @@ export default async function Inscricao({
         />
         <ol className="grid gap-3 text-sm text-texto2 sm:grid-cols-3">
           <li className="rounded-md bg-grafite p-4 ring-1 ring-borda">
-            <strong className="block text-gelo">1. Abra o app do banco</strong>
+            <strong className="block text-marfim">
+              1. Abra o app do banco
+            </strong>
             Entre na área Pix.
           </li>
           <li className="rounded-md bg-grafite p-4 ring-1 ring-borda">
-            <strong className="block text-gelo">2. Leia ou cole</strong>Use o QR
-            Code ou o código copia e cola.
+            <strong className="block text-marfim">2. Leia ou cole</strong>Use o
+            QR Code ou o código copia e cola.
           </li>
           <li className="rounded-md bg-grafite p-4 ring-1 ring-borda">
-            <strong className="block text-gelo">3. Volte aqui</strong>Pode
+            <strong className="block text-marfim">3. Volte aqui</strong>Pode
             deixar esta tela aberta: o ingresso aparece sozinho.
           </li>
         </ol>

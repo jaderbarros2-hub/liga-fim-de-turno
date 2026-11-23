@@ -44,7 +44,7 @@ export const emailBoasVindas = (jogadorId: string) =>
       para: j?.email,
       tipo: "boas_vindas",
       jogadorId,
-      assunto: `Bem-vindo à Liga Fim de Turno, ${nomeDe(j)}`,
+      assunto: `Bem-vindo à First Strike, ${nomeDe(j)}`,
       conteudo: {
         imagem: imagemFixa("boas-vindas"),
         titulo: `Bem-vindo à liga, ${nomeDe(j)}`,
@@ -542,7 +542,7 @@ export const emailResgateParaLoja = (movId: string) =>
         imagem: m.parceiro.foto_url
           ? { url: m.parceiro.foto_url }
           : imagemFixa(`loja-${m.parceiro.id}`),
-        motivo: `Você recebe este e-mail porque a ${m.parceiro.nome} é loja parceira da Liga Fim de Turno`,
+        motivo: `Você recebe este e-mail porque a ${m.parceiro.nome} é loja parceira da First Strike`,
         selo: { texto: `Gerar em até ${PRAZO_LOJA}`, tom: "alerta" },
         titulo: "Gere o crédito deste cliente",
         destaque: {
@@ -610,7 +610,7 @@ export const emailTeste = (para: string) =>
   enviarEmail({
     para,
     tipo: "teste",
-    assunto: "Teste de e-mail · Liga Fim de Turno",
+    assunto: "Teste de e-mail · First Strike",
     conteudo: {
       imagem: imagemFixa("teste"),
       selo: { texto: "Teste" },

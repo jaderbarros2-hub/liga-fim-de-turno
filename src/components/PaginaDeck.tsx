@@ -165,7 +165,7 @@ export function PaginaDeck({
               {etiquetas}
             </div>
           )}
-          <h1 className="titulo text-5xl sm:text-7xl">{titulo}</h1>
+          <h1 className="titulo text-4xl sm:text-5xl">{titulo}</h1>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-texto2">
             {autor && (
               <span className="flex items-center gap-2">
@@ -176,7 +176,7 @@ export function PaginaDeck({
                 />
                 <span>
                   por{" "}
-                  <strong className="text-gelo">
+                  <strong className="text-marfim">
                     <NomeJogador nick={autor.nick} />
                   </strong>
                 </span>
@@ -232,7 +232,7 @@ export function PaginaDeck({
                 key={r}
                 className="flex flex-col justify-center bg-grafite p-4"
               >
-                <dd className="titulo text-4xl">{v}</dd>
+                <dd className="titulo text-3xl">{v}</dd>
                 <dt className="text-xs text-cinza">{r}</dt>
               </div>
             ))}
@@ -252,7 +252,7 @@ export function PaginaDeck({
                 >
                   <span className="text-[11px] text-texto2">{q || ""}</span>
                   <div
-                    className="w-full rounded-sm bg-azul"
+                    className="w-full rounded-sm bg-vermelho"
                     style={{ height: `${Math.max(3, (q / maxCurva) * 64)}px` }}
                   />
                   <span className="text-[11px] text-cinza">

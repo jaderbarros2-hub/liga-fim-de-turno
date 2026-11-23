@@ -7,7 +7,7 @@ import { ehConstruido } from "@/lib/formatos";
 
 export function EtiquetaLiga({ evento }: { evento: Evento }) {
   return (
-    <Etiqueta tipo={ehConstruido(evento.formato) ? "azul" : "ciano"}>
+    <Etiqueta tipo={ehConstruido(evento.formato) ? "destaque" : "marfim"}>
       {ehConstruido(evento.formato)
         ? NOMES_FORMATO[evento.formato]
         : `${NOMES_FORMATO[evento.formato]}${evento.colecao ? ` · ${evento.colecao}` : ""}`}
@@ -21,7 +21,7 @@ export async function CartaoEvento({ evento }: { evento: Evento }) {
   return (
     <Link
       href={`/eventos/${evento.slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:ring-ciano"
+      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-marfim no-underline ring-1 ring-borda transition hover:ring-brasa"
     >
       <div className="relative aspect-[16/8] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -52,10 +52,10 @@ export async function CartaoEvento({ evento }: { evento: Evento }) {
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 px-4 pb-5 pt-3">
-        <span className="text-sm font-semibold text-ciano">
+        <span className="text-sm font-semibold text-brasa">
           {dataCurta(evento.inicio)} · {hora(evento.inicio)}
         </span>
-        <span className="titulo text-3xl">{evento.titulo}</span>
+        <span className="titulo text-2xl">{evento.titulo}</span>
         <span className="mt-auto flex items-center justify-between gap-3 pt-3 text-sm text-texto2">
           <span
             className="min-w-0 truncate"
@@ -65,7 +65,7 @@ export async function CartaoEvento({ evento }: { evento: Evento }) {
               ? "Online · Endstep"
               : `Presencial${evento.loja?.cidade ? ` · ${evento.loja.cidade}` : ""}`}
           </span>
-          <span className="shrink-0 whitespace-nowrap font-semibold text-gelo group-hover:text-ciano">
+          <span className="shrink-0 whitespace-nowrap font-semibold text-marfim group-hover:text-brasa">
             {evento.status === "aberto" ? "Inscrever-se →" : "Ver evento →"}
           </span>
         </span>
@@ -83,7 +83,7 @@ export function ListaEventos({
 }) {
   if (eventos.length === 0) {
     return (
-      <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+      <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
         {vazio ??
           "A próxima etapa ainda não foi aberta. Os avisos saem primeiro no Discord da liga."}
       </p>

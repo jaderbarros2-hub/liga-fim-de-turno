@@ -1,4 +1,4 @@
-# Liga Fim de Turno (nome provisório)
+# First Strike (nome provisório)
 
 Portal da liga de Magic: The Gathering (Pauper e Limited) jogada no Endstep: agenda de eventos, cadastro com
 Discord, inscrição com Pix (Mercado Pago), resultados e prêmios.

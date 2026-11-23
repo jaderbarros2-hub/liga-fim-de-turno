@@ -48,17 +48,17 @@ export async function ListaAgenda({ eventos }: { eventos: Evento[] }) {
               <li key={e.id}>
                 <Link
                   href={`/eventos/${e.slug}`}
-                  className="group grid grid-cols-[3.5rem_1fr_auto] items-center gap-4 px-4 py-3 text-gelo no-underline transition hover:bg-grafite sm:grid-cols-[3.5rem_8rem_1fr_auto]"
+                  className="group grid grid-cols-[3.5rem_1fr_auto] items-center gap-4 px-4 py-3 text-marfim no-underline transition hover:bg-grafite sm:grid-cols-[3.5rem_8rem_1fr_auto]"
                 >
                   {/* Data */}
                   <span className="flex flex-col items-center leading-none">
                     <span className="text-[11px] font-bold uppercase text-cinza">
                       {parte(e.inicio, { weekday: "short" })}
                     </span>
-                    <span className="titulo text-3xl">
+                    <span className="titulo text-2xl">
                       {parte(e.inicio, { day: "2-digit" })}
                     </span>
-                    <span className="text-[11px] font-bold uppercase text-ciano">
+                    <span className="text-[11px] font-bold uppercase text-brasa">
                       {hora(e.inicio)}
                     </span>
                   </span>
@@ -78,7 +78,7 @@ export async function ListaAgenda({ eventos }: { eventos: Evento[] }) {
                     <span className="flex flex-wrap items-center gap-2">
                       <EtiquetaLiga evento={e} />
                     </span>
-                    <span className="truncate text-lg font-semibold group-hover:text-ciano">
+                    <span className="truncate text-lg font-semibold group-hover:text-brasa">
                       {e.titulo}
                     </span>
                     <span className="truncate text-sm text-texto2">
@@ -90,13 +90,13 @@ export async function ListaAgenda({ eventos }: { eventos: Evento[] }) {
                   <span
                     className={`hidden whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold sm:inline-flex ${
                       e.status === "aberto"
-                        ? "bg-azul text-white group-hover:bg-azul-escuro"
+                        ? "bg-vermelho text-white group-hover:bg-vermelho-escuro"
                         : "text-texto2 ring-1 ring-borda-forte"
                     }`}
                   >
                     {e.status === "aberto" ? "Inscrever-se" : "Ver evento"}
                   </span>
-                  <span className="text-ciano sm:hidden">→</span>
+                  <span className="text-brasa sm:hidden">→</span>
                 </Link>
               </li>
             ))}

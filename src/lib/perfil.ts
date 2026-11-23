@@ -1,6 +1,7 @@
 /** Utilitários do perfil público que também rodam no navegador. */
 
-export const linkJogador = (nick: string) => `/jogadores/${encodeURIComponent(nick)}`;
+export const linkJogador = (nick: string) =>
+  `/jogadores/${encodeURIComponent(nick)}`;
 
 export const REDES = [
   { id: "twitch", nome: "Twitch", base: "https://twitch.tv/" },
@@ -16,6 +17,9 @@ export type Redes = Partial<Record<(typeof REDES)[number]["id"], string>>;
 export function usuarioDaRede(valor: string) {
   const v = valor.trim();
   if (!v) return "";
-  const semLink = v.replace(/^https?:\/\/(www\.)?[^/]+\/(@)?/i, "").replace(/^@/, "").split(/[/?#]/)[0];
+  const semLink = v
+    .replace(/^https?:\/\/(www\.)?[^/]+\/(@)?/i, "")
+    .replace(/^@/, "")
+    .split(/[/?#]/)[0];
   return /^[A-Za-z0-9._-]{2,40}$/.test(semLink) ? semLink : "";
 }

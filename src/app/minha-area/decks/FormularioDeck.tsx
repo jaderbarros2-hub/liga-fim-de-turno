@@ -4,7 +4,7 @@ import { startTransition, useActionState, useState } from "react";
 import { salvarDeck, type EstadoDeck } from "./actions";
 
 const campo =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 export function FormularioDeck({
   arquetipos,
@@ -66,7 +66,7 @@ export function FormularioDeck({
           ].map(([v, r]) => (
             <label
               key={v}
-              className={`inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-4 text-sm font-semibold ring-1 ${formato === v ? "bg-azul/15 text-gelo ring-azul" : "bg-grafite text-texto2 ring-borda-forte hover:ring-ciano"}`}
+              className={`inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg px-4 text-sm font-semibold ring-1 ${formato === v ? "bg-vermelho/15 text-marfim ring-vermelho" : "bg-grafite text-texto2 ring-borda-forte hover:ring-brasa"}`}
             >
               <input
                 type="radio"
@@ -120,7 +120,7 @@ export function FormularioDeck({
           }
           className={`${campo} py-2 font-mono text-sm`}
         />
-        <label className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-lg border border-borda-forte px-5 text-sm font-semibold hover:border-ciano">
+        <label className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-lg border border-borda-forte px-5 text-sm font-semibold hover:border-brasa">
           Enviar arquivo .txt
           <input
             type="file"
@@ -134,7 +134,7 @@ export function FormularioDeck({
         <button
           type="submit"
           disabled={enviando}
-          className="inline-flex min-h-11 items-center self-start rounded-lg bg-azul px-6 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
+          className="inline-flex min-h-11 items-center self-start rounded-lg bg-vermelho px-6 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
         >
           {enviando ? "Conferindo cartas…" : "Salvar deck"}
         </button>

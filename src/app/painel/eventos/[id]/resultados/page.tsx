@@ -126,7 +126,7 @@ export default async function ResultadosEvento({
         ← {evento.titulo}
       </Link>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="titulo text-5xl">Resultados</h1>
+        <h1 className="titulo text-4xl">Resultados</h1>
         <span className="text-sm text-cinza">
           {inscritos.length} confirmados · prêmio total {reais(premioTotal)}
         </span>
@@ -164,7 +164,7 @@ export default async function ResultadosEvento({
       )}
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-        <h2 className="titulo text-2xl">3 · Liberar prêmios na Carteira</h2>
+        <h2 className="titulo text-xl">3 · Liberar prêmios na Carteira</h2>
         {lista.length === 0 ? (
           <p className="text-sm text-texto2">
             Os prêmios aparecem aqui depois de salvar a classificação.
@@ -177,15 +177,15 @@ export default async function ResultadosEvento({
                   key={p.id}
                   className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-borda py-3"
                 >
-                  <span className="w-8 font-semibold text-ciano">
+                  <span className="w-8 font-semibold text-brasa">
                     {p.posicao}º
                   </span>
                   <span className="min-w-36 flex-1 font-semibold">
                     {p.jogador?.nick_endstep || p.jogador?.nome}
                   </span>
-                  <span className="text-ciano">{reais(p.valor_centavos)}</span>
+                  <span className="text-brasa">{reais(p.valor_centavos)}</span>
                   {p.status === "pago" ? (
-                    <span className="text-ciano">
+                    <span className="text-brasa">
                       ✓ Na Carteira{" "}
                       {p.pago_em
                         ? new Date(p.pago_em).toLocaleDateString("pt-BR")
@@ -203,7 +203,7 @@ export default async function ResultadosEvento({
                 className="flex flex-wrap items-center gap-4"
               >
                 <input type="hidden" name="evento_id" value={id} />
-                <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
+                <BotaoEnviar className="min-h-11 rounded-lg bg-vermelho px-5 font-semibold text-white">
                   Liberar prêmios na Carteira
                 </BotaoEnviar>
                 <span className="text-xs text-cinza">

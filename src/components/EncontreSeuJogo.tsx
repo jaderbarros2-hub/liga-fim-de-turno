@@ -57,16 +57,16 @@ export function EncontreSeuJogo({ eventos }: { eventos: EventoResumo[] }) {
                   onClick={() => setEscolhido(ativo ? null : f.valor)}
                   className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold ring-1 transition ${
                     ativo
-                      ? "bg-azul text-white ring-azul"
+                      ? "bg-vermelho text-white ring-vermelho"
                       : n
-                        ? "bg-grafite text-gelo ring-borda-forte hover:ring-ciano"
-                        : "text-cinza ring-borda hover:text-gelo"
+                        ? "bg-grafite text-marfim ring-borda-forte hover:ring-brasa"
+                        : "text-cinza ring-borda hover:text-marfim"
                   }`}
                 >
                   {f.rotulo}
                   {n > 0 && (
                     <span
-                      className={`rounded-full px-1.5 text-xs ${ativo ? "bg-white/20 text-white" : "bg-preto/60 text-ciano"}`}
+                      className={`rounded-full px-1.5 text-xs ${ativo ? "bg-white/20 text-white" : "bg-preto/60 text-brasa"}`}
                     >
                       {n}
                     </span>
@@ -81,9 +81,9 @@ export function EncontreSeuJogo({ eventos }: { eventos: EventoResumo[] }) {
           {proximo ? (
             <Link
               href={`/eventos/${proximo.slug}`}
-              className="group flex flex-col gap-0.5 rounded-lg bg-grafite px-5 py-3 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
+              className="group flex flex-col gap-0.5 rounded-lg bg-grafite px-5 py-3 text-marfim no-underline ring-1 ring-borda hover:ring-brasa"
             >
-              <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+              <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                 {nomeEscolhido
                   ? `Próximo evento de ${nomeEscolhido}`
                   : "Próximo evento"}
@@ -96,7 +96,7 @@ export function EncontreSeuJogo({ eventos }: { eventos: EventoResumo[] }) {
                     ? `Presencial${proximo.cidade ? `, ${proximo.cidade}` : ""}`
                     : "Online"}
                 </span>
-                <span className="font-semibold text-ciano transition group-hover:translate-x-1">
+                <span className="font-semibold text-brasa transition group-hover:translate-x-1">
                   Ver →
                 </span>
               </span>

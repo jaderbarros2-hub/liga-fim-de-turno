@@ -44,7 +44,7 @@ export type ValoresEvento = {
 };
 
 const campo =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 /** A liga sai do formato: Pauper vai para a Liga Pauper; draft, selado e cubo, para a Liga Limited. */
 export function FormularioEvento({
@@ -80,7 +80,7 @@ export function FormularioEvento({
       ref={aviso}
       role={estado.erro ? "alert" : "status"}
       className={`rounded-lg border px-4 py-3 text-sm font-semibold md:col-span-2 ${
-        estado.erro ? "border-erro text-erro" : "border-ciano text-ciano"
+        estado.erro ? "border-erro text-erro" : "border-brasa text-brasa"
       }`}
     >
       {estado.erro ?? estado.ok}
@@ -317,7 +317,7 @@ export function FormularioEvento({
         <button
           type="submit"
           disabled={enviando}
-          className="inline-flex min-h-11 items-center rounded-lg bg-azul px-6 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
+          className="inline-flex min-h-11 items-center rounded-lg bg-vermelho px-6 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
         >
           {enviando ? "Salvando…" : "Salvar evento"}
         </button>

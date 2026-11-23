@@ -31,7 +31,7 @@ type CartaScryfall = {
 
 const API = "https://api.scryfall.com";
 const CABECALHOS = {
-  "User-Agent": "LigaFimDeTurno/1.0 (painel de artes)",
+  "User-Agent": "LigaFirstStrike/1.0 (painel de artes)",
   Accept: "application/json",
 };
 

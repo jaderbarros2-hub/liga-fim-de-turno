@@ -9,7 +9,7 @@ import { CATEGORIAS, TIPOS, type Artigo, type Autor } from "@/lib/blogComum";
 import { enviarImagem, salvarArtigo } from "./actions";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim";
 const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
 
 /** Converte a data salva para o campo datetime-local no horário de Brasília. */
@@ -125,7 +125,7 @@ export function Editor({
                 key={a}
                 type="button"
                 onClick={() => setAba(a)}
-                className={`py-3 ${aba === a ? "border-b-2 border-azul text-gelo" : "text-cinza"}`}
+                className={`py-3 ${aba === a ? "border-b-2 border-vermelho text-marfim" : "text-cinza"}`}
               >
                 {a === "escrever" ? "Escrever" : "Pré-visualizar"}
               </button>
@@ -138,12 +138,12 @@ export function Editor({
                   key={r}
                   type="button"
                   onClick={f}
-                  className="rounded px-2 py-1.5 text-texto2 ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+                  className="rounded px-2 py-1.5 text-texto2 ring-1 ring-borda hover:text-marfim hover:ring-brasa"
                 >
                   {r}
                 </button>
               ))}
-              <label className="cursor-pointer rounded px-2 py-1.5 text-texto2 ring-1 ring-borda hover:text-gelo hover:ring-ciano">
+              <label className="cursor-pointer rounded px-2 py-1.5 text-texto2 ring-1 ring-borda hover:text-marfim hover:ring-brasa">
                 {enviando ? "Enviando…" : "Imagem"}
                 <input
                   type="file"
@@ -166,7 +166,7 @@ export function Editor({
             onChange={(e) => setTexto(e.target.value)}
             rows={24}
             placeholder="Escreva aqui. Use [[Nome da Carta]] para mostrar a carta ao passar o mouse."
-            className="w-full rounded-lg border border-borda-forte bg-fundo2 p-4 font-mono text-sm leading-relaxed text-gelo"
+            className="w-full rounded-lg border border-borda-forte bg-fundo2 p-4 font-mono text-sm leading-relaxed text-marfim"
           />
         ) : (
           <div className="min-h-96 rounded-lg border border-borda p-6">
@@ -280,7 +280,7 @@ export function Editor({
         </p>
       )}
       {estado?.ok && (
-        <p className="rounded-lg border border-ciano/50 bg-ciano/10 p-4 font-semibold text-ciano">
+        <p className="rounded-lg border border-brasa/50 bg-brasa/10 p-4 font-semibold text-brasa">
           {estado.ok}
         </p>
       )}
@@ -291,7 +291,7 @@ export function Editor({
           name="acao"
           value="publicar"
           disabled={salvando}
-          className="corte min-h-12 bg-azul px-8 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
+          className="corte min-h-12 bg-vermelho px-8 font-semibold uppercase tracking-wide text-white disabled:opacity-60"
         >
           {publicado ? "Atualizar publicação" : "Publicar"}
         </button>
@@ -300,7 +300,7 @@ export function Editor({
           name="acao"
           value="rascunho"
           disabled={salvando}
-          className="min-h-12 rounded-lg px-5 font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-60"
+          className="min-h-12 rounded-lg px-5 font-semibold ring-1 ring-borda-forte hover:ring-brasa disabled:opacity-60"
         >
           {publicado ? "Salvar sem mudar a data" : "Salvar rascunho"}
         </button>

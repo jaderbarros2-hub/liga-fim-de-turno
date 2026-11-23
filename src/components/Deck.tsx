@@ -134,7 +134,7 @@ export function SeloLocal({
   loja?: { nome: string; logo_url: string | null } | null;
 }) {
   return (
-    <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full bg-preto/80 px-3 py-1.5 text-xs font-semibold text-gelo ring-1 ring-borda-forte backdrop-blur">
+    <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full bg-preto/80 px-3 py-1.5 text-xs font-semibold text-marfim ring-1 ring-borda-forte backdrop-blur">
       {presencial && loja?.logo_url ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -148,7 +148,7 @@ export function SeloLocal({
           height="14"
           viewBox="0 0 24 24"
           aria-hidden="true"
-          className="text-ciano"
+          className="text-brasa"
         >
           <rect
             x="2.5"

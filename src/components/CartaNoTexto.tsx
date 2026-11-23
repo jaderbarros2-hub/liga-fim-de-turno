@@ -6,17 +6,27 @@ const imagem = (nome: string) =>
   `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(nome)}&format=image&version=normal`;
 
 /** Nome de carta no texto: mostra a carta ao passar o mouse (ou tocar) e leva ao Scryfall. */
-export function CartaNoTexto({ nome, children }: { nome: string; children: React.ReactNode }) {
+export function CartaNoTexto({
+  nome,
+  children,
+}: {
+  nome: string;
+  children: React.ReactNode;
+}) {
   const [aberta, setAberta] = useState(false);
   return (
-    <span className="relative inline-block" onMouseEnter={() => setAberta(true)} onMouseLeave={() => setAberta(false)}>
+    <span
+      className="relative inline-block"
+      onMouseEnter={() => setAberta(true)}
+      onMouseLeave={() => setAberta(false)}
+    >
       <a
         href={`https://scryfall.com/search?q=${encodeURIComponent(`!"${nome}"`)}`}
         target="_blank"
         rel="noopener"
         onFocus={() => setAberta(true)}
         onBlur={() => setAberta(false)}
-        className="font-semibold text-ciano underline decoration-dotted underline-offset-4"
+        className="font-semibold text-brasa underline decoration-dotted underline-offset-4"
       >
         {children}
       </a>

@@ -6,7 +6,7 @@ import { linkRastreado, listarParceiros } from "@/lib/parceiros";
 
 export const metadata: Metadata = {
   title: "Parceiros",
-  description: "Lojas e empresas que apoiam a Liga Fim de Turno.",
+  description: "Lojas e empresas que apoiam a First Strike.",
 };
 export const dynamic = "force-dynamic";
 
@@ -95,7 +95,7 @@ export default async function Parceiros() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/90 to-preto/40" />
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-16">
-          <h1 className="titulo text-6xl sm:text-7xl">Parceiros</h1>
+          <h1 className="titulo text-5xl sm:text-5xl">Parceiros</h1>
           <p className="max-w-2xl text-lg text-texto2">
             Lojas e empresas do mundo do Magic que ajudam a liga a acontecer e
             premiam quem joga.
@@ -114,7 +114,7 @@ export default async function Parceiros() {
 
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
         {parceiros.length === 0 ? (
-          <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+          <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
             A liga está começando e as primeiras parcerias estão sendo fechadas.
             Quer ser uma delas? Veja abaixo.
           </p>
@@ -132,7 +132,7 @@ export default async function Parceiros() {
                           pagina: "/parceiros",
                         })
                   }
-                  className="flex h-full flex-col gap-4 rounded-lg bg-grafite p-6 text-gelo no-underline ring-1 ring-borda hover:text-gelo hover:ring-ciano"
+                  className="flex h-full flex-col gap-4 rounded-lg bg-grafite p-6 text-marfim no-underline ring-1 ring-borda hover:text-marfim hover:ring-brasa"
                 >
                   {p.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -142,7 +142,7 @@ export default async function Parceiros() {
                       className="h-14 w-auto self-start object-contain"
                     />
                   ) : (
-                    <span className="grid h-14 w-14 place-items-center rounded-md bg-azul text-2xl font-bold">
+                    <span className="grid h-14 w-14 place-items-center rounded-md bg-vermelho text-2xl font-bold">
                       {p.nome.charAt(0)}
                     </span>
                   )}
@@ -158,18 +158,18 @@ export default async function Parceiros() {
                   )}
                   <span className="flex flex-wrap gap-1.5">
                     {p.sede_eventos && (
-                      <span className="rounded bg-azul/15 px-2 py-0.5 text-xs font-semibold text-ciano">
+                      <span className="rounded bg-vermelho/15 px-2 py-0.5 text-xs font-semibold text-brasa">
                         Eventos presenciais
                       </span>
                     )}
                     {p.aceita_credito && (
-                      <span className="rounded bg-azul/15 px-2 py-0.5 text-xs font-semibold text-ciano">
+                      <span className="rounded bg-vermelho/15 px-2 py-0.5 text-xs font-semibold text-brasa">
                         Resgate de prêmios
                         {p.bonus_credito_pct ? ` +${p.bonus_credito_pct}%` : ""}
                       </span>
                     )}
                   </span>
-                  <span className="mt-auto text-sm font-semibold text-ciano">
+                  <span className="mt-auto text-sm font-semibold text-brasa">
                     Conhecer a loja →
                   </span>
                 </Link>
@@ -185,7 +185,7 @@ export default async function Parceiros() {
       >
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-16">
           <div className="max-w-2xl">
-            <h2 className="titulo text-5xl">Como funciona a parceria</h2>
+            <h2 className="titulo text-4xl">Como funciona a parceria</h2>
             <p className="mt-2 text-texto2">
               A parceria é uma troca: a loja ajuda a premiar e divulgar a liga,
               e a liga coloca a loja na frente de quem joga Pauper, Premodern e
@@ -197,7 +197,7 @@ export default async function Parceiros() {
             {PASSOS.map((p, i) => (
               <li
                 key={p.titulo}
-                className="flex flex-col gap-2 border-t-2 border-azul pt-4"
+                className="flex flex-col gap-2 border-t-2 border-vermelho pt-4"
               >
                 <span className="text-sm font-semibold text-cinza">
                   {i + 1}
@@ -212,23 +212,23 @@ export default async function Parceiros() {
 
       <section id="anuncie" className="scroll-mt-20 border-t border-borda">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
-          <h2 className="titulo text-5xl">Formas de participar</h2>
+          <h2 className="titulo text-4xl">Formas de participar</h2>
           <ul className="grid gap-5 md:grid-cols-3">
             {NIVEIS.map((n) => (
               <li
                 key={n.titulo}
-                className={`flex flex-col gap-4 rounded-lg p-6 ring-1 ${n.destaque ? "bg-azul/10 ring-azul" : "bg-grafite ring-borda"}`}
+                className={`flex flex-col gap-4 rounded-lg p-6 ring-1 ${n.destaque ? "bg-vermelho/10 ring-vermelho" : "bg-grafite ring-borda"}`}
               >
                 <span>
-                  <span className="titulo block text-3xl">{n.titulo}</span>
-                  <span className="text-sm font-semibold text-ciano">
+                  <span className="titulo block text-2xl">{n.titulo}</span>
+                  <span className="text-sm font-semibold text-brasa">
                     {n.resumo}
                   </span>
                 </span>
                 <ul className="flex flex-col gap-2 text-sm text-texto2">
                   {n.itens.map((i) => (
                     <li key={i} className="flex gap-2">
-                      <span className="text-ciano">✓</span>
+                      <span className="text-brasa">✓</span>
                       {i}
                     </li>
                   ))}
@@ -242,7 +242,7 @@ export default async function Parceiros() {
       <section className="border-t border-borda">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-[1fr_1.6fr]">
           <div className="flex flex-col gap-3">
-            <h2 className="titulo text-5xl">Onde sua marca aparece</h2>
+            <h2 className="titulo text-4xl">Onde sua marca aparece</h2>
             <p className="text-texto2">
               Banners aceitam a arte da própria loja (JPG, PNG, WebP ou GIF
               animado), em rotação com até três lojas por espaço. Todo conteúdo
@@ -253,7 +253,7 @@ export default async function Parceiros() {
             {ESPACOS.map(([t, d]) => (
               <div
                 key={t}
-                className="flex flex-col gap-1 border-l-2 border-azul pl-4"
+                className="flex flex-col gap-1 border-l-2 border-vermelho pl-4"
               >
                 <dt className="font-semibold">{t}</dt>
                 <dd className="text-sm text-texto2">{d}</dd>
@@ -265,7 +265,7 @@ export default async function Parceiros() {
 
       <section className="border-t border-borda">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-16 text-center">
-          <h2 className="titulo text-5xl">Vamos conversar?</h2>
+          <h2 className="titulo text-4xl">Vamos conversar?</h2>
           <p className="text-texto2">
             Conte sobre a sua loja e como gostaria de participar. O media kit
             completo, com formatos e especificações, está sendo preparado.

@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "Como funcionam os eventos",
   description:
-    "Passo a passo dos eventos online (no Endstep) e presenciais da Liga Fim de Turno: ingresso, deck, check-in, rodadas e prêmio.",
+    "Passo a passo dos eventos online (no Endstep) e presenciais da First Strike: ingresso, deck, check-in, rodadas e prêmio.",
 };
 export const dynamic = "force-dynamic";
 
@@ -128,7 +128,7 @@ export default async function ComoFunciona({
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/30" />
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-16">
-          <h1 className="titulo text-6xl sm:text-7xl">
+          <h1 className="titulo text-5xl sm:text-5xl">
             Como funcionam os eventos
           </h1>
           <p className="max-w-2xl text-lg text-texto2">
@@ -148,7 +148,7 @@ export default async function ComoFunciona({
               key={m}
               href={`/como-funciona?modo=${m}`}
               aria-current={modo === m ? "page" : undefined}
-              className={`py-4 no-underline ${modo === m ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
+              className={`py-4 no-underline ${modo === m ? "border-b-2 border-vermelho text-marfim" : "text-cinza hover:text-marfim"}`}
             >
               {m === "online"
                 ? "Online, no Endstep"
@@ -162,7 +162,7 @@ export default async function ComoFunciona({
         <ol className="grid gap-px overflow-hidden rounded-md bg-borda ring-1 ring-borda sm:grid-cols-2 lg:grid-cols-3">
           {PASSOS[modo].map((p, i) => (
             <li key={p.titulo} className="flex flex-col gap-3 bg-grafite p-6">
-              <span className="titulo text-5xl text-azul">
+              <span className="titulo text-4xl text-vermelho">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h2 className="text-lg font-semibold">{p.titulo}</h2>
@@ -172,12 +172,12 @@ export default async function ComoFunciona({
         </ol>
 
         <section className="grid gap-8 lg:grid-cols-[1fr_2fr]">
-          <h2 className="titulo text-4xl">Vale para todos os eventos</h2>
+          <h2 className="titulo text-3xl">Vale para todos os eventos</h2>
           <dl className="grid gap-6 sm:grid-cols-2">
             {REGRAS.map((r) => (
               <div
                 key={r.titulo}
-                className="flex flex-col gap-1 border-t-2 border-azul pt-3"
+                className="flex flex-col gap-1 border-t-2 border-vermelho pt-3"
               >
                 <dt className="font-semibold">{r.titulo}</dt>
                 <dd className="text-sm text-texto2">{r.texto}</dd>
@@ -188,7 +188,7 @@ export default async function ComoFunciona({
 
         <section className="flex flex-col gap-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-4xl">
+            <h2 className="titulo text-3xl">
               Próximos eventos {modo === "online" ? "online" : "presenciais"}
             </h2>
             <Link href="/eventos" className="text-sm font-semibold">

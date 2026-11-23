@@ -48,7 +48,7 @@ export function ArtigoCompleto({
   return (
     <>
       {!publicado && (
-        <p className="bg-azul px-6 py-2 text-center text-sm font-semibold text-white">
+        <p className="bg-vermelho px-6 py-2 text-center text-sm font-semibold text-white">
           Pré-visualização: este artigo ainda não está publicado.{" "}
           <Link
             href={`/painel/blog/${artigo.id}`}
@@ -62,16 +62,16 @@ export function ArtigoCompleto({
       <div className="mx-auto grid max-w-6xl gap-12 px-6 pb-16 pt-10 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="min-w-0">
           <header className="flex flex-col gap-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-azul">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-vermelho">
               <Link
                 href={`/blog?categoria=${artigo.categoria}`}
-                className="text-azul no-underline hover:text-ciano"
+                className="text-vermelho no-underline hover:text-brasa"
               >
                 {categoria}
               </Link>{" "}
               | {artigo.tipo}
             </span>
-            <h1 className="font-[family-name:var(--font-titulo)] text-4xl font-bold leading-[1.05] sm:text-5xl">
+            <h1 className="font-[family-name:var(--font-titulo)] text-3xl font-bold leading-[1.05] sm:text-4xl">
               {artigo.titulo}
             </h1>
             {artigo.resumo && (
@@ -82,12 +82,12 @@ export function ArtigoCompleto({
               {artigo.autor?.jogador?.nick_endstep ? (
                 <Link
                   href={linkJogador(artigo.autor.jogador.nick_endstep)}
-                  className="font-semibold text-ciano"
+                  className="font-semibold text-brasa"
                 >
                   {autor}
                 </Link>
               ) : (
-                <span className="font-semibold text-ciano">{autor}</span>
+                <span className="font-semibold text-brasa">{autor}</span>
               )}{" "}
               | Publicado{" "}
               {artigo.publicado_em ? dataPublicacao(artigo.publicado_em) : "—"}{" "}
@@ -129,7 +129,7 @@ export function ArtigoCompleto({
               <Link
                 key={t.rotulo}
                 href={t.href}
-                className="rounded-full bg-grafite px-3 py-1 text-xs font-semibold text-texto2 no-underline ring-1 ring-borda hover:text-gelo"
+                className="rounded-full bg-grafite px-3 py-1 text-xs font-semibold text-texto2 no-underline ring-1 ring-borda hover:text-marfim"
               >
                 {t.rotulo}
               </Link>
@@ -142,7 +142,7 @@ export function ArtigoCompleto({
               <span className="text-[11px] font-bold uppercase tracking-wider text-cinza">
                 Escrito por
               </span>
-              <span className="font-semibold text-ciano">{autor}</span>
+              <span className="font-semibold text-brasa">{autor}</span>
               {artigo.autor?.bio && (
                 <p className="text-sm text-texto2">{artigo.autor.bio}</p>
               )}
@@ -172,7 +172,7 @@ export function ArtigoCompleto({
           <BannerPatrocinado posicao="evento" pagina={caminho} coluna />
           {populares.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="titulo text-2xl">Mais lidos</h2>
+              <h2 className="titulo text-xl">Mais lidos</h2>
               <div className="grid grid-cols-2 gap-2">
                 {populares.map((a) => (
                   <TileArtigo key={a.id} artigo={a} />
@@ -182,7 +182,7 @@ export function ArtigoCompleto({
           )}
           {doAutor.length > 0 && (
             <section className="flex flex-col">
-              <h2 className="titulo text-2xl">Mais de {autor}</h2>
+              <h2 className="titulo text-xl">Mais de {autor}</h2>
               <div className="divide-y divide-borda">
                 {doAutor.map((a) => (
                   <MiniArtigo key={a.id} artigo={a} />

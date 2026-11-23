@@ -13,8 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sobre a liga",
-  description:
-    "Por que a Liga Fim de Turno existe, como funciona e quem organiza.",
+  description: "Por que a First Strike existe, como funciona e quem organiza.",
 };
 
 const DIFERENCIAIS = [
@@ -59,14 +58,14 @@ export default async function Sobre() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/90 to-preto/40" />
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-20">
-          <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
-            Magic competitivo, <span className="text-ciano">acessível</span> e
+          <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+            Magic competitivo, <span className="text-brasa">acessível</span> e
             toda semana
           </h1>
           <p className="max-w-2xl text-lg text-texto2">
-            A Liga Fim de Turno nasceu para juntar quem gosta de jogar Magic a
-            sério, mas não quer depender de ter uma coleção cara ou de uma loja
-            perto de casa para competir.
+            A First Strike nasceu para juntar quem gosta de jogar Magic a sério,
+            mas não quer depender de ter uma coleção cara ou de uma loja perto
+            de casa para competir.
           </p>
         </div>
         <span className="absolute bottom-3 right-4 text-[11px] text-white/50">
@@ -75,7 +74,7 @@ export default async function Sobre() {
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.4fr]">
-        <h2 className="titulo text-5xl">Por que a liga existe</h2>
+        <h2 className="titulo text-4xl">Por que a liga existe</h2>
         <div className="conteudo-texto">
           <p>
             Jogar Magic de forma competitiva costuma ter duas barreiras: o preço
@@ -99,9 +98,9 @@ export default async function Sobre() {
           {DIFERENCIAIS.map((d) => (
             <div
               key={d.titulo}
-              className="flex flex-col gap-3 border-t-2 border-azul pt-5"
+              className="flex flex-col gap-3 border-t-2 border-vermelho pt-5"
             >
-              <h3 className="text-xl font-semibold">{d.titulo}</h3>
+              <h3 className="text-2xl font-semibold">{d.titulo}</h3>
               <p className="text-texto2">{d.texto}</p>
             </div>
           ))}
@@ -109,7 +108,7 @@ export default async function Sobre() {
       </section>
 
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
-        <h2 className="titulo text-5xl">Os formatos</h2>
+        <h2 className="titulo text-4xl">Os formatos</h2>
         <div className="grid gap-5 md:grid-cols-3">
           {[
             {
@@ -134,7 +133,7 @@ export default async function Sobre() {
             <Link
               key={f.slug}
               href={`/ligas/${f.slug}`}
-              className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-lg p-7 text-gelo no-underline ring-1 ring-borda hover:ring-ciano"
+              className="group relative isolate flex min-h-60 flex-col justify-end overflow-hidden rounded-lg p-7 text-marfim no-underline ring-1 ring-borda hover:ring-brasa"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -148,7 +147,7 @@ export default async function Sobre() {
               <span className="absolute right-4 top-3 text-[11px] text-white/60">
                 {creditoArte(artesFormato[f.slug])}
               </span>
-              <h3 className="titulo text-4xl">{f.nome}</h3>
+              <h3 className="titulo text-3xl">{f.nome}</h3>
               <p className="mt-2 max-w-md text-texto2">{f.texto}</p>
             </Link>
           ))}
@@ -160,7 +159,7 @@ export default async function Sobre() {
 
       <section className="border-t border-borda bg-fundo2">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.4fr]">
-          <h2 className="titulo text-5xl">Quem organiza</h2>
+          <h2 className="titulo text-4xl">Quem organiza</h2>
           <div className="flex flex-col gap-5">
             <div className="conteudo-texto">
               <p>

@@ -17,7 +17,7 @@ const NOMES: Record<string, string> = {
   teste: "Teste",
 };
 const COR: Record<string, string> = {
-  enviado: "text-ciano",
+  enviado: "text-brasa",
   simulado: "text-alerta",
   falhou: "text-erro",
 };
@@ -61,12 +61,12 @@ export default async function Emails({
       ].filter(Boolean)
     : [];
   const remetente =
-    process.env.EMAIL_REMETENTE || "Liga Fim de Turno <onboarding@resend.dev>";
+    process.env.EMAIL_REMETENTE || "First Strike <onboarding@resend.dev>";
 
   return (
     <div className="flex max-w-5xl flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-5xl">E-mails</h1>
+        <h1 className="titulo text-4xl">E-mails</h1>
         <p className="text-sm text-texto2">
           Tudo que o portal enviou (ou tentou enviar), mais recente primeiro.
         </p>
@@ -77,7 +77,7 @@ export default async function Emails({
           <div>
             <dt className="text-cinza">Envio</dt>
             <dd
-              className={`font-semibold ${configurado ? "text-ciano" : "text-alerta"}`}
+              className={`font-semibold ${configurado ? "text-brasa" : "text-alerta"}`}
             >
               {configurado
                 ? "Resend conectado"
@@ -125,15 +125,15 @@ export default async function Emails({
               type="email"
               required
               placeholder="voce@email.com"
-              className="min-h-11 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo"
+              className="min-h-11 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim"
             />
-            <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 text-sm font-semibold text-white">
+            <BotaoEnviar className="min-h-11 rounded-lg bg-vermelho px-5 text-sm font-semibold text-white">
               Enviar
             </BotaoEnviar>
           </div>
           {teste && MSG[teste] && (
             <p
-              className={`text-sm ${teste === "enviado" ? "text-ciano" : teste === "simulado" ? "text-alerta" : "text-erro"}`}
+              className={`text-sm ${teste === "enviado" ? "text-brasa" : teste === "simulado" ? "text-alerta" : "text-erro"}`}
             >
               {MSG[teste]}
             </p>

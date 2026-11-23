@@ -96,7 +96,7 @@ export default async function Inicio() {
           titulo: (
             <>
               Pauper, Premodern e Limited{" "}
-              <span className="text-ciano">toda semana</span>
+              <span className="text-brasa">toda semana</span>
             </>
           ),
           texto:
@@ -109,7 +109,7 @@ export default async function Inicio() {
       ...img(a1),
       titulo: (
         <>
-          Jogue sem precisar <span className="text-ciano">ter as cartas</span>
+          Jogue sem precisar <span className="text-brasa">ter as cartas</span>
         </>
       ),
       texto:
@@ -122,7 +122,7 @@ export default async function Inicio() {
       ...img(a2),
       titulo: (
         <>
-          80% da inscrição <span className="text-ciano">vira prêmio</span>
+          80% da inscrição <span className="text-brasa">vira prêmio</span>
         </>
       ),
       texto:
@@ -135,7 +135,7 @@ export default async function Inicio() {
       ...img(a3),
       titulo: (
         <>
-          Uma temporada <span className="text-ciano">inteira</span> para
+          Uma temporada <span className="text-brasa">inteira</span> para
           disputar
         </>
       ),
@@ -166,7 +166,7 @@ export default async function Inicio() {
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="titulo text-5xl">As ligas</h2>
+              <h2 className="titulo text-4xl">As ligas</h2>
               <p className="mt-1 text-texto2">
                 Três formatos, uma temporada. Escolha a sua e acompanhe etapas,
                 ranking e regras.
@@ -207,7 +207,7 @@ export default async function Inicio() {
       <section className="border-t border-borda">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-5xl">Próximos eventos</h2>
+            <h2 className="titulo text-4xl">Próximos eventos</h2>
             <Link href="/eventos" className="text-sm font-semibold">
               Agenda completa →
             </Link>
@@ -222,7 +222,7 @@ export default async function Inicio() {
       {encerrados.length > 0 && (
         <section className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-5xl">Últimos eventos</h2>
+            <h2 className="titulo text-4xl">Últimos eventos</h2>
             <Link href="/resultados" className="text-sm font-semibold">
               Todos os eventos →
             </Link>
@@ -232,25 +232,25 @@ export default async function Inicio() {
               <li key={e.id}>
                 <Link
                   href={`/eventos/${e.slug}?aba=resultados`}
-                  className="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-borda py-4 text-gelo no-underline"
+                  className="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-borda py-4 text-marfim no-underline"
                 >
                   <span className="w-20 text-sm font-semibold text-cinza">
                     {dataCurta(e.inicio)}
                   </span>
-                  <span className="min-w-56 flex-1 text-lg font-semibold group-hover:text-ciano">
+                  <span className="min-w-56 flex-1 text-lg font-semibold group-hover:text-brasa">
                     {e.titulo}
                   </span>
                   {resultadosEncerrados[n]?.[0] && (
                     <span className="text-sm text-texto2">
                       Campeão:{" "}
-                      <span className="font-semibold text-gelo">
+                      <span className="font-semibold text-marfim">
                         {resultadosEncerrados[n][0].nick_endstep}
                       </span>{" "}
                       · {resultadosEncerrados[n].length} jogadores
                     </span>
                   )}
                   <EtiquetaLiga evento={e} />
-                  <span className="text-sm font-semibold text-ciano">
+                  <span className="text-sm font-semibold text-brasa">
                     Classificação →
                   </span>
                 </Link>
@@ -278,7 +278,7 @@ export default async function Inicio() {
         <MesaDeCartas cartas={mesa} />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(6_7_10/0.9)_20%,rgb(6_7_10/0.45)_60%,rgb(6_7_10/0.3)_100%)]" />
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 px-6 py-28 text-center">
-          <h2 className="titulo text-5xl">A liga acontece no Discord</h2>
+          <h2 className="titulo text-4xl">A liga acontece no Discord</h2>
           <p className="text-lg text-texto2">
             Avisos de etapa, conversa sobre decks e suporte nos dias de evento.
           </p>
@@ -305,7 +305,7 @@ function Liga({
   return (
     <Link
       href={`/ligas/${slug}`}
-      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-gelo no-underline ring-1 ring-borda transition hover:ring-ciano"
+      className="group flex flex-col overflow-hidden rounded-lg bg-grafite text-marfim no-underline ring-1 ring-borda transition hover:ring-brasa"
     >
       <div className="relative aspect-[16/9] overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -323,13 +323,13 @@ function Liga({
         >
           {arte.artista}
         </span>
-        <h3 className="titulo absolute bottom-3 left-5 text-4xl drop-shadow">
+        <h3 className="titulo absolute bottom-3 left-5 text-3xl drop-shadow">
           {nome}
         </h3>
       </div>
       <div className="flex flex-1 flex-col gap-3 px-5 pb-5 pt-3">
         <p className="line-clamp-3 text-sm text-texto2">{texto}</p>
-        <span className="mt-auto text-sm font-semibold text-ciano">
+        <span className="mt-auto text-sm font-semibold text-brasa">
           Ver etapas e regras →
         </span>
       </div>

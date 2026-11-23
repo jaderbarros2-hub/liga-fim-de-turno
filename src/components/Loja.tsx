@@ -53,7 +53,7 @@ export function FaixaLoja({
           className="h-12 w-12 shrink-0 rounded bg-white object-contain p-1"
         />
       ) : (
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded bg-azul text-xl font-bold">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded bg-vermelho text-xl font-bold">
           {loja.nome.charAt(0)}
         </span>
       )}
@@ -61,7 +61,7 @@ export function FaixaLoja({
         {loja.slug ? (
           <Link
             href={`/parceiros/${loja.slug}`}
-            className="font-semibold text-gelo no-underline hover:text-ciano"
+            className="font-semibold text-marfim no-underline hover:text-brasa"
           >
             {loja.nome}
           </Link>
@@ -136,7 +136,7 @@ export function LocalDaLoja({
                 className="h-11 w-11 rounded bg-white object-contain p-1"
               />
             ) : (
-              <span className="grid h-11 w-11 place-items-center rounded bg-azul text-lg font-bold">
+              <span className="grid h-11 w-11 place-items-center rounded bg-vermelho text-lg font-bold">
                 {loja.nome.charAt(0)}
               </span>
             )}
@@ -144,7 +144,7 @@ export function LocalDaLoja({
               {loja.slug ? (
                 <Link
                   href={`/parceiros/${loja.slug}`}
-                  className="text-lg font-semibold text-gelo no-underline hover:text-ciano"
+                  className="text-lg font-semibold text-marfim no-underline hover:text-brasa"
                 >
                   {loja.nome}
                 </Link>
@@ -158,7 +158,7 @@ export function LocalDaLoja({
           </div>
         )}
         <p className="flex gap-2 text-texto2">
-          <span className="mt-0.5 shrink-0 text-ciano">
+          <span className="mt-0.5 shrink-0 text-brasa">
             <Icone d={PIN} />
           </span>
           <span>
@@ -171,7 +171,7 @@ export function LocalDaLoja({
           </span>
         </p>
         {observacao && (
-          <p className="border-l-2 border-azul pl-3 text-sm text-texto2">
+          <p className="border-l-2 border-vermelho pl-3 text-sm text-texto2">
             {observacao}
           </p>
         )}
@@ -186,7 +186,7 @@ export function LocalDaLoja({
             href={linkMapa(end)}
             target="_blank"
             rel="noopener"
-            className={`${botao} bg-azul text-white hover:bg-azul-escuro hover:text-white`}
+            className={`${botao} bg-vermelho text-white hover:bg-vermelho-escuro hover:text-white`}
           >
             <Icone d={PIN} /> Abrir no Google Maps
           </a>
@@ -194,7 +194,7 @@ export function LocalDaLoja({
             href={linkRota(end)}
             target="_blank"
             rel="noopener"
-            className={`${botao} text-gelo ring-1 ring-borda-forte hover:text-gelo hover:ring-ciano`}
+            className={`${botao} text-marfim ring-1 ring-borda-forte hover:text-marfim hover:ring-brasa`}
           >
             <Icone d={ROTA} /> Como chegar
           </a>
@@ -203,7 +203,7 @@ export function LocalDaLoja({
               href={insta}
               target="_blank"
               rel="noopener"
-              className={`${botao} text-gelo ring-1 ring-borda-forte hover:text-gelo hover:ring-ciano`}
+              className={`${botao} text-marfim ring-1 ring-borda-forte hover:text-marfim hover:ring-brasa`}
             >
               Instagram
             </a>
@@ -213,7 +213,7 @@ export function LocalDaLoja({
               href={zap}
               target="_blank"
               rel="noopener"
-              className={`${botao} text-gelo ring-1 ring-borda-forte hover:text-gelo hover:ring-ciano`}
+              className={`${botao} text-marfim ring-1 ring-borda-forte hover:text-marfim hover:ring-brasa`}
             >
               WhatsApp
             </a>

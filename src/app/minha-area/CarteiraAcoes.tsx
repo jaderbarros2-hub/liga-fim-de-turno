@@ -9,7 +9,7 @@ import {
 } from "./carteira";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 type Loja = {
   id: string;
@@ -77,7 +77,7 @@ export function CarteiraAcoes({
             key={id}
             type="button"
             onClick={() => setAba(id as "saque" | "loja")}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold ${aba === id ? "bg-azul text-white" : "text-texto2 ring-1 ring-borda hover:text-gelo"}`}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold ${aba === id ? "bg-vermelho text-white" : "text-texto2 ring-1 ring-borda hover:text-marfim"}`}
           >
             {r}
           </button>
@@ -87,10 +87,10 @@ export function CarteiraAcoes({
       {aba === "saque" ? (
         <form action={sacar} className="flex flex-col gap-3">
           <p className="text-sm text-texto2">
-            Saque mínimo de <strong className="text-gelo">{minimoTexto}</strong>{" "}
-            (o prêmio do campeão numa etapa de 8 jogadores). O Pix vai para a
-            chave{" "}
-            <strong className="text-gelo">
+            Saque mínimo de{" "}
+            <strong className="text-marfim">{minimoTexto}</strong> (o prêmio do
+            campeão numa etapa de 8 jogadores). O Pix vai para a chave{" "}
+            <strong className="text-marfim">
               {chavePix || "não cadastrada"}
             </strong>{" "}
             em até 48 horas.
@@ -107,20 +107,20 @@ export function CarteiraAcoes({
                 <input
                   type="checkbox"
                   name="tudo"
-                  className="h-4 w-4 accent-[#2e6bff]"
+                  className="h-4 w-4 accent-[#d8392a]"
                 />{" "}
                 Sacar tudo ({saldoTexto})
               </label>
               <button
                 type="submit"
                 disabled={sacando}
-                className="min-h-11 rounded-lg bg-azul px-5 text-sm font-semibold text-white disabled:opacity-60"
+                className="min-h-11 rounded-lg bg-vermelho px-5 text-sm font-semibold text-white disabled:opacity-60"
               >
                 {sacando ? "Solicitando…" : "Solicitar saque"}
               </button>
             </div>
           ) : (
-            <p className="rounded-md border-l-4 border-azul bg-fundo2 p-3 text-sm text-texto2">
+            <p className="rounded-md border-l-4 border-vermelho bg-fundo2 p-3 text-sm text-texto2">
               Seu saldo ainda não chegou ao mínimo para saque. Use no próximo
               ingresso, envie para uma loja ou espere: saldo parado há 30 dias é
               depositado automaticamente no seu Pix.
@@ -130,7 +130,7 @@ export function CarteiraAcoes({
             <p className="text-sm text-erro">{estadoSaque.erro}</p>
           )}
           {estadoSaque.ok && (
-            <p className="text-sm font-semibold text-ciano">{estadoSaque.ok}</p>
+            <p className="text-sm font-semibold text-brasa">{estadoSaque.ok}</p>
           )}
         </form>
       ) : lojas.length === 0 ? (
@@ -139,7 +139,7 @@ export function CarteiraAcoes({
         </p>
       ) : saldo <= 0 ? (
         <div className="flex flex-col gap-3">
-          <p className="rounded-md border-l-4 border-azul bg-fundo2 p-3 text-sm text-texto2">
+          <p className="rounded-md border-l-4 border-vermelho bg-fundo2 p-3 text-sm text-texto2">
             Seu saldo está zerado. Quando você premiar numa etapa, o valor cai
             aqui e pode ser resgatado em uma destas lojas:
           </p>
@@ -159,7 +159,7 @@ export function CarteiraAcoes({
                 ) : null}
                 {l.nome}
                 {l.bonus > 0 && (
-                  <span className="text-xs font-bold text-ciano">
+                  <span className="text-xs font-bold text-brasa">
                     +{l.bonus}%
                   </span>
                 )}
@@ -177,7 +177,7 @@ export function CarteiraAcoes({
               {lojas.map((l) => (
                 <label
                   key={l.id}
-                  className={`flex cursor-pointer items-center gap-3 rounded-md p-3 ring-1 ${lojaId === l.id ? "bg-azul/10 ring-azul" : "bg-fundo2 ring-borda hover:ring-borda-forte"}`}
+                  className={`flex cursor-pointer items-center gap-3 rounded-md p-3 ring-1 ${lojaId === l.id ? "bg-vermelho/10 ring-vermelho" : "bg-fundo2 ring-borda hover:ring-borda-forte"}`}
                 >
                   <input
                     type="radio"
@@ -195,7 +195,7 @@ export function CarteiraAcoes({
                       className="h-10 w-10 shrink-0 rounded bg-white object-contain p-1"
                     />
                   ) : (
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded bg-azul font-bold text-white">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded bg-vermelho font-bold text-white">
                       {l.nome.charAt(0)}
                     </span>
                   )}
@@ -206,7 +206,7 @@ export function CarteiraAcoes({
                     </span>
                   </span>
                   {l.bonus > 0 && (
-                    <span className="rounded bg-ciano/15 px-2 py-0.5 text-xs font-bold text-ciano">
+                    <span className="rounded bg-brasa/15 px-2 py-0.5 text-xs font-bold text-brasa">
                       +{l.bonus}%
                     </span>
                   )}
@@ -248,9 +248,9 @@ export function CarteiraAcoes({
           {loja && valorDigitado > 0 && (
             <p className="rounded-md bg-fundo2 p-3 text-sm ring-1 ring-borda">
               Sai da Carteira{" "}
-              <strong className="text-gelo">{brl(valorDigitado)}</strong> → você
-              recebe{" "}
-              <strong className="text-ciano">{brl(creditoPrevisto)}</strong> de
+              <strong className="text-marfim">{brl(valorDigitado)}</strong> →
+              você recebe{" "}
+              <strong className="text-brasa">{brl(creditoPrevisto)}</strong> de
               crédito na {loja.nome}
               {loja.bonus ? ` (+${loja.bonus}% de bônus da parceria)` : ""}.
             </p>
@@ -261,7 +261,7 @@ export function CarteiraAcoes({
 
           <div className="flex flex-col gap-2 rounded-md border-l-4 border-alerta bg-fundo2 p-3 text-sm text-texto2">
             <span>
-              <strong className="text-gelo">
+              <strong className="text-marfim">
                 Você precisa ter cadastro e login na {loja?.nome ?? "loja"}
               </strong>{" "}
               para usar o crédito.
@@ -276,9 +276,9 @@ export function CarteiraAcoes({
             </span>
             <span>
               A liga faz o Pix para a loja e a loja gera o crédito na sua conta
-              em até <strong className="text-gelo">2 dias úteis</strong>. Depois
-              de liberado, o crédito é da loja, segue as regras dela e não volta
-              para a Carteira.
+              em até <strong className="text-marfim">2 dias úteis</strong>.
+              Depois de liberado, o crédito é da loja, segue as regras dela e
+              não volta para a Carteira.
             </span>
           </div>
           <label className="flex items-start gap-2 text-sm">
@@ -286,7 +286,7 @@ export function CarteiraAcoes({
               type="checkbox"
               name="ciente"
               required
-              className="mt-0.5 h-4 w-4 accent-[#2e6bff]"
+              className="mt-0.5 h-4 w-4 accent-[#d8392a]"
             />
             <span>
               Tenho cadastro na loja, li as regras e autorizo enviar meu nome,
@@ -296,7 +296,7 @@ export function CarteiraAcoes({
           <button
             type="submit"
             disabled={enviando}
-            className="min-h-11 self-start rounded-lg bg-azul px-5 text-sm font-semibold text-white disabled:opacity-60"
+            className="min-h-11 self-start rounded-lg bg-vermelho px-5 text-sm font-semibold text-white disabled:opacity-60"
           >
             {enviando ? "Enviando…" : "Resgatar na loja"}
           </button>
@@ -304,7 +304,7 @@ export function CarteiraAcoes({
             <p className="text-sm text-erro">{estadoLoja.erro}</p>
           )}
           {estadoLoja.ok && (
-            <p className="rounded-md border border-ciano/50 bg-ciano/10 p-3 text-sm font-semibold text-ciano">
+            <p className="rounded-md border border-brasa/50 bg-brasa/10 p-3 text-sm font-semibold text-brasa">
               {estadoLoja.ok}
             </p>
           )}

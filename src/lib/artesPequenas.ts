@@ -23,7 +23,7 @@ import { STAPLES } from "./staples";
 const API = "https://api.scryfall.com";
 const UMA_SEMANA = 60 * 60 * 24 * 7;
 const CABECALHOS = {
-  "User-Agent": "LigaFimDeTurno/1.0 (artes do portal)",
+  "User-Agent": "LigaFirstStrike/1.0 (artes do portal)",
   Accept: "application/json",
 };
 

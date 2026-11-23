@@ -22,7 +22,7 @@ export default async function Arquetipos({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="titulo text-5xl">Arquétipos</h1>
+      <h1 className="titulo text-4xl">Arquétipos</h1>
       <nav aria-label="Formato" className="flex gap-2">
         {[
           ["pauper", "Pauper"],
@@ -32,7 +32,7 @@ export default async function Arquetipos({
             key={v}
             href={`/painel/arquetipos?formato=${v}`}
             aria-current={formato === v ? "page" : undefined}
-            className={`inline-flex min-h-9 items-center rounded-full px-4 text-sm font-semibold no-underline ring-1 ${formato === v ? "bg-azul text-white ring-azul hover:text-white" : "text-texto2 ring-borda-forte hover:text-gelo hover:ring-ciano"}`}
+            className={`inline-flex min-h-9 items-center rounded-full px-4 text-sm font-semibold no-underline ring-1 ${formato === v ? "bg-vermelho text-white ring-vermelho hover:text-white" : "text-texto2 ring-borda-forte hover:text-marfim hover:ring-brasa"}`}
           >
             {r}
           </Link>
@@ -48,9 +48,9 @@ export default async function Arquetipos({
           name="nome"
           required
           placeholder={`Novo arquétipo de ${formato === "premodern" ? "Premodern" : "Pauper"}`}
-          className="min-h-11 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo"
+          className="min-h-11 flex-1 rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim"
         />
-        <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
+        <BotaoEnviar className="min-h-11 rounded-lg bg-vermelho px-5 font-semibold text-white">
           Adicionar
         </BotaoEnviar>
       </form>

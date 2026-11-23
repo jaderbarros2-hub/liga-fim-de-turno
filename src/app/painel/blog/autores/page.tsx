@@ -5,7 +5,7 @@ import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { salvarAutor } from "../actions";
 
 const CAMPO =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim";
 const ROTULO = "flex flex-col gap-1 text-sm font-semibold";
 
 export default async function Autores({
@@ -36,7 +36,7 @@ export default async function Autores({
       <Link href="/painel/blog" className="text-sm">
         ← Blog
       </Link>
-      <h1 className="titulo text-5xl">Autores</h1>
+      <h1 className="titulo text-4xl">Autores</h1>
       <ul className="flex flex-col border-t border-borda">
         {autores.map((a) => (
           <li
@@ -51,7 +51,7 @@ export default async function Autores({
                 className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-azul font-semibold text-white">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-vermelho font-semibold text-white">
                 {a.nome.charAt(0)}
               </span>
             )}
@@ -76,7 +76,7 @@ export default async function Autores({
         action={salvarAutor}
         className="grid scroll-mt-20 gap-4 rounded-xl border border-borda p-6"
       >
-        <h2 className="titulo text-3xl">
+        <h2 className="titulo text-2xl">
           {atual ? `Editar ${atual.nome}` : "Novo autor"}
         </h2>
         {atual && <input type="hidden" name="id" value={atual.id} />}
@@ -137,7 +137,7 @@ export default async function Autores({
           />
         </label>
         <div className="flex gap-4">
-          <BotaoEnviar className="min-h-11 rounded-lg bg-azul px-5 font-semibold text-white">
+          <BotaoEnviar className="min-h-11 rounded-lg bg-vermelho px-5 font-semibold text-white">
             Salvar autor
           </BotaoEnviar>
           {atual && (

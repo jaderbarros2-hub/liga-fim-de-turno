@@ -175,7 +175,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             <div className="flex flex-wrap gap-2 pt-8">
               <EtiquetaLiga evento={evento} />
               {evento.tipo !== "etapa" && (
-                <Etiqueta tipo="ciano">
+                <Etiqueta tipo="marfim">
                   {NOMES_TIPO[evento.tipo]}
                   {evento.tipo === "final_trimestre" ? ` · T${trimestre}` : ""}
                 </Etiqueta>
@@ -191,7 +191,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 {NOMES_STATUS[evento.status]}
               </Etiqueta>
             </div>
-            <h1 className="titulo text-5xl sm:text-7xl">{evento.titulo}</h1>
+            <h1 className="titulo text-4xl sm:text-5xl">{evento.titulo}</h1>
             <p className="text-lg text-texto2">
               {dataLonga(evento.inicio)} · {hora(evento.inicio)} (horário de
               Brasília)
@@ -206,7 +206,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
             {campeao && (
               <Link
                 href={`/eventos/${evento.slug}?aba=resultados`}
-                className="mt-2 flex max-w-md items-center gap-3 rounded-md bg-preto/60 p-3 text-gelo no-underline ring-1 ring-ciano/40 backdrop-blur hover:text-gelo hover:ring-ciano"
+                className="mt-2 flex max-w-md items-center gap-3 rounded-md bg-preto/60 p-3 text-marfim no-underline ring-1 ring-brasa/40 backdrop-blur hover:text-marfim hover:ring-brasa"
               >
                 <Trofeu />
                 <FotoJogador
@@ -215,7 +215,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                   tamanho={34}
                 />
                 <span className="flex min-w-0 flex-col">
-                  <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+                  <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                     Campeão
                   </span>
                   <span className="truncate font-semibold">
@@ -268,7 +268,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               key={a.id}
               href={`/eventos/${evento.slug}?aba=${a.id}`}
               aria-current={aba === a.id ? "page" : undefined}
-              className={`py-4 no-underline ${aba === a.id ? "border-b-2 border-azul text-gelo" : "text-cinza hover:text-gelo"}`}
+              className={`py-4 no-underline ${aba === a.id ? "border-b-2 border-vermelho text-marfim" : "text-cinza hover:text-marfim"}`}
             >
               {a.rotulo}
             </Link>
@@ -282,7 +282,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
         <div className="min-w-0">
           {aba === "resultados" &&
             (!temResultado ? (
-              <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+              <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                 A classificação aparece aqui depois do evento.
               </p>
             ) : (
@@ -293,11 +293,11 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                     return (
                       <li
                         key={r.posicao}
-                        className={`flex flex-col gap-3 rounded-md p-4 ring-1 ${i === 0 ? "bg-azul/15 ring-azul" : "bg-grafite ring-borda"}`}
+                        className={`flex flex-col gap-3 rounded-md p-4 ring-1 ${i === 0 ? "bg-vermelho/15 ring-vermelho" : "bg-grafite ring-borda"}`}
                       >
                         <span className="flex items-center justify-between">
                           <span
-                            className={`titulo text-4xl ${i === 0 ? "text-ciano" : "text-cinza"}`}
+                            className={`titulo text-3xl ${i === 0 ? "text-brasa" : "text-cinza"}`}
                           >
                             {r.posicao}º
                           </span>
@@ -356,7 +356,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         return (
                           <tr
                             key={r.posicao}
-                            className={`border-t hover:bg-grafite/60 ${r.posicao === TOP_PUBLICO + 1 ? "border-t-2 border-azul/60" : "border-borda"}`}
+                            className={`border-t hover:bg-grafite/60 ${r.posicao === TOP_PUBLICO + 1 ? "border-t-2 border-vermelho/60" : "border-borda"}`}
                           >
                             <td className="p-3 text-center font-semibold text-cinza">
                               {r.posicao}
@@ -417,7 +417,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
 
           {aba === "inscritos" &&
             (inscritos.length === 0 ? (
-              <p className="border-l-2 border-azul py-2 pl-4 text-texto2">
+              <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                 Ainda não há inscrições confirmadas.
               </p>
             ) : (
@@ -473,10 +473,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 />
               </Palco>
               <div className="flex flex-col gap-3 p-6 md:pl-0">
-                <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+                <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                   {NOMES_FORMATO[evento.formato]}
                 </span>
-                <h2 className="titulo flex items-center gap-3 text-4xl">
+                <h2 className="titulo flex items-center gap-3 text-3xl">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={colecao?.icone_svg ?? "/icone-cubo.svg"}
@@ -562,7 +562,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
               <Palco
                 arte={capa.src}
                 foco={capa.foco}
-                cor={evento.formato === "premodern" ? "#d9a441" : "#2e6bff"}
+                cor={evento.formato === "premodern" ? "#d9a441" : "#d8392a"}
               >
                 <SeloLocal presencial={presencial} loja={evento.loja} />
                 <LequeCartas
@@ -573,10 +573,10 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 />
               </Palco>
               <div className="flex flex-col gap-3 p-6 md:pl-0">
-                <span className="text-xs font-bold uppercase tracking-wider text-ciano">
+                <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                   Formato construído
                 </span>
-                <h2 className="titulo text-4xl">
+                <h2 className="titulo text-3xl">
                   {NOMES_FORMATO[evento.formato]}
                 </h2>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -666,7 +666,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 <ul className="flex flex-col divide-y divide-borda border-y border-borda">
                   {cronograma(evento, inscritos.length).map((c) => (
                     <li key={c.texto} className="flex gap-6 py-3">
-                      <span className="w-16 shrink-0 font-semibold text-ciano">
+                      <span className="w-16 shrink-0 font-semibold text-brasa">
                         {c.estimado ? "~" : ""}
                         {c.hora}
                       </span>
@@ -711,7 +711,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="2.4"
-                        className="mt-0.5 shrink-0 text-ciano"
+                        className="mt-0.5 shrink-0 text-brasa"
                         aria-hidden="true"
                       >
                         <path d="m5 12 5 5L20 7" />
@@ -769,7 +769,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                     >
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
                         {f.p}
-                        <span className="text-xl text-ciano transition group-open:rotate-45">
+                        <span className="text-xl text-brasa transition group-open:rotate-45">
                           +
                         </span>
                       </summary>
@@ -833,7 +833,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                       </span>
                       <span className="h-1.5 overflow-hidden rounded-full bg-fundo2">
                         <span
-                          className="block h-full rounded-full bg-azul"
+                          className="block h-full rounded-full bg-vermelho"
                           style={{ width: `${(n / fatias[0][1]) * 100}%` }}
                         />
                       </span>
@@ -889,7 +889,7 @@ function Secao({
 }) {
   return (
     <section className="flex flex-col gap-4 border-t border-borda py-8">
-      <h2 className="titulo text-3xl">{titulo}</h2>
+      <h2 className="titulo text-2xl">{titulo}</h2>
       {children}
     </section>
   );
@@ -904,7 +904,7 @@ function Trofeu() {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
-      className="shrink-0 text-ciano"
+      className="shrink-0 text-brasa"
       aria-hidden="true"
     >
       <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z" />
@@ -925,7 +925,7 @@ function Linha({
   return (
     <div className="flex justify-between gap-3 border-b border-borda pb-3 text-sm">
       <span className="text-cinza">{rotulo}</span>
-      <span className={`font-semibold ${destaque ? "text-ciano" : ""}`}>
+      <span className={`font-semibold ${destaque ? "text-brasa" : ""}`}>
         {valor}
       </span>
     </div>

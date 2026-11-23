@@ -10,9 +10,9 @@ export function botao(
   tamanho: "sm" | "md" = "sm",
 ) {
   const v = {
-    primario: "bg-azul text-white hover:bg-azul-escuro",
+    primario: "bg-vermelho text-white hover:bg-vermelho-escuro",
     secundario:
-      "bg-grafite text-gelo ring-1 ring-borda-forte hover:ring-ciano hover:bg-fundo2",
+      "bg-grafite text-marfim ring-1 ring-borda-forte hover:ring-brasa hover:bg-fundo2",
     perigo: "text-erro ring-1 ring-erro/40 hover:bg-erro/10 hover:ring-erro",
   }[variante];
   const t = tamanho === "sm" ? "min-h-9 px-3.5 text-sm" : "min-h-11 px-5";
@@ -23,10 +23,10 @@ type Variante = "primario" | "contorno" | "texto";
 
 const estilos: Record<Variante, string> = {
   primario:
-    "corte bg-azul px-7 text-white hover:bg-azul-escuro hover:text-white tracking-wide uppercase",
+    "corte bg-vermelho px-7 text-white hover:bg-vermelho-escuro hover:text-white tracking-wide uppercase",
   contorno:
-    "border border-borda-forte text-gelo hover:border-ciano hover:text-gelo",
-  texto: "text-ciano hover:text-[#8fdbff] px-0",
+    "border border-borda-forte text-marfim hover:border-brasa hover:text-marfim",
+  texto: "text-brasa hover:text-[#ff8a7a] px-0",
 };
 
 const base =
@@ -57,15 +57,16 @@ export function Botao({
 
 export function Etiqueta({
   children,
-  tipo = "azul",
+  tipo = "destaque",
 }: {
   children: React.ReactNode;
-  tipo?: "azul" | "ciano" | "contorno" | "alerta";
+  tipo?: "destaque" | "marfim" | "sucesso" | "contorno" | "alerta";
 }) {
   const cores = {
-    azul: "bg-azul text-white",
-    ciano: "bg-ciano text-preto",
-    contorno: "border border-ciano text-ciano",
+    destaque: "bg-vermelho text-white",
+    marfim: "bg-marfim text-preto",
+    sucesso: "border border-sucesso/60 text-sucesso",
+    contorno: "border border-brasa text-brasa",
     alerta: "border border-alerta text-alerta",
   };
   return (

@@ -22,7 +22,7 @@ type DeckOpcao = {
 };
 
 const campo =
-  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-gelo focus:border-ciano focus:outline-none";
+  "min-h-11 w-full rounded-lg border border-borda-forte bg-fundo2 px-3 text-marfim focus:border-brasa focus:outline-none";
 
 function Bloco({
   n,
@@ -40,14 +40,14 @@ function Bloco({
       <span
         className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-bold ring-1 ${
           feito
-            ? "bg-ciano text-preto ring-ciano"
-            : "bg-azul/15 text-ciano ring-azul/50"
+            ? "bg-brasa text-preto ring-brasa"
+            : "bg-vermelho/15 text-brasa ring-vermelho/50"
         }`}
       >
         {feito ? "✓" : n}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-3 border-b border-borda pb-7">
-        <h2 className="titulo text-3xl leading-9">{titulo}</h2>
+        <h2 className="titulo text-2xl leading-9">{titulo}</h2>
         {children}
       </div>
     </section>
@@ -184,7 +184,7 @@ export function Checkout({
                   <label
                     className={`flex cursor-pointer items-center gap-3 rounded-md p-3 ring-1 ${
                       deckId === d.id
-                        ? "bg-azul/15 ring-azul"
+                        ? "bg-vermelho/15 ring-vermelho"
                         : "bg-grafite ring-borda hover:ring-borda-forte"
                     } ${d.legal ? "" : "cursor-not-allowed opacity-60"}`}
                   >
@@ -194,7 +194,7 @@ export function Checkout({
                       checked={deckId === d.id}
                       disabled={!d.legal}
                       onChange={() => setDeckId(d.id)}
-                      className="accent-[#2e6bff]"
+                      className="accent-[#d8392a]"
                     />
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate font-semibold">{d.nome}</span>
@@ -262,7 +262,7 @@ export function Checkout({
                 <button
                   type="submit"
                   disabled={salvando}
-                  className="min-h-10 rounded-lg bg-azul px-5 text-sm font-semibold text-white disabled:opacity-60"
+                  className="min-h-10 rounded-lg bg-vermelho px-5 text-sm font-semibold text-white disabled:opacity-60"
                 >
                   {salvando
                     ? "Conferindo as cartas…"
@@ -298,24 +298,24 @@ export function Checkout({
       <Bloco n={n++} titulo="Regras do ingresso" feito={aceite}>
         <ul className="flex flex-col gap-2 rounded-md bg-grafite p-4 text-sm text-texto2 ring-1 ring-borda">
           <li>
-            <strong className="text-gelo">Cancelamento:</strong> até 24 horas
+            <strong className="text-marfim">Cancelamento:</strong> até 24 horas
             antes do início, com reembolso por Pix ou o valor de volta na sua
             Carteira (você escolhe). Depois disso, o ingresso não é reembolsado.
           </li>
           <li>
-            <strong className="text-gelo">Evento cancelado</strong> (menos
+            <strong className="text-marfim">Evento cancelado</strong> (menos
             jogadores que o mínimo): reembolso ou valor na Carteira para todos.
           </li>
           <li>
-            <strong className="text-gelo">No dia:</strong>{" "}
+            <strong className="text-marfim">No dia:</strong>{" "}
             {presencial
               ? `o evento é presencial, em ${presencial}. Chegue 15 minutos antes para o check-in; endereço e mapa estão na página do evento.`
               : "o link do Endstep aparece na página do evento e na sua Minha área. Faça o check-in até 10 minutos antes."}
           </li>
           {pauper && (
             <li>
-              <strong className="text-gelo">Deck:</strong> a lista registrada é
-              a que vale; dá para trocar até o início.
+              <strong className="text-marfim">Deck:</strong> a lista registrada
+              é a que vale; dá para trocar até o início.
             </li>
           )}
         </ul>
@@ -324,7 +324,7 @@ export function Checkout({
             type="checkbox"
             checked={aceite}
             onChange={(e) => setAceite(e.target.checked)}
-            className="mt-0.5 h-4 w-4 accent-[#2e6bff]"
+            className="mt-0.5 h-4 w-4 accent-[#d8392a]"
           />
           <span>
             Li e concordo com as regras do ingresso e com o{" "}
@@ -340,7 +340,7 @@ export function Checkout({
         <div className="flex flex-col gap-2 rounded-md bg-grafite p-4 ring-1 ring-borda">
           {cupom?.codigo ? (
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded bg-ciano/15 px-2 py-1 font-mono text-sm font-bold text-ciano">
+              <span className="rounded bg-brasa/15 px-2 py-1 font-mono text-sm font-bold text-brasa">
                 {cupom.codigo}
               </span>
               <span className="text-sm">
@@ -353,7 +353,7 @@ export function Checkout({
                   setCupom(null);
                   setCodigo("");
                 }}
-                className="ml-auto text-sm font-semibold text-cinza hover:text-gelo"
+                className="ml-auto text-sm font-semibold text-cinza hover:text-marfim"
               >
                 Remover
               </button>
@@ -382,7 +382,7 @@ export function Checkout({
               <button
                 type="submit"
                 disabled={!codigo || conferindo}
-                className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-ciano disabled:opacity-50"
+                className="min-h-11 rounded-lg px-4 text-sm font-semibold ring-1 ring-borda-forte hover:ring-brasa disabled:opacity-50"
               >
                 {conferindo ? "Conferindo…" : "Aplicar"}
               </button>
@@ -399,7 +399,7 @@ export function Checkout({
               {cupom?.codigo && (
                 <span className="text-sm text-cinza line-through">{valor}</span>
               )}
-              <span className="titulo text-3xl">
+              <span className="titulo text-2xl">
                 {gratis ? "Grátis" : finalTexto}
               </span>
             </span>
@@ -412,7 +412,7 @@ export function Checkout({
             <button
               type="submit"
               disabled={!pronto || gerando}
-              className="corte inline-flex min-h-14 items-center justify-center bg-azul px-8 font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:cursor-not-allowed disabled:opacity-40"
+              className="corte inline-flex min-h-14 items-center justify-center bg-vermelho px-8 font-semibold uppercase tracking-wide text-white hover:bg-vermelho-escuro disabled:cursor-not-allowed disabled:opacity-40"
             >
               {gerando ? "Emitindo…" : "Emitir ingresso gratuito"}
             </button>
@@ -465,7 +465,7 @@ export function Checkout({
                   onClick={() => setMetodo(m.id as "pix" | "credito")}
                   className={`flex flex-col items-start rounded-md p-3 text-left ring-1 disabled:cursor-not-allowed disabled:opacity-45 ${
                     metodo === m.id
-                      ? "bg-azul/15 ring-azul"
+                      ? "bg-vermelho/15 ring-vermelho"
                       : "bg-grafite ring-borda hover:ring-borda-forte"
                   }`}
                 >
@@ -493,7 +493,7 @@ export function Checkout({
                 <button
                   type="submit"
                   disabled={!pronto || gerando}
-                  className="corte inline-flex min-h-14 items-center justify-center bg-azul px-8 font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:cursor-not-allowed disabled:opacity-40"
+                  className="corte inline-flex min-h-14 items-center justify-center bg-vermelho px-8 font-semibold uppercase tracking-wide text-white hover:bg-vermelho-escuro disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {gerando ? "Gerando o Pix…" : `Gerar Pix de ${finalTexto}`}
                 </button>
@@ -520,7 +520,7 @@ export function Checkout({
                 <button
                   type="submit"
                   disabled={!pronto || usando}
-                  className="corte inline-flex min-h-14 items-center justify-center bg-azul px-8 font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro disabled:cursor-not-allowed disabled:opacity-40"
+                  className="corte inline-flex min-h-14 items-center justify-center bg-vermelho px-8 font-semibold uppercase tracking-wide text-white hover:bg-vermelho-escuro disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {usando
                     ? "Emitindo…"

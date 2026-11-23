@@ -20,12 +20,26 @@ export async function POST(req: Request) {
   const dataId = url.searchParams.get("data.id") ?? corpo.data?.id ?? "";
   if (!dataId) return NextResponse.json({ ok: true });
 
-  const valida = assinaturaValida(req.headers.get("x-signature"), req.headers.get("x-request-id"), dataId);
+  const valida = assinaturaValida(
+    req.headers.get("x-signature"),
+    req.headers.get("x-request-id"),
+    dataId,
+  );
   // Registro de cada aviso recebido (ajuda a conferir os testes no Painel)
   await criarClienteAdmin()
     .from("registro_atividades")
-    .insert({ acao: valida ? "webhook_recebido" : "webhook_assinatura_invalida", entidade: "mercadopago", detalhes: { id: dataId, tipo: corpo.type ?? url.searchParams.get("type") } })
-    .then(() => undefined, () => undefined);
+    .insert({
+      acao: valida ? "webhook_recebido" : "webhook_assinatura_invalida",
+      entidade: "mercadopago",
+      detalhes: {
+        id: dataId,
+        tipo: corpo.type ?? url.searchParams.get("type"),
+      },
+    })
+    .then(
+      () => undefined,
+      () => undefined,
+    );
   if (!valida) {
     return NextResponse.json({ erro: "assinatura inválida" }, { status: 401 });
   }
@@ -38,9 +52,17 @@ export async function POST(req: Request) {
       .insert({
         acao: "mercadopago_status",
         entidade: "mercadopago",
-        detalhes: { id: dataId, pedido: pedido?.status, detalhe: pedido?.statusDetalhe, pix: pedido?.statusPagamento },
+        detalhes: {
+          id: dataId,
+          pedido: pedido?.status,
+          detalhe: pedido?.statusDetalhe,
+          pix: pedido?.statusPagamento,
+        },
       })
-      .then(() => undefined, () => undefined);
+      .then(
+        () => undefined,
+        () => undefined,
+      );
     await sincronizarPorIdExterno(dataId);
   } catch (e) {
     console.error("Webhook Mercado Pago:", e);
@@ -51,5 +73,8 @@ export async function POST(req: Request) {
 
 /** O painel do Mercado Pago às vezes confere se o endereço responde. */
 export async function GET() {
-  return NextResponse.json({ ok: true, servico: "webhook Mercado Pago · Liga Fim de Turno" });
+  return NextResponse.json({
+    ok: true,
+    servico: "webhook Mercado Pago · First Strike",
+  });
 }

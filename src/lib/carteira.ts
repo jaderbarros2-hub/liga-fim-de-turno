@@ -15,7 +15,13 @@ export const INGRESSO_PADRAO = 1500;
 export const MINIMO_JOGADORES = 8;
 export const PERCENTUAL_PREMIO = 80;
 export const DIAS_SAQUE_AUTOMATICO = 30;
-export const SAQUE_MINIMO = Math.round((INGRESSO_PADRAO * MINIMO_JOGADORES * (PERCENTUAL_PREMIO / 100) * regraPauper(MINIMO_JOGADORES)[0]) / 100);
+export const SAQUE_MINIMO = Math.round(
+  (INGRESSO_PADRAO *
+    MINIMO_JOGADORES *
+    (PERCENTUAL_PREMIO / 100) *
+    regraPauper(MINIMO_JOGADORES)[0]) /
+    100,
+);
 
 export type Movimento = {
   id: string;
@@ -41,14 +47,20 @@ export const NOMES_MOVIMENTO: Record<Movimento["tipo"], string> = {
 };
 
 export async function saldoDaCarteira(jogadorId: string) {
-  const { data } = await criarClienteAdmin().rpc("saldo_carteira", { p_jogador: jogadorId });
+  const { data } = await criarClienteAdmin().rpc("saldo_carteira", {
+    p_jogador: jogadorId,
+  });
   return (data as number | null) ?? 0;
 }
 
-export async function movimentosDaCarteira(jogadorId: string): Promise<Movimento[]> {
+export async function movimentosDaCarteira(
+  jogadorId: string,
+): Promise<Movimento[]> {
   const { data } = await criarClienteAdmin()
     .from("carteira_movimentos")
-    .select("id, tipo, valor_centavos, status, descricao, automatico, codigo_loja, credito_centavos, concluido_em, criado_em, parceiro:parceiros(nome)")
+    .select(
+      "id, tipo, valor_centavos, status, descricao, automatico, codigo_loja, credito_centavos, concluido_em, criado_em, parceiro:parceiros(nome)",
+    )
     .eq("jogador_id", jogadorId)
     .order("criado_em", { ascending: false });
   return (data as unknown as Movimento[]) ?? [];
@@ -57,9 +69,17 @@ export async function movimentosDaCarteira(jogadorId: string): Promise<Movimento
 /** Credita na carteira os prêmios de um evento (uma vez por prêmio). */
 export async function liberarPremios(eventoId: string, titulo: string) {
   const db = criarClienteAdmin();
-  const { data: premios } = await db.from("premios").select("id, jogador_id, valor_centavos, posicao").eq("evento_id", eventoId).neq("status", "pago");
+  const { data: premios } = await db
+    .from("premios")
+    .select("id, jogador_id, valor_centavos, posicao")
+    .eq("evento_id", eventoId)
+    .neq("status", "pago");
   const agora = new Date().toISOString();
-  const { data: ev } = await db.from("eventos").select("slug").eq("id", eventoId).maybeSingle();
+  const { data: ev } = await db
+    .from("eventos")
+    .select("slug")
+    .eq("id", eventoId)
+    .maybeSingle();
   for (const p of premios ?? []) {
     if (!p.valor_centavos) continue;
     const { error } = await db.from("carteira_movimentos").insert({
@@ -70,8 +90,22 @@ export async function liberarPremios(eventoId: string, titulo: string) {
       premio_id: p.id,
       concluido_em: agora,
     });
-    if (!error) after(() => emailPremio(p.jogador_id, p.valor_centavos, p.posicao, { titulo, slug: ev?.slug ?? "" }));
-    if (!error || error.code === "23505") await db.from("premios").update({ status: "pago", pago_em: agora, observacao: "Creditado na Carteira" }).eq("id", p.id);
+    if (!error)
+      after(() =>
+        emailPremio(p.jogador_id, p.valor_centavos, p.posicao, {
+          titulo,
+          slug: ev?.slug ?? "",
+        }),
+      );
+    if (!error || error.code === "23505")
+      await db
+        .from("premios")
+        .update({
+          status: "pago",
+          pago_em: agora,
+          observacao: "Creditado na Carteira",
+        })
+        .eq("id", p.id);
   }
   return (premios ?? []).length;
 }

@@ -19,14 +19,14 @@ export function Rodadas({ partidas }: { partidas: PartidaPublica[] }) {
   const grupos = porRodada(partidas);
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="titulo text-3xl">Rodadas</h2>
+      <h2 className="titulo text-2xl">Rodadas</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {grupos.map((g) => (
           <div
             key={g.rodada}
-            className={`rounded-md ring-1 ${g.partidas[0]?.fase === "eliminatoria" ? "bg-azul/10 ring-azul/50" : "bg-grafite ring-borda"}`}
+            className={`rounded-md ring-1 ${g.partidas[0]?.fase === "eliminatoria" ? "bg-vermelho/10 ring-vermelho/50" : "bg-grafite ring-borda"}`}
           >
-            <p className="border-b border-borda px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-ciano">
+            <p className="border-b border-borda px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-brasa">
               {g.rotulo}
             </p>
             <ul className="flex flex-col">
@@ -40,7 +40,7 @@ export function Rodadas({ partidas }: { partidas: PartidaPublica[] }) {
                   >
                     <NomeJogador
                       nick={p.jogador_a}
-                      className={`truncate ${aVenceu ? "font-semibold text-gelo" : "text-texto2"}`}
+                      className={`truncate ${aVenceu ? "font-semibold text-marfim" : "text-texto2"}`}
                     />
                     <span className="rounded bg-preto/60 px-2 py-0.5 text-center font-semibold tabular-nums">
                       {p.jogador_b
@@ -50,7 +50,7 @@ export function Rodadas({ partidas }: { partidas: PartidaPublica[] }) {
                     {p.jogador_b ? (
                       <NomeJogador
                         nick={p.jogador_b}
-                        className={`truncate text-right ${bVenceu ? "font-semibold text-gelo" : "text-texto2"}`}
+                        className={`truncate text-right ${bVenceu ? "font-semibold text-marfim" : "text-texto2"}`}
                       />
                     ) : (
                       <span />

@@ -96,7 +96,7 @@ export async function AcaoEvento({
         )}
         <a
           href={`${caminho}/inscricao`}
-          className="text-xs font-semibold text-ciano"
+          className="text-xs font-semibold text-brasa"
         >
           ✓ Ingresso confirmado · ver ingresso
         </a>

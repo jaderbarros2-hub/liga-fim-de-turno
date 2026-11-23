@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
-/* Identidade visual aprovada (Opção D · preto e azul) */
+/* Identidade First Strike · manual da marca v1 (marca/first-strike-manual-da-marca.pdf) */
 @theme {
   --color-preto: #06070a;
-  --color-fundo2: #0b0e14;
-  --color-grafite: #10141c;
-  --color-borda: #1e2533;
-  --color-borda-forte: #2a3140;
-  --color-azul: #2e6bff;
-  --color-azul-escuro: #2457d6;
-  --color-ciano: #5cc8ff;
-  --color-gelo: #eef2f8;
-  --color-texto2: #c9d2e0;
-  --color-cinza: #9aa6b8;
+  --color-fundo2: #0c0e12;
+  --color-grafite: #12151c;
+  --color-borda: #262b36;
+  --color-borda-forte: #363b47;
+  --color-vermelho: #d8392a;
+  --color-vermelho-escuro: #b52e21;
+  --color-brasa: #ff5a47;
+  --color-marfim: #f4efe6;
+  --color-texto2: #c9c2b6;
+  --color-cinza: #9a938a;
   --color-alerta: #f2b84b;
+  --color-dourado: #ffc24a;
+  --color-sucesso: #7fd69a;
   --color-erro: #ff6b6b;
 
   --font-sans: "Inter Variable", system-ui, sans-serif;
-  --font-titulo: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-titulo: "Unbounded", "Arial Black", sans-serif;
 }
 
 @layer base {
@@ -28,25 +30,25 @@
 
   body {
     background: var(--color-preto);
-    color: var(--color-gelo);
+    color: var(--color-marfim);
     font-family: var(--font-sans);
   }
 
   a {
-    color: var(--color-ciano);
+    color: var(--color-brasa);
   }
 
   a:hover {
-    color: #8fdbff;
+    color: #ff8a7a;
   }
 
   ::selection {
-    background: var(--color-azul);
+    background: var(--color-vermelho);
     color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-ciano);
+    outline: 2px solid var(--color-brasa);
     outline-offset: 3px;
   }
 
@@ -96,7 +98,7 @@
     border-radius: 0.5rem;
     border: 1px solid var(--color-borda-forte);
     background: var(--color-grafite);
-    color: var(--color-gelo);
+    color: var(--color-marfim);
     padding: 0.4rem 0.9rem;
     font-weight: 600;
   }
@@ -139,16 +141,15 @@
 .titulo {
   font-family: var(--font-titulo);
   font-weight: 800;
-  text-transform: uppercase;
-  line-height: 0.95;
-  letter-spacing: 0.01em;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .conteudo-texto h2 {
   font-family: var(--font-titulo);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: 1.75rem;
+  font-weight: 700;
+  font-size: 1.375rem;
   margin: 2rem 0 0.75rem;
 }
 
@@ -208,13 +209,13 @@
   line-height: 1.75;
 }
 .artigo a {
-  color: var(--color-ciano);
+  color: var(--color-brasa);
   font-weight: 600;
 }
 .artigo h2 {
   text-transform: none;
   font-weight: 700;
-  font-size: 2rem;
+  font-size: 1.5rem;
   margin: 2.5rem 0 1rem;
 }
 .artigo h3 {
@@ -224,7 +225,7 @@
   margin-top: 0;
 }
 .artigo blockquote {
-  border-left: 3px solid var(--color-azul);
+  border-left: 3px solid var(--color-vermelho);
   margin: 1.5rem 0;
   padding: 0.25rem 0 0.25rem 1.25rem;
   font-style: italic;
@@ -268,7 +269,7 @@
   text-align: left;
 }
 .artigo strong {
-  color: var(--color-gelo);
+  color: var(--color-marfim);
 }
 
 /* Booster desenhado pela liga: bordas serrilhadas em cima e embaixo */

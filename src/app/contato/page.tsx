@@ -5,10 +5,13 @@ export const metadata: Metadata = { title: "Contato" };
 
 export default function Contato() {
   const discord = process.env.NEXT_PUBLIC_DISCORD_CONVITE;
-  const email = process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO;
+  const email =
+    process.env.EMAIL_CONTATO || process.env.NEXT_PUBLIC_EMAIL_CONTATO;
   return (
     <PaginaTexto titulo="Contato">
-      <p>O jeito mais rápido de falar com a organização é pelo Discord da liga.</p>
+      <p>
+        O jeito mais rápido de falar com a organização é pelo Discord da liga.
+      </p>
       <ul>
         <li>
           Discord:{" "}
@@ -20,9 +23,13 @@ export default function Contato() {
             "link em breve"
           )}
         </li>
-        <li>E-mail: {email ? <a href={`mailto:${email}`}>{email}</a> : "em breve"}</li>
+        <li>
+          E-mail: {email ? <a href={`mailto:${email}`}>{email}</a> : "em breve"}
+        </li>
       </ul>
-      <p>Lojas e marcas interessadas em parcerias também podem usar esses canais.</p>
+      <p>
+        Lojas e marcas interessadas em parcerias também podem usar esses canais.
+      </p>
     </PaginaTexto>
   );
 }

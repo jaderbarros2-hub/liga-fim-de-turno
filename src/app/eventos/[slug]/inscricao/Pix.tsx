@@ -72,7 +72,7 @@ export function Pix({
   }
 
   return (
-    <div className="flex flex-col gap-5 rounded-xl border border-azul bg-grafite p-6 sm:flex-row sm:items-start">
+    <div className="flex flex-col gap-5 rounded-xl border border-vermelho bg-grafite p-6 sm:flex-row sm:items-start">
       {qrBase64 && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -95,7 +95,7 @@ export function Pix({
         <button
           type="button"
           onClick={copiar}
-          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-azul px-5 text-sm font-semibold uppercase tracking-wide text-white hover:bg-azul-escuro"
+          className="inline-flex min-h-11 items-center justify-center rounded-lg bg-vermelho px-5 text-sm font-semibold uppercase tracking-wide text-white hover:bg-vermelho-escuro"
         >
           {copiado ? "Copiado ✓" : "Copiar código Pix"}
         </button>
@@ -103,7 +103,7 @@ export function Pix({
           className="flex items-center gap-2 text-sm text-cinza"
           aria-live="polite"
         >
-          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ciano" />
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-brasa" />
           Aguardando pagamento{mm !== null && ` · expira em ${mm}:${ss}`}
         </p>
       </div>

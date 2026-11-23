@@ -3,7 +3,7 @@
  * a faixa toda. Cartas reais do Scryfall dos três formatos; algumas de costas com o verso
  * da liga (desenho próprio, não o verso oficial de Magic).
  */
-import { Diamante } from "@/components/Diamante";
+import { Simbolo } from "@/components/Logo";
 import { srcArte, type ArteBanco } from "@/lib/artes";
 
 // Pilha densa: grade com deslocamentos e rotações "aleatórias" fixas (mesmo resultado no servidor e no navegador)
@@ -31,9 +31,9 @@ const LUGARES = Array.from({ length: COLUNAS * LINHAS }, (_, n) => {
 
 function Verso() {
   return (
-    <div className="carta-solta flex h-full w-full items-center justify-center bg-[linear-gradient(150deg,#1a2a55,#0a1024_60%,#16244a)] p-[7%]">
-      <div className="flex h-full w-full items-center justify-center rounded-[6%] border-2 border-ciano/40 bg-[repeating-linear-gradient(45deg,rgb(92_200_255/0.08)_0_6px,transparent_6px_12px)]">
-        <Diamante tamanho={54} className="text-ciano/80" />
+    <div className="carta-solta flex h-full w-full items-center justify-center bg-[linear-gradient(150deg,#2a0d09,#0c0e12_60%,#1f0a07)] p-[7%]">
+      <div className="flex h-full w-full items-center justify-center rounded-[6%] border-2 border-vermelho/50 bg-[repeating-linear-gradient(80deg,rgb(216_57_42/0.08)_0_6px,transparent_6px_12px)]">
+        <Simbolo tamanho={64} />
       </div>
     </div>
   );

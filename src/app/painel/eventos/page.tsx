@@ -15,7 +15,7 @@ export default async function EventosPainel() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="titulo text-5xl">Eventos</h1>
+        <h1 className="titulo text-4xl">Eventos</h1>
         <BotaoLink href="/painel/eventos/novo">Novo evento</BotaoLink>
       </div>
       <div className="overflow-x-auto rounded-xl border border-borda">
