@@ -377,7 +377,7 @@ export default async function MinhaArea({
                 Ver meu perfil público →
               </Link>
             </span>
-            <h1 className="titulo flex flex-wrap items-center gap-3 text-4xl sm:text-5xl">
+            <h1 className="titulo flex flex-wrap items-center gap-3 text-5xl sm:text-6xl">
               {nick}
               {temporada.some((f) => f.vaga) && (
                 <span className="rounded bg-alerta px-2 py-1 font-sans text-xs font-bold uppercase tracking-wider text-preto">
@@ -402,7 +402,7 @@ export default async function MinhaArea({
                 key={r}
                 className="flex min-w-24 flex-col bg-preto/70 px-4 py-3 backdrop-blur"
               >
-                <dd className="titulo text-2xl">{v}</dd>
+                <dd className="titulo text-3xl">{v}</dd>
                 <dt className="text-xs text-cinza">{r}</dt>
               </div>
             ))}
@@ -445,7 +445,7 @@ export default async function MinhaArea({
           <>
             {/* Sua próxima mesa */}
             <section className="flex flex-col gap-4">
-              <h2 className="titulo text-2xl">Sua próxima mesa</h2>
+              <h2 className="titulo text-3xl">Sua próxima mesa</h2>
               {proxima ? (
                 <ProximaMesa
                   inscricao={proxima}
@@ -479,7 +479,7 @@ export default async function MinhaArea({
 
             {pendencias.length > 0 && (
               <section className="flex flex-col gap-3">
-                <h2 className="titulo text-2xl">Pendências</h2>
+                <h2 className="titulo text-3xl">Pendências</h2>
                 <ul className="flex flex-col gap-2">
                   {pendencias.map((p) => (
                     <li
@@ -500,7 +500,7 @@ export default async function MinhaArea({
               {/* Minha temporada */}
               <section className="flex flex-col gap-4">
                 <div className="flex items-end justify-between">
-                  <h2 className="titulo text-2xl">
+                  <h2 className="titulo text-3xl">
                     Minha temporada {per.temporada}
                   </h2>
                   <Link
@@ -521,7 +521,7 @@ export default async function MinhaArea({
                       className="flex flex-col gap-3 rounded-md bg-grafite p-5 ring-1 ring-borda"
                     >
                       <span className="flex items-center justify-between">
-                        <span className="titulo text-xl">
+                        <span className="titulo text-2xl">
                           Circuito {f.nome}
                         </span>
                         <span className="text-xs font-bold uppercase tracking-wider text-cinza">
@@ -539,7 +539,7 @@ export default async function MinhaArea({
                             key={r as string}
                             className="rounded bg-fundo2 py-2"
                           >
-                            <dd className="titulo text-xl">{v}</dd>
+                            <dd className="titulo text-2xl">{v}</dd>
                             <dt className="text-[11px] text-cinza">{r}</dt>
                           </div>
                         ))}
@@ -564,7 +564,7 @@ export default async function MinhaArea({
 
               {/* Últimos resultados */}
               <section className="flex flex-col gap-4">
-                <h2 className="titulo text-2xl">Últimos resultados</h2>
+                <h2 className="titulo text-3xl">Últimos resultados</h2>
                 {resultados.length === 0 ? (
                   <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                     Seus resultados aparecem aqui depois da primeira etapa.
@@ -577,7 +577,7 @@ export default async function MinhaArea({
                         className="flex items-center gap-4 px-4 py-3"
                       >
                         <span
-                          className={`titulo w-12 text-2xl ${r.posicao === 1 ? "text-brasa" : "text-cinza"}`}
+                          className={`titulo w-12 text-3xl ${r.posicao === 1 ? "text-brasa" : "text-cinza"}`}
                         >
                           {r.posicao}º
                         </span>
@@ -618,7 +618,7 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Saldo da Carteira
                 </dt>
-                <dd className="titulo text-2xl">{reais(saldo)}</dd>
+                <dd className="titulo text-3xl">{reais(saldo)}</dd>
                 <span className="text-sm text-texto2">
                   Use na hora de comprar qualquer ingresso.
                 </span>
@@ -627,7 +627,7 @@ export default async function MinhaArea({
                 <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                   Em processamento
                 </dt>
-                <dd className="titulo text-2xl">
+                <dd className="titulo text-3xl">
                   {reais(Math.abs(totalProcessamento))}
                 </dd>
                 <span className="text-sm text-texto2">
@@ -644,7 +644,7 @@ export default async function MinhaArea({
             ].map((g) =>
               g.lista.length ? (
                 <div key={g.titulo} className="flex flex-col gap-3">
-                  <h2 className="titulo text-2xl">{g.titulo}</h2>
+                  <h2 className="titulo text-3xl">{g.titulo}</h2>
                   <ul className="flex flex-col divide-y divide-borda rounded-md ring-1 ring-borda">
                     {g.lista.map((i) => {
                       const s = STATUS_INSCRICAO[i.status] ?? {
@@ -741,7 +741,7 @@ export default async function MinhaArea({
         {aba === "decks" && (
           <section className="flex flex-col gap-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 className="titulo text-2xl">Meus decks</h2>
+              <h2 className="titulo text-3xl">Meus decks</h2>
               <BotaoLink href="/minha-area/decks/novo">Novo deck</BotaoLink>
             </div>
             {decks.length === 0 ? (
@@ -830,7 +830,7 @@ export default async function MinhaArea({
                   <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
                     {r}
                   </dt>
-                  <dd className="titulo text-2xl">{v}</dd>
+                  <dd className="titulo text-3xl">{v}</dd>
                   <span className="text-sm text-texto2">{t}</span>
                 </div>
               ))}
@@ -849,7 +849,7 @@ export default async function MinhaArea({
 
             {cupons.length > 0 && (
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-2xl">Cupons e brindes</h2>
+                <h2 className="titulo text-3xl">Cupons e brindes</h2>
                 <ul className="grid gap-3 sm:grid-cols-2">
                   {cupons.map((c) => (
                     <li
@@ -893,7 +893,7 @@ export default async function MinhaArea({
             )}
 
             <div className="flex flex-col gap-3">
-              <h2 className="titulo text-2xl">Histórico</h2>
+              <h2 className="titulo text-3xl">Histórico</h2>
               {movimentos.length === 0 ? (
                 <p className="border-l-2 border-vermelho py-2 pl-4 text-texto2">
                   Prêmios e créditos aparecem aqui.
@@ -977,7 +977,7 @@ export default async function MinhaArea({
               className="grid gap-10 border-b border-borda pb-12 lg:grid-cols-[1fr_1.4fr]"
             >
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-2xl">Perfil público</h2>
+                <h2 className="titulo text-3xl">Perfil público</h2>
                 <p className="text-texto2">
                   Qualquer pessoa que clicar no seu nick vê seu perfil:
                   insígnias, resultados, decks e artigos. Escolha o que mostrar
@@ -998,7 +998,7 @@ export default async function MinhaArea({
             </section>
             <section className="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
               <div className="flex flex-col gap-3">
-                <h2 className="titulo text-2xl">Meus dados</h2>
+                <h2 className="titulo text-3xl">Meus dados</h2>
                 <p className="text-texto2">
                   Usados para confirmar inscrições e pagar prêmios. Publicamente
                   aparecem só o seu nick do Endstep e a foto do Discord.
@@ -1059,7 +1059,7 @@ function ProximaMesa({
               {pendente ? "Falta pagar o Pix" : "Inscrição confirmada"}
             </Etiqueta>
           </span>
-          <span className="titulo text-3xl sm:text-4xl">{e.titulo}</span>
+          <span className="titulo text-4xl sm:text-5xl">{e.titulo}</span>
           <span className="text-texto2">
             {dataLonga(e.inicio)} · {hora(e.inicio)} (horário de Brasília)
             {e.modalidade === "presencial" && e.loja ? ` · ${e.loja.nome}` : ""}

@@ -117,7 +117,7 @@ export default async function Circuito() {
           <span className="text-sm font-semibold uppercase tracking-widest text-brasa">
             Temporada {temporada}
           </span>
-          <h1 className="titulo max-w-4xl text-5xl sm:text-6xl">
+          <h1 className="titulo max-w-4xl text-6xl sm:text-8xl">
             Toda semana conta.{" "}
             <span className="text-brasa">Um campeão por ano.</span>
           </h1>
@@ -141,7 +141,7 @@ export default async function Circuito() {
       {/* Os três atos */}
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20">
         <div className="flex flex-col gap-3">
-          <h2 className="titulo text-4xl sm:text-5xl">
+          <h2 className="titulo text-5xl sm:text-6xl">
             Como funciona a temporada
           </h2>
           <p className="max-w-2xl text-texto2">
@@ -163,13 +163,13 @@ export default async function Circuito() {
                 className="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 -z-10 bg-gradient-to-t from-preto via-preto/85 to-preto/20" />
-              <span className="titulo absolute left-7 top-5 text-5xl text-white/15">
+              <span className="titulo absolute left-7 top-5 text-7xl text-white/15">
                 {a.numero}
               </span>
               <span className="text-sm font-semibold text-brasa">
                 {a.resumo}
               </span>
-              <h3 className="titulo mt-1 text-3xl">{a.titulo}</h3>
+              <h3 className="titulo mt-1 text-4xl">{a.titulo}</h3>
               <p className="mt-3 text-texto2">{a.texto}</p>
               <span className="absolute right-4 top-4 text-[10px] text-white/50">
                 {aAtos[i].artista}
@@ -183,7 +183,7 @@ export default async function Circuito() {
       <section className="border-y border-borda bg-fundo2">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <h2 className="titulo text-4xl">O ano em 48 etapas</h2>
+            <h2 className="titulo text-5xl">O ano em 48 etapas</h2>
             <div className="flex flex-wrap gap-5 text-sm text-texto2">
               <span className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-vermelho" /> Etapa
@@ -205,7 +205,7 @@ export default async function Circuito() {
                 className={`flex flex-col gap-4 rounded-lg p-5 ring-1 ${agora.trimestre === t.n ? "bg-vermelho/10 ring-vermelho" : "bg-grafite ring-borda"}`}
               >
                 <span className="flex items-center justify-between">
-                  <span className="titulo text-xl">{t.nome}</span>
+                  <span className="titulo text-2xl">{t.nome}</span>
                   {agora.trimestre === t.n && (
                     <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                       Agora
@@ -266,7 +266,7 @@ export default async function Circuito() {
           <span className="text-sm font-semibold uppercase tracking-widest text-alerta">
             Dezembro
           </span>
-          <h2 className="titulo text-4xl sm:text-5xl">Player of the Year</h2>
+          <h2 className="titulo text-5xl sm:text-6xl">Player of the Year</h2>
           <p className="text-texto2">
             Oito vagas, conquistadas ao longo do ano. Quem vence uma Final do
             Trimestre está dentro. Quem chega em segundo também. Se alguém se
@@ -286,13 +286,13 @@ export default async function Circuito() {
                 key={i}
                 className={`flex aspect-[3/4] flex-col justify-between rounded-lg p-4 ring-1 ${campeao ? "bg-brasa/10 ring-brasa/40" : "bg-grafite ring-borda"}`}
               >
-                <span className="titulo text-3xl text-white/20">{i + 1}</span>
+                <span className="titulo text-4xl text-white/20">{i + 1}</span>
                 <span className="flex flex-col">
                   <span className="text-xs font-bold uppercase tracking-wider text-cinza">
                     {t}º trimestre
                   </span>
                   <span
-                    className={`titulo text-xl ${campeao ? "text-brasa" : "text-marfim"}`}
+                    className={`titulo text-2xl ${campeao ? "text-brasa" : "text-marfim"}`}
                   >
                     {campeao ? "Campeão" : "Vice"}
                   </span>
@@ -307,7 +307,7 @@ export default async function Circuito() {
       <section className="border-y border-borda bg-fundo2">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.3fr]">
           <div className="flex flex-col gap-4">
-            <h2 className="titulo text-4xl">Pontuação</h2>
+            <h2 className="titulo text-5xl">Pontuação</h2>
             <p className="text-texto2">
               Toda etapa, inclusive as Finais do Trimestre, soma pontos no
               ranking do trimestre e no anual. Em caso de empate, vale quem tem
@@ -320,7 +320,7 @@ export default async function Circuito() {
                 key={t.faixa}
                 className="flex flex-col items-center gap-1 rounded-lg bg-grafite px-3 py-6 text-center ring-1 ring-borda"
               >
-                <span className="titulo text-4xl text-brasa">{t.pontos}</span>
+                <span className="titulo text-5xl text-brasa">{t.pontos}</span>
                 <span className="text-xs font-semibold uppercase tracking-wider text-cinza">
                   pontos
                 </span>
@@ -334,7 +334,7 @@ export default async function Circuito() {
       {/* Situação atual */}
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="titulo text-4xl">A temporada {temporada} até agora</h2>
+          <h2 className="titulo text-5xl">A temporada {temporada} até agora</h2>
           <Link href="/ranking" className="text-sm font-semibold">
             Ranking completo →
           </Link>
@@ -360,7 +360,7 @@ export default async function Circuito() {
               className="flex flex-col gap-5 rounded-lg bg-grafite p-6 ring-1 ring-borda"
             >
               <div className="flex items-center justify-between">
-                <h3 className="titulo text-2xl">Circuito {f.nome}</h3>
+                <h3 className="titulo text-3xl">Circuito {f.nome}</h3>
                 <Link
                   href={`/ranking?liga=${f.slug}`}
                   className="text-sm font-semibold"
@@ -431,7 +431,7 @@ export default async function Circuito() {
       {/* Perguntas */}
       <section className="border-t border-borda bg-fundo2">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.6fr]">
-          <h2 className="titulo text-4xl">Perguntas sobre o circuito</h2>
+          <h2 className="titulo text-5xl">Perguntas sobre o circuito</h2>
           <div className="flex flex-col divide-y divide-borda border-y border-borda">
             {PERGUNTAS.map((q) => (
               <details key={q.p} className="group py-4">

@@ -28,7 +28,7 @@ const GRUPOS: { v: GrupoArte; r: string; dica: string }[] = [
 ];
 
 const campo =
-  "rounded-lg border border-borda-forte bg-preto px-3 py-2 text-sm text-gelo outline-none focus:border-azul";
+  "rounded-lg border border-borda-forte bg-preto px-3 py-2 text-sm text-marfim outline-none focus:border-vermelho";
 
 export default async function Artes({
   searchParams,
@@ -59,16 +59,16 @@ export default async function Artes({
             <Link
               key={g.v}
               href={`/painel/artes?grupo=${g.v}`}
-              className={`rounded-xl border p-4 transition hover:border-azul ${
+              className={`rounded-xl border p-4 transition hover:border-vermelho ${
                 g.v === grupo
-                  ? "border-azul bg-azul/10"
+                  ? "border-vermelho bg-vermelho/10"
                   : "border-borda bg-fundo2"
               }`}
             >
               <div className="text-xs uppercase tracking-wider text-texto2">
                 {g.r}
               </div>
-              <div className="mt-1 text-3xl font-semibold text-gelo">
+              <div className="mt-1 text-3xl font-semibold text-marfim">
                 {lista.length}
               </div>
               <div className="text-xs text-cinza">
@@ -81,7 +81,7 @@ export default async function Artes({
 
       {grupo !== "geral" && (
         <section className="rounded-2xl border border-borda bg-fundo2 p-6">
-          <h2 className="text-lg font-semibold text-gelo">
+          <h2 className="text-lg font-semibold text-marfim">
             1. Gerar a lista de {info.r}
           </h2>
           <p className="mt-1 text-sm text-texto2">
@@ -130,7 +130,7 @@ export default async function Artes({
                   type="checkbox"
                   name="epoca"
                   value="1"
-                  className="accent-azul"
+                  className="accent-vermelho"
                 />
                 Só ilustrações publicadas até 2003
               </label>
@@ -163,13 +163,13 @@ export default async function Artes({
 
       {grupo !== "geral" && (
         <section className="rounded-2xl border border-borda bg-fundo2 p-6">
-          <h2 className="text-lg font-semibold text-gelo">
+          <h2 className="text-lg font-semibold text-marfim">
             2. Baixar as imagens e importar
           </h2>
           <ol className="mt-3 flex list-decimal flex-col gap-2 pl-5 text-sm text-texto2">
             <li>
               Abra a pasta do MTG Art Downloader e substitua o{" "}
-              <code className="text-ciano">cards.txt</code> pelo que você
+              <code className="text-brasa">cards.txt</code> pelo que você
               baixou.
             </li>
             <li>
@@ -177,8 +177,8 @@ export default async function Artes({
             </li>
             <li>
               Mova as imagens e o{" "}
-              <code className="text-ciano">lista-{grupo}.json</code> para{" "}
-              <code className="text-ciano">
+              <code className="text-brasa">lista-{grupo}.json</code> para{" "}
+              <code className="text-brasa">
                 liga-fim-de-turno/artes-originais/{grupo}/
               </code>
               .
@@ -193,7 +193,7 @@ export default async function Artes({
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold text-gelo">
+          <h2 className="text-lg font-semibold text-marfim">
             No banco: {info.r}
           </h2>
           <span className="text-xs text-cinza">
@@ -216,7 +216,7 @@ export default async function Artes({
                   style={{ objectPosition: a.foco }}
                 />
                 <figcaption className="p-2 text-xs text-texto2">
-                  <span className="line-clamp-1 text-gelo">
+                  <span className="line-clamp-1 text-marfim">
                     {a.carta ?? "Sem nome"}
                   </span>
                   <span className="line-clamp-1" title={creditoArte(a)}>

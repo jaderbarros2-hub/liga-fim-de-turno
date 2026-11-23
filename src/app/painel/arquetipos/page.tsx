@@ -22,7 +22,7 @@ export default async function Arquetipos({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="titulo text-4xl">Arquétipos</h1>
+      <h1 className="titulo text-5xl">Arquétipos</h1>
       <nav aria-label="Formato" className="flex gap-2">
         {[
           ["pauper", "Pauper"],

@@ -77,7 +77,7 @@ export function HeroRotativo({ destaques }: { destaques: Destaque[] }) {
                 {d.etiqueta}
               </div>
             )}
-            <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+            <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
               {d.titulo}
             </h1>
             <p className="max-w-xl text-lg text-texto2">{d.texto}</p>

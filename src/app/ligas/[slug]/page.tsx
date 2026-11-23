@@ -74,7 +74,7 @@ export default async function PaginaFormato({ params }: Props) {
           <span className="text-sm font-semibold uppercase tracking-widest text-brasa">
             Liga {f.nome}
           </span>
-          <h1 className="titulo max-w-3xl text-5xl sm:text-6xl">{f.chamada}</h1>
+          <h1 className="titulo max-w-3xl text-6xl sm:text-8xl">{f.chamada}</h1>
           <p className="max-w-xl text-lg text-texto2">{f.resumo}</p>
           <div className="flex flex-wrap items-center gap-6">
             <BotaoLink href="#agenda">Ver próximas etapas</BotaoLink>
@@ -92,7 +92,7 @@ export default async function PaginaFormato({ params }: Props) {
                 className="flex flex-col bg-preto/80 px-4 py-3 backdrop-blur"
               >
                 <dt className="order-2 text-xs text-cinza">{n.rotulo}</dt>
-                <dd className="titulo text-2xl text-marfim">{n.valor}</dd>
+                <dd className="titulo text-3xl text-marfim">{n.valor}</dd>
               </div>
             ))}
           </dl>
@@ -129,7 +129,7 @@ export default async function PaginaFormato({ params }: Props) {
         className="mx-auto grid max-w-6xl scroll-mt-32 gap-12 px-6 py-20 lg:grid-cols-[1.1fr_1fr]"
       >
         <div className="flex flex-col gap-5">
-          <h2 className="titulo text-4xl">O que é o {f.nome}</h2>
+          <h2 className="titulo text-5xl">O que é o {f.nome}</h2>
           <div className="conteudo-texto">
             {f.sobre.map((p) => (
               <p key={p}>{p}</p>
@@ -160,7 +160,7 @@ export default async function PaginaFormato({ params }: Props) {
         className="scroll-mt-32 border-y border-borda bg-fundo2"
       >
         <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-20">
-          <h2 className="titulo text-4xl">Como é uma etapa</h2>
+          <h2 className="titulo text-5xl">Como é uma etapa</h2>
           <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {f.etapa.map((e, i) => (
               <li
@@ -177,7 +177,7 @@ export default async function PaginaFormato({ params }: Props) {
           </ol>
           <div className="grid gap-6 rounded-lg bg-grafite p-6 ring-1 ring-borda lg:grid-cols-[1fr_2fr]">
             <div className="flex flex-col gap-2">
-              <h3 className="titulo text-2xl">{f.premio.titulo}</h3>
+              <h3 className="titulo text-3xl">{f.premio.titulo}</h3>
               <p className="text-sm text-cinza">{f.premio.nota}</p>
             </div>
             <ul className="flex flex-col divide-y divide-borda">
@@ -201,7 +201,7 @@ export default async function PaginaFormato({ params }: Props) {
         className="mx-auto flex max-w-6xl scroll-mt-32 flex-col gap-6 px-6 py-20"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="titulo text-4xl">Próximas etapas</h2>
+          <h2 className="titulo text-5xl">Próximas etapas</h2>
           <Link href="/eventos" className="text-sm font-semibold">
             Agenda completa →
           </Link>
@@ -221,7 +221,7 @@ export default async function PaginaFormato({ params }: Props) {
             {meta.fatias.length > 0 && (
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1">
-                  <h2 className="titulo text-4xl">Metagame</h2>
+                  <h2 className="titulo text-5xl">Metagame</h2>
                   <p className="text-sm text-cinza">
                     {meta.decks} decks nas últimas {meta.etapas} etapas
                   </p>
@@ -252,7 +252,7 @@ export default async function PaginaFormato({ params }: Props) {
             )}
             {campeoes.length > 0 && (
               <div className="flex flex-col gap-5">
-                <h2 className="titulo text-4xl">Últimos campeões</h2>
+                <h2 className="titulo text-5xl">Últimos campeões</h2>
                 <ul className="flex flex-col divide-y divide-borda border-y border-borda">
                   {campeoes.map((c) => (
                     <li
@@ -310,7 +310,7 @@ export default async function PaginaFormato({ params }: Props) {
           <span className="text-sm font-semibold uppercase tracking-widest text-brasa">
             {agora.trimestre}º trimestre de {agora.temporada}
           </span>
-          <h2 className="titulo text-4xl">Corrida do trimestre</h2>
+          <h2 className="titulo text-5xl">Corrida do trimestre</h2>
           <p className="text-texto2">
             A última etapa do trimestre é a Final: o campeão e o vice vão direto
             para o Player of the Year em dezembro.
@@ -377,7 +377,7 @@ export default async function PaginaFormato({ params }: Props) {
         className="mx-auto grid max-w-6xl scroll-mt-32 gap-12 px-6 py-20 lg:grid-cols-[1fr_1.6fr]"
       >
         <div className="flex flex-col gap-4">
-          <h2 className="titulo text-4xl">Perguntas sobre o {f.nome}</h2>
+          <h2 className="titulo text-5xl">Perguntas sobre o {f.nome}</h2>
           <Link href="/regras" className="text-sm font-semibold">
             Regulamento completo →
           </Link>

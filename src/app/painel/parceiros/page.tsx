@@ -61,7 +61,7 @@ export default async function PainelParceiros({
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-4xl">Lojas e parceiros</h1>
+        <h1 className="titulo text-5xl">Lojas e parceiros</h1>
         <p className="text-sm text-texto2">
           Um cadastro só para patrocinadores, sedes de eventos presenciais,
           lojas que recebem resgate de prêmios e lojas que vendem cartas.
@@ -176,7 +176,7 @@ export default async function PainelParceiros({
       <FormularioLoja key={atual?.id ?? "nova"} atual={atual ?? null} />
 
       <section className="flex flex-col gap-4">
-        <h2 className="titulo text-2xl">Banners</h2>
+        <h2 className="titulo text-3xl">Banners</h2>
         <ul className="flex flex-col border-t border-borda text-sm">
           {(banners ?? []).length === 0 && (
             <li className="py-3 text-texto2">Nenhum banner ainda.</li>

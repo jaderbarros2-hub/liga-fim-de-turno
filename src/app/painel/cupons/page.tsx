@@ -55,7 +55,7 @@ export default async function Cupons() {
   return (
     <div className="flex max-w-5xl flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-4xl">Cupons</h1>
+        <h1 className="titulo text-5xl">Cupons</h1>
         <p className="text-sm text-texto2">
           Descontos no ingresso, inclusive gratuito. O jogador digita o código
           na tela de ingresso; o uso conta quando o ingresso é confirmado.

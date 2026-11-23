@@ -194,7 +194,7 @@ function BannerColuna({
         href="/parceiros#anuncie"
         className="flex aspect-[3/4] flex-col items-center justify-center gap-3 rounded-md bg-[repeating-linear-gradient(135deg,var(--color-grafite)_0_14px,var(--color-fundo2)_14px_28px)] p-6 text-center text-cinza no-underline ring-1 ring-borda hover:text-marfim hover:ring-brasa"
       >
-        <span className="titulo text-2xl text-marfim">Sua loja aqui</span>
+        <span className="titulo text-3xl text-marfim">Sua loja aqui</span>
         <span className="text-sm">
           Anuncie para quem joga Magic toda semana
         </span>

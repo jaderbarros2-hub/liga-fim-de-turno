@@ -16,7 +16,7 @@ export default async function NovoEvento() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="titulo text-4xl">Novo evento</h1>
+      <h1 className="titulo text-5xl">Novo evento</h1>
       <FormularioEvento
         ligas={ligas ?? []}
         lojas={lojas ?? []}

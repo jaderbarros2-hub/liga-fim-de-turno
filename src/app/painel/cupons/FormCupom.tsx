@@ -24,7 +24,7 @@ export function FormCupom({
       action={acao}
       className="grid gap-4 rounded-xl border border-borda p-6 sm:grid-cols-2"
     >
-      <h2 className="titulo text-2xl sm:col-span-2">Novo cupom</h2>
+      <h2 className="titulo text-3xl sm:col-span-2">Novo cupom</h2>
       <div className="flex gap-2 sm:col-span-2">
         {[
           [false, "Um código"],

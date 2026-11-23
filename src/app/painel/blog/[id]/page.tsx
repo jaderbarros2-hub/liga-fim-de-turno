@@ -29,7 +29,7 @@ export default async function EditarArtigo({
       <Link href="/painel/blog" className="text-sm">
         ← Blog
       </Link>
-      <h1 className="titulo text-4xl">Editar artigo</h1>
+      <h1 className="titulo text-5xl">Editar artigo</h1>
       {salvo && (
         <p className="rounded-lg border border-brasa/50 bg-brasa/10 p-4 font-semibold text-brasa">
           Artigo criado.

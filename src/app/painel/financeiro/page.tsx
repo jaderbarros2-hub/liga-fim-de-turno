@@ -133,7 +133,7 @@ export default async function Financeiro({
   return (
     <div className="flex max-w-5xl flex-col gap-10">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-4xl">Financeiro</h1>
+        <h1 className="titulo text-5xl">Financeiro</h1>
         <p className="text-sm text-texto2">
           Saques por Pix, envios para lojas parceiras e o total guardado nas
           Carteiras.
@@ -184,14 +184,14 @@ export default async function Financeiro({
             <dt className="text-xs font-bold uppercase tracking-wider text-cinza">
               {r}
             </dt>
-            <dd className="titulo text-2xl">{v}</dd>
+            <dd className="titulo text-3xl">{v}</dd>
             <span className="text-sm text-texto2">{t}</span>
           </div>
         ))}
       </dl>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Saques por Pix</h2>
+        <h2 className="titulo text-3xl">Saques por Pix</h2>
         <p className="text-sm text-cinza">
           Faça o Pix pelo app do banco e confira se o nome do titular bate com o
           cadastro. Marque a conferência na primeira vez: a chave fica
@@ -221,7 +221,7 @@ export default async function Financeiro({
                       {s.descricao}
                       {s.automatico && " · automático"} · {quando(s.criado_em)}
                     </span>
-                    <strong className="titulo text-xl text-brasa">
+                    <strong className="titulo text-2xl text-brasa">
                       {reais(-s.valor_centavos)}
                     </strong>
                   </div>
@@ -284,7 +284,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Resgates em lojas parceiras</h2>
+        <h2 className="titulo text-3xl">Resgates em lojas parceiras</h2>
         <p className="text-sm text-cinza">
           Faça o Pix do valor para a chave da loja (o bônus é por conta da loja)
           e clique em{" "}
@@ -382,7 +382,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Concluídos recentemente</h2>
+        <h2 className="titulo text-3xl">Concluídos recentemente</h2>
         {(recentes ?? []).length === 0 ? (
           <p className="text-texto2">Nada concluído ainda.</p>
         ) : (
@@ -450,7 +450,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Pix aguardando pagamento</h2>
+        <h2 className="titulo text-3xl">Pix aguardando pagamento</h2>
         {(pixPendentes ?? []).length === 0 ? (
           <p className="text-texto2">Nenhum Pix em aberto.</p>
         ) : (
@@ -496,7 +496,7 @@ export default async function Financeiro({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Avisos do Mercado Pago</h2>
+        <h2 className="titulo text-3xl">Avisos do Mercado Pago</h2>
         <p className="text-sm text-cinza">
           Últimos avisos automáticos (webhook) e pagamentos confirmados. Útil
           para conferir os testes.

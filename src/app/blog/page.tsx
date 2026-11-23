@@ -56,7 +56,7 @@ export default async function Blog({ searchParams }: Props) {
       </nav>
 
       <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 pb-16 pt-10">
-        <h1 className="titulo text-4xl">Artigos</h1>
+        <h1 className="titulo text-5xl">Artigos</h1>
         <nav
           aria-label="Categorias"
           className="flex flex-wrap gap-x-5 gap-y-2 text-sm"

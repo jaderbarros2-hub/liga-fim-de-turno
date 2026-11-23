@@ -120,7 +120,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
             avatar={perfil.avatar}
             tamanho={112}
           />
-          <h1 className="titulo text-4xl sm:text-5xl">{perfil.nick}</h1>
+          <h1 className="titulo text-5xl sm:text-6xl">{perfil.nick}</h1>
           {insignias.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">
               {insignias.slice(0, 6).map((i) => (
@@ -153,7 +153,7 @@ export default async function PerfilPublico({ params, searchParams }: Props) {
                   key={r as string}
                   className="flex min-w-20 flex-col bg-preto/70 px-4 py-3 backdrop-blur sm:min-w-28"
                 >
-                  <dd className="titulo text-2xl">{n}</dd>
+                  <dd className="titulo text-3xl">{n}</dd>
                   <dt className="text-xs text-cinza">{r}</dt>
                 </div>
               ))}

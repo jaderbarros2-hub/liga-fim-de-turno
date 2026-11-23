@@ -54,7 +54,7 @@ export function Ingresso({
           </svg>
           Ingresso · First Strike
         </span>
-        <span className="titulo truncate text-2xl leading-none">{titulo}</span>
+        <span className="titulo truncate text-3xl leading-none">{titulo}</span>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <div>
             <dt className="text-[11px] uppercase tracking-wider text-cinza">

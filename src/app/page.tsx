@@ -166,7 +166,7 @@ export default async function Inicio() {
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="titulo text-4xl">As ligas</h2>
+              <h2 className="titulo text-5xl">As ligas</h2>
               <p className="mt-1 text-texto2">
                 Três formatos, uma temporada. Escolha a sua e acompanhe etapas,
                 ranking e regras.
@@ -207,7 +207,7 @@ export default async function Inicio() {
       <section className="border-t border-borda">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-4xl">Próximos eventos</h2>
+            <h2 className="titulo text-5xl">Próximos eventos</h2>
             <Link href="/eventos" className="text-sm font-semibold">
               Agenda completa →
             </Link>
@@ -222,7 +222,7 @@ export default async function Inicio() {
       {encerrados.length > 0 && (
         <section className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-16">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-4xl">Últimos eventos</h2>
+            <h2 className="titulo text-5xl">Últimos eventos</h2>
             <Link href="/resultados" className="text-sm font-semibold">
               Todos os eventos →
             </Link>
@@ -278,7 +278,7 @@ export default async function Inicio() {
         <MesaDeCartas cartas={mesa} />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgb(6_7_10/0.9)_20%,rgb(6_7_10/0.45)_60%,rgb(6_7_10/0.3)_100%)]" />
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 px-6 py-28 text-center">
-          <h2 className="titulo text-4xl">A liga acontece no Discord</h2>
+          <h2 className="titulo text-5xl">A liga acontece no Discord</h2>
           <p className="text-lg text-texto2">
             Avisos de etapa, conversa sobre decks e suporte nos dias de evento.
           </p>
@@ -323,7 +323,7 @@ function Liga({
         >
           {arte.artista}
         </span>
-        <h3 className="titulo absolute bottom-3 left-5 text-3xl drop-shadow">
+        <h3 className="titulo absolute bottom-3 left-5 text-4xl drop-shadow">
           {nome}
         </h3>
       </div>

@@ -91,7 +91,7 @@ export default async function PaginaLoja({ params }: Props) {
               </span>
             )}
             <div className="flex flex-col gap-1">
-              <h1 className="titulo text-4xl sm:text-5xl">{loja.nome}</h1>
+              <h1 className="titulo text-5xl sm:text-6xl">{loja.nome}</h1>
               <span className="text-texto2">
                 {[loja.bairro, [loja.cidade, loja.uf].filter(Boolean).join("/")]
                   .filter(Boolean)
@@ -166,7 +166,7 @@ export default async function PaginaLoja({ params }: Props) {
       <div className="mx-auto flex max-w-6xl flex-col gap-14 px-6 py-14">
         {temEndereco && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-3xl">Onde fica</h2>
+            <h2 className="titulo text-4xl">Onde fica</h2>
             <LocalDaLoja loja={loja} comNome={false} />
             {loja.mesas && (
               <p className="text-sm text-cinza">
@@ -178,7 +178,7 @@ export default async function PaginaLoja({ params }: Props) {
 
         {loja.sede_eventos && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-3xl">Próximos eventos aqui</h2>
+            <h2 className="titulo text-4xl">Próximos eventos aqui</h2>
             <ListaEventos
               eventos={proximos}
               vazio="Nenhum evento presencial marcado nesta loja por enquanto. Fique de olho na agenda."
@@ -189,7 +189,7 @@ export default async function PaginaLoja({ params }: Props) {
         {loja.aceita_credito && (
           <section className="grid gap-6 rounded-md bg-grafite p-6 ring-1 ring-borda md:grid-cols-[1fr_1.2fr] md:p-8">
             <div className="flex flex-col gap-3">
-              <h2 className="titulo text-3xl">Use seus prêmios aqui</h2>
+              <h2 className="titulo text-4xl">Use seus prêmios aqui</h2>
               <p className="text-texto2">
                 Troque o saldo da sua Carteira por crédito na {loja.nome}
                 {loja.bonus_credito_pct ? (
@@ -231,7 +231,7 @@ export default async function PaginaLoja({ params }: Props) {
 
         {passados.length > 0 && (
           <section className="flex flex-col gap-4">
-            <h2 className="titulo text-3xl">Já aconteceu aqui</h2>
+            <h2 className="titulo text-4xl">Já aconteceu aqui</h2>
             <ListaEventos eventos={passados} />
           </section>
         )}

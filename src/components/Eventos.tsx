@@ -55,7 +55,7 @@ export async function CartaoEvento({ evento }: { evento: Evento }) {
         <span className="text-sm font-semibold text-brasa">
           {dataCurta(evento.inicio)} · {hora(evento.inicio)}
         </span>
-        <span className="titulo text-2xl">{evento.titulo}</span>
+        <span className="titulo text-3xl">{evento.titulo}</span>
         <span className="mt-auto flex items-center justify-between gap-3 pt-3 text-sm text-texto2">
           <span
             className="min-w-0 truncate"

@@ -47,7 +47,7 @@ function Bloco({
         {feito ? "✓" : n}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-3 border-b border-borda pb-7">
-        <h2 className="titulo text-2xl leading-9">{titulo}</h2>
+        <h2 className="titulo text-3xl leading-9">{titulo}</h2>
         {children}
       </div>
     </section>
@@ -399,7 +399,7 @@ export function Checkout({
               {cupom?.codigo && (
                 <span className="text-sm text-cinza line-through">{valor}</span>
               )}
-              <span className="titulo text-2xl">
+              <span className="titulo text-3xl">
                 {gratis ? "Grátis" : finalTexto}
               </span>
             </span>

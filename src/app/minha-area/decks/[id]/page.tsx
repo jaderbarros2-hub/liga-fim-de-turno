@@ -62,7 +62,7 @@ export default async function Deck({
         <Link href={`/minha-area/decks/${id}`} className="text-sm">
           ← {deck.nome}
         </Link>
-        <h1 className="titulo text-4xl">Editar deck</h1>
+        <h1 className="titulo text-5xl">Editar deck</h1>
         <FormularioDeck
           arquetipos={(arquetipos ?? []).sort((a, b) =>
             a.nome === "Outro" ? 1 : b.nome === "Outro" ? -1 : 0,

@@ -95,7 +95,7 @@ export default async function Inscricao({
           </span>
         </div>
         <div className="flex flex-col gap-3 p-5">
-          <span className="titulo text-2xl">{evento.titulo}</span>
+          <span className="titulo text-3xl">{evento.titulo}</span>
           <span className="text-sm text-texto2">
             {dataLonga(evento.inicio)} · {hora(evento.inicio)} (Brasília) ·{" "}
             {evento.modalidade === "presencial"
@@ -160,7 +160,7 @@ export default async function Inscricao({
         <span>Ingresso</span>
       </nav>
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-4xl sm:text-5xl">{titulo}</h1>
+        <h1 className="titulo text-5xl sm:text-6xl">{titulo}</h1>
         <p className="text-texto2">{subtitulo}</p>
       </div>
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -200,7 +200,7 @@ export default async function Inscricao({
           codigo={codigoIngresso(inscricao.id)}
         />
         <section className="flex flex-col gap-3">
-          <h2 className="titulo text-2xl">Próximos passos</h2>
+          <h2 className="titulo text-3xl">Próximos passos</h2>
           <ul className="grid gap-3 sm:grid-cols-2">
             {evento.modalidade === "presencial" ? (
               <Passo

@@ -55,7 +55,7 @@ export async function ListaAgenda({ eventos }: { eventos: Evento[] }) {
                     <span className="text-[11px] font-bold uppercase text-cinza">
                       {parte(e.inicio, { weekday: "short" })}
                     </span>
-                    <span className="titulo text-2xl">
+                    <span className="titulo text-3xl">
                       {parte(e.inicio, { day: "2-digit" })}
                     </span>
                     <span className="text-[11px] font-bold uppercase text-brasa">

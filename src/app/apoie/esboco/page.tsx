@@ -146,7 +146,7 @@ export default function Apoie() {
           <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-brasa">
             <Diamante /> Seja apoiador
           </span>
-          <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+          <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
             A liga existe porque a comunidade joga. E cresce porque ela apoia.
           </h1>
           <p className="max-w-xl text-lg text-texto2">
@@ -177,7 +177,7 @@ export default function Apoie() {
       <section className="border-b border-borda bg-fundo2">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 md:flex-row md:items-center md:gap-10">
           <p className="shrink-0 text-sm text-texto2">
-            <strong className="titulo text-3xl text-marfim">
+            <strong className="titulo text-5xl text-marfim">
               {META.atual}
             </strong>{" "}
             de {META.alvo} apoiadores
@@ -206,7 +206,7 @@ export default function Apoie() {
         {/* Para onde vai */}
         <section className="flex flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-3xl sm:text-4xl">
+            <h2 className="titulo text-4xl sm:text-5xl">
               Para onde vai o seu apoio
             </h2>
             <p className="text-texto2">
@@ -217,7 +217,7 @@ export default function Apoie() {
           <ul className="grid gap-px overflow-hidden rounded-md bg-borda ring-1 ring-borda sm:grid-cols-2 lg:grid-cols-4">
             {DESTINOS.map((d, i) => (
               <li key={d.titulo} className="flex flex-col gap-3 bg-grafite p-6">
-                <span className="titulo text-4xl text-vermelho">
+                <span className="titulo text-6xl text-vermelho">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-lg font-semibold">{d.titulo}</h3>
@@ -230,7 +230,7 @@ export default function Apoie() {
         {/* Planos */}
         <section id="planos" className="flex scroll-mt-24 flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-3xl sm:text-4xl">Escolha como apoiar</h2>
+            <h2 className="titulo text-4xl sm:text-5xl">Escolha como apoiar</h2>
             <p className="text-texto2">
               Os dois planos têm os mesmos benefícios na comunidade. O anual sai
               mais em conta e vem com o kit completo.
@@ -255,7 +255,7 @@ export default function Apoie() {
                     {p.nome}
                   </h3>
                   <p>
-                    <span className="titulo text-5xl">{p.preco}</span>
+                    <span className="titulo text-xl">{p.preco}</span>
                     <span className="text-cinza">{p.periodo}</span>
                   </p>
                   <p className="text-sm text-texto2">{p.nota}</p>
@@ -301,7 +301,7 @@ export default function Apoie() {
         {/* Brindes */}
         <section id="brindes" className="flex scroll-mt-24 flex-col gap-8">
           <div className="flex max-w-2xl flex-col gap-3">
-            <h2 className="titulo text-3xl sm:text-4xl">Brindes da liga</h2>
+            <h2 className="titulo text-4xl sm:text-5xl">Brindes da liga</h2>
             <p className="text-texto2">
               Feitos com a identidade da First Strike, só para apoiadores. Os
               modelos finais saem a cada temporada.
@@ -330,7 +330,7 @@ export default function Apoie() {
         {/* Reconhecimento */}
         <section className="grid items-center gap-10 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
-            <h2 className="titulo text-3xl sm:text-4xl">Seu apoio aparece</h2>
+            <h2 className="titulo text-4xl sm:text-5xl">Seu apoio aparece</h2>
             <p className="text-texto2">
               Apoiadores ganham uma insígnia no perfil público, ao lado dos
               títulos e conquistas, e o losango ao lado do nick em toda a liga:
@@ -386,7 +386,7 @@ export default function Apoie() {
 
         {/* Perguntas */}
         <section className="grid gap-10 lg:grid-cols-[1fr_1.6fr]">
-          <h2 className="titulo text-3xl sm:text-4xl">Perguntas frequentes</h2>
+          <h2 className="titulo text-4xl sm:text-5xl">Perguntas frequentes</h2>
           <div className="flex flex-col border-t border-borda">
             {PERGUNTAS.map((q) => (
               <details key={q.p} className="group border-b border-borda py-4">
@@ -405,7 +405,7 @@ export default function Apoie() {
         {/* Chamada final */}
         <section className="flex flex-col items-center gap-5 rounded-xl bg-gradient-to-br from-vermelho/25 via-grafite to-grafite px-6 py-14 text-center ring-1 ring-borda">
           <Simbolo tamanho={56} />
-          <h2 className="titulo max-w-2xl text-3xl sm:text-4xl">
+          <h2 className="titulo max-w-2xl text-4xl sm:text-5xl">
             Chegue primeiro na próxima temporada com a gente
           </h2>
           <a
@@ -455,7 +455,7 @@ function Brinde({ tipo }: { tipo: string }) {
               transform: `rotate(${r}deg) translateY(${i === 1 ? -6 : 0}px)`,
             }}
           >
-            <span className="titulo text-xl">{["1/1", "+1", "2/2"][i]}</span>
+            <span className="titulo text-2xl">{["1/1", "+1", "2/2"][i]}</span>
           </div>
         ))}
       </div>

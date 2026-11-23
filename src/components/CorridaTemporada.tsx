@@ -22,7 +22,7 @@ export async function CorridaTemporada() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="titulo text-4xl">Corrida da temporada</h2>
+            <h2 className="titulo text-5xl">Corrida da temporada</h2>
             <p className="mt-1 text-texto2">
               Os cinco primeiros de cada liga em {temporada}. Cada etapa jogada
               soma pontos.
@@ -39,7 +39,7 @@ export async function CorridaTemporada() {
               className="flex flex-col rounded-lg bg-grafite ring-1 ring-borda"
             >
               <div className="flex items-baseline justify-between border-b border-borda px-5 py-4">
-                <h3 className="titulo text-2xl">{t.nome}</h3>
+                <h3 className="titulo text-3xl">{t.nome}</h3>
                 <span className="text-xs font-semibold uppercase tracking-wider text-cinza">
                   Pontos
                 </span>

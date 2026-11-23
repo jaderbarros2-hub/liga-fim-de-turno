@@ -36,17 +36,17 @@ export default async function VisaoGeral() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="titulo text-4xl">Visão geral</h1>
+        <h1 className="titulo text-5xl">Visão geral</h1>
         <BotaoLink href="/painel/eventos/novo">Novo evento</BotaoLink>
       </div>
       <section className="flex flex-col gap-3">
-        <h2 className="titulo text-2xl">Saúde do portal</h2>
+        <h2 className="titulo text-3xl">Saúde do portal</h2>
         <ListaProblemas
           problemas={problemas}
           vazio="Tudo configurado: nenhuma pendência encontrada."
         />
       </section>
-      <h2 className="titulo text-2xl">Próximos eventos</h2>
+      <h2 className="titulo text-3xl">Próximos eventos</h2>
       {(eventos ?? []).length === 0 ? (
         <p className="text-texto2">Nenhum evento ainda. Crie o primeiro.</p>
       ) : (

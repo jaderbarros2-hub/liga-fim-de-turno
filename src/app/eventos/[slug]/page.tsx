@@ -191,7 +191,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 {NOMES_STATUS[evento.status]}
               </Etiqueta>
             </div>
-            <h1 className="titulo text-4xl sm:text-5xl">{evento.titulo}</h1>
+            <h1 className="titulo text-5xl sm:text-7xl">{evento.titulo}</h1>
             <p className="text-lg text-texto2">
               {dataLonga(evento.inicio)} · {hora(evento.inicio)} (horário de
               Brasília)
@@ -297,7 +297,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                       >
                         <span className="flex items-center justify-between">
                           <span
-                            className={`titulo text-3xl ${i === 0 ? "text-brasa" : "text-cinza"}`}
+                            className={`titulo text-4xl ${i === 0 ? "text-brasa" : "text-cinza"}`}
                           >
                             {r.posicao}º
                           </span>
@@ -476,7 +476,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                   {NOMES_FORMATO[evento.formato]}
                 </span>
-                <h2 className="titulo flex items-center gap-3 text-3xl">
+                <h2 className="titulo flex items-center gap-3 text-4xl">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={colecao?.icone_svg ?? "/icone-cubo.svg"}
@@ -576,7 +576,7 @@ export default async function PaginaEvento({ params, searchParams }: Props) {
                 <span className="text-xs font-bold uppercase tracking-wider text-brasa">
                   Formato construído
                 </span>
-                <h2 className="titulo text-3xl">
+                <h2 className="titulo text-4xl">
                   {NOMES_FORMATO[evento.formato]}
                 </h2>
                 <dl className="grid grid-cols-2 gap-3 text-sm">
@@ -889,7 +889,7 @@ function Secao({
 }) {
   return (
     <section className="flex flex-col gap-4 border-t border-borda py-8">
-      <h2 className="titulo text-2xl">{titulo}</h2>
+      <h2 className="titulo text-3xl">{titulo}</h2>
       {children}
     </section>
   );

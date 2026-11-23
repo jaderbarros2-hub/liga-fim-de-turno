@@ -69,7 +69,7 @@ export default async function Entrar({
           <span className="text-sm font-semibold uppercase tracking-widest text-brasa">
             First Strike
           </span>
-          <h1 className="titulo text-4xl lg:text-[3.25rem]">
+          <h1 className="titulo text-6xl leading-[0.9] sm:text-8xl">
             Quem bate primeiro
             <br />
             <span className="text-brasa">joga com vantagem.</span>
@@ -82,7 +82,7 @@ export default async function Entrar({
               <span className="text-xs font-bold uppercase tracking-wider text-cinza">
                 Você está se inscrevendo em
               </span>
-              <span className="titulo text-2xl">{evento.titulo}</span>
+              <span className="titulo text-3xl">{evento.titulo}</span>
               <span className="flex flex-wrap items-center gap-3 text-sm text-texto2">
                 <EtiquetaLiga evento={evento} />
                 {dataLonga(evento.inicio)} · {hora(evento.inicio)}
@@ -110,7 +110,7 @@ export default async function Entrar({
         {/* Painel de entrada */}
         <div className="relative flex flex-col gap-6 bg-grafite/90 p-8 ring-1 ring-borda backdrop-blur [clip-path:polygon(0_0,calc(100%-2.5rem)_0,100%_2.5rem,100%_100%,2.5rem_100%,0_calc(100%-2.5rem))] sm:p-10">
           <div className="flex flex-col gap-2">
-            <h2 className="titulo text-4xl">Entrar</h2>
+            <h2 className="titulo text-5xl">Entrar</h2>
             <p className="text-texto2">
               A liga usa o Discord como conta. É lá que saem os avisos e o
               suporte nos dias de etapa.

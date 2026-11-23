@@ -27,7 +27,7 @@ export default function Apoie() {
         <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-brasa">
           <Diamante /> Seja apoiador · em breve
         </span>
-        <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+        <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
           Em breve, você vai poder fazer parte da liga de um jeito novo.
         </h1>
         <p className="max-w-xl text-lg text-texto2">

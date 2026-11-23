@@ -71,7 +71,7 @@ export function ArtigoCompleto({
               </Link>{" "}
               | {artigo.tipo}
             </span>
-            <h1 className="font-[family-name:var(--font-titulo)] text-3xl font-bold leading-[1.05] sm:text-4xl">
+            <h1 className="font-[family-name:var(--font-titulo)] text-4xl font-bold leading-[1.05] sm:text-5xl">
               {artigo.titulo}
             </h1>
             {artigo.resumo && (
@@ -172,7 +172,7 @@ export function ArtigoCompleto({
           <BannerPatrocinado posicao="evento" pagina={caminho} coluna />
           {populares.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="titulo text-xl">Mais lidos</h2>
+              <h2 className="titulo text-2xl">Mais lidos</h2>
               <div className="grid grid-cols-2 gap-2">
                 {populares.map((a) => (
                   <TileArtigo key={a.id} artigo={a} />
@@ -182,7 +182,7 @@ export function ArtigoCompleto({
           )}
           {doAutor.length > 0 && (
             <section className="flex flex-col">
-              <h2 className="titulo text-xl">Mais de {autor}</h2>
+              <h2 className="titulo text-2xl">Mais de {autor}</h2>
               <div className="divide-y divide-borda">
                 {doAutor.map((a) => (
                   <MiniArtigo key={a.id} artigo={a} />

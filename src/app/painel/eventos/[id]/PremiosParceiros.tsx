@@ -31,7 +31,7 @@ export function PremiosParceirosPainel({
       className="flex scroll-mt-24 flex-col gap-4 rounded-xl border border-borda bg-grafite p-5"
     >
       <div>
-        <h2 className="titulo text-2xl">Cupons dos parceiros</h2>
+        <h2 className="titulo text-3xl">Cupons dos parceiros</h2>
         <p className="text-sm text-texto2">
           Cupons de desconto oferecidos pelas lojas, como prêmio extra. Aparecem
           na página do evento com o logo da loja. Por posição: entregue ao

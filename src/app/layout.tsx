@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "@fontsource-variable/inter";
-import "@fontsource/unbounded/600.css";
-import "@fontsource/unbounded/700.css";
-import "@fontsource/unbounded/800.css";
+import "@fontsource/barlow-condensed/700.css";
+import "@fontsource/barlow-condensed/800.css";
 import { Cabecalho } from "@/components/Cabecalho";
 import { Rodape } from "@/components/Rodape";
 import "./globals.css";

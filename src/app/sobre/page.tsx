@@ -58,7 +58,7 @@ export default async function Sobre() {
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/90 to-preto/40" />
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-20">
-          <h1 className="titulo max-w-3xl text-5xl sm:text-5xl">
+          <h1 className="titulo max-w-3xl text-6xl sm:text-7xl">
             Magic competitivo, <span className="text-brasa">acessível</span> e
             toda semana
           </h1>
@@ -74,7 +74,7 @@ export default async function Sobre() {
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.4fr]">
-        <h2 className="titulo text-4xl">Por que a liga existe</h2>
+        <h2 className="titulo text-5xl">Por que a liga existe</h2>
         <div className="conteudo-texto">
           <p>
             Jogar Magic de forma competitiva costuma ter duas barreiras: o preço
@@ -108,7 +108,7 @@ export default async function Sobre() {
       </section>
 
       <section className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-16">
-        <h2 className="titulo text-4xl">Os formatos</h2>
+        <h2 className="titulo text-5xl">Os formatos</h2>
         <div className="grid gap-5 md:grid-cols-3">
           {[
             {
@@ -147,7 +147,7 @@ export default async function Sobre() {
               <span className="absolute right-4 top-3 text-[11px] text-white/60">
                 {creditoArte(artesFormato[f.slug])}
               </span>
-              <h3 className="titulo text-3xl">{f.nome}</h3>
+              <h3 className="titulo text-4xl">{f.nome}</h3>
               <p className="mt-2 max-w-md text-texto2">{f.texto}</p>
             </Link>
           ))}
@@ -159,7 +159,7 @@ export default async function Sobre() {
 
       <section className="border-t border-borda bg-fundo2">
         <div className="mx-auto grid max-w-6xl gap-12 px-6 py-16 lg:grid-cols-[1fr_1.4fr]">
-          <h2 className="titulo text-4xl">Quem organiza</h2>
+          <h2 className="titulo text-5xl">Quem organiza</h2>
           <div className="flex flex-col gap-5">
             <div className="conteudo-texto">
               <p>

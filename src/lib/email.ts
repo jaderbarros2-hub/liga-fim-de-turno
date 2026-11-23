@@ -100,7 +100,7 @@ const C = {
   erro: "#ff6b6b",
 };
 const FONTE = "Inter,'Segoe UI',Helvetica,Arial,sans-serif";
-const TITULO = "Unbounded,'Arial Black',Arial,sans-serif";
+const TITULO = "'Barlow Condensed','Arial Narrow',Arial,sans-serif";
 
 /** HTML com o visual da liga: arte no topo, título, número em destaque, detalhes e um botão. */
 export function montarEmail(
@@ -120,7 +120,7 @@ export function montarEmail(
     ? `<div style="margin:0 0 14px"><span style="display:inline-block;padding:5px 10px;border-radius:999px;border:1px solid ${tomSelo};font:600 12px ${FONTE};color:${tomSelo}">${escapar(c.selo.texto)}</span></div>`
     : "";
   const destaque = c.destaque
-    ? `<div style="margin:4px 0 20px"><div style="font:800 40px/1 ${TITULO};color:${C.brasa}">${escapar(c.destaque.valor)}</div><div style="margin-top:6px;font:14px ${FONTE};color:${C.cinza}">${escapar(c.destaque.rotulo)}</div></div>`
+    ? `<div style="margin:4px 0 20px"><div style="font:700 44px/1 ${TITULO};color:${C.brasa}">${escapar(c.destaque.valor)}</div><div style="margin-top:6px;font:14px ${FONTE};color:${C.cinza}">${escapar(c.destaque.rotulo)}</div></div>`
     : "";
   const p = c.paragrafos
     .map(

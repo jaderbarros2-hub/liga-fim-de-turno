@@ -128,7 +128,7 @@ export default async function ComoFunciona({
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-preto via-preto/85 to-preto/30" />
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-16">
-          <h1 className="titulo text-5xl sm:text-5xl">
+          <h1 className="titulo text-6xl sm:text-7xl">
             Como funcionam os eventos
           </h1>
           <p className="max-w-2xl text-lg text-texto2">
@@ -162,7 +162,7 @@ export default async function ComoFunciona({
         <ol className="grid gap-px overflow-hidden rounded-md bg-borda ring-1 ring-borda sm:grid-cols-2 lg:grid-cols-3">
           {PASSOS[modo].map((p, i) => (
             <li key={p.titulo} className="flex flex-col gap-3 bg-grafite p-6">
-              <span className="titulo text-4xl text-vermelho">
+              <span className="titulo text-5xl text-vermelho">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h2 className="text-lg font-semibold">{p.titulo}</h2>
@@ -172,7 +172,7 @@ export default async function ComoFunciona({
         </ol>
 
         <section className="grid gap-8 lg:grid-cols-[1fr_2fr]">
-          <h2 className="titulo text-3xl">Vale para todos os eventos</h2>
+          <h2 className="titulo text-4xl">Vale para todos os eventos</h2>
           <dl className="grid gap-6 sm:grid-cols-2">
             {REGRAS.map((r) => (
               <div
@@ -188,7 +188,7 @@ export default async function ComoFunciona({
 
         <section className="flex flex-col gap-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-3xl">
+            <h2 className="titulo text-4xl">
               Próximos eventos {modo === "online" ? "online" : "presenciais"}
             </h2>
             <Link href="/eventos" className="text-sm font-semibold">

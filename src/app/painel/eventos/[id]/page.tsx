@@ -96,7 +96,7 @@ export default async function EditarEvento({
         ← Eventos
       </Link>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="titulo text-4xl">{evento.titulo}</h1>
+        <h1 className="titulo text-5xl">{evento.titulo}</h1>
         <div className="flex flex-wrap gap-4 text-sm font-semibold">
           <Link href={`/painel/eventos/${evento.id}/resultados`}>
             Resultados e prêmios
@@ -122,7 +122,7 @@ export default async function EditarEvento({
       />
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="titulo text-2xl">Inscritos</h2>
+          <h2 className="titulo text-3xl">Inscritos</h2>
           <span className="text-sm text-cinza">
             {confirmadas.length} confirmados ·{" "}
             {(inscricoes ?? []).length - confirmadas.length} outros

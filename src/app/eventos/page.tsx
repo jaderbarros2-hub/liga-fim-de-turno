@@ -43,7 +43,7 @@ export default async function Agenda({
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-5xl">Agenda</h1>
+        <h1 className="titulo text-6xl">Agenda</h1>
         <p className="text-texto2">
           Os próximos eventos da liga, mês a mês. Escolha um formato para
           filtrar.
@@ -83,7 +83,7 @@ export default async function Agenda({
       {ultimos.length > 0 && (
         <section className="flex flex-col gap-3 border-t border-borda pt-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <h2 className="titulo text-3xl">Últimos eventos</h2>
+            <h2 className="titulo text-4xl">Últimos eventos</h2>
             <Link href="/resultados" className="text-sm font-semibold">
               Todos os resultados →
             </Link>

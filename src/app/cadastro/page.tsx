@@ -30,7 +30,7 @@ export default async function Cadastro({
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 px-6 py-12">
-      <h1 className="titulo text-4xl">Complete seu cadastro</h1>
+      <h1 className="titulo text-5xl">Complete seu cadastro</h1>
       <p className="text-texto2">
         Precisamos desses dados para confirmar sua inscrição e pagar seus
         prêmios. Só o seu nick aparece publicamente.

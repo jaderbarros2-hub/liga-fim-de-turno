@@ -126,7 +126,7 @@ export default async function ResultadosEvento({
         ← {evento.titulo}
       </Link>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="titulo text-4xl">Resultados</h1>
+        <h1 className="titulo text-5xl">Resultados</h1>
         <span className="text-sm text-cinza">
           {inscritos.length} confirmados · prêmio total {reais(premioTotal)}
         </span>
@@ -164,7 +164,7 @@ export default async function ResultadosEvento({
       )}
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-        <h2 className="titulo text-xl">3 · Liberar prêmios na Carteira</h2>
+        <h2 className="titulo text-2xl">3 · Liberar prêmios na Carteira</h2>
         {lista.length === 0 ? (
           <p className="text-sm text-texto2">
             Os prêmios aparecem aqui depois de salvar a classificação.

@@ -136,7 +136,7 @@ export function FormularioLoja({ atual }: { atual: LojaForm | null }) {
       }}
       className="flex scroll-mt-20 flex-col gap-5"
     >
-      <h2 className="titulo text-2xl">
+      <h2 className="titulo text-3xl">
         {atual?.id ? `Editar ${atual.nome}` : "Nova loja ou parceiro"}
       </h2>
       {atual?.id && <input type="hidden" name="id" value={atual.id} />}

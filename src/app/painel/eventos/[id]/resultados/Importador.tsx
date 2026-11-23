@@ -120,7 +120,7 @@ export function Importador({
     <div className="flex flex-col gap-6">
       {!bloqueado && (
         <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-          <h2 className="titulo text-xl">1 · Classificação do Endstep</h2>
+          <h2 className="titulo text-2xl">1 · Classificação do Endstep</h2>
           <p className="text-sm text-texto2">
             No Endstep, abra a classificação final, selecione a tabela inteira,
             copie e cole aqui. Uma linha por jogador, na ordem final. Os nicks
@@ -148,7 +148,7 @@ export function Importador({
 
       {!bloqueado && (
         <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
-          <h2 className="titulo text-xl">
+          <h2 className="titulo text-2xl">
             1b · Rodadas{" "}
             <span className="text-base font-normal text-cinza">
               (histórico de partidas)
@@ -230,7 +230,7 @@ export function Importador({
 
       <section className="flex flex-col gap-3 rounded-xl border border-borda bg-grafite p-5">
         <div className="flex flex-wrap items-end justify-between gap-3">
-          <h2 className="titulo text-xl">2 · Conferir e premiar</h2>
+          <h2 className="titulo text-2xl">2 · Conferir e premiar</h2>
           <label className="flex items-center gap-2 text-sm">
             <span className="text-cinza">Divisão personalizada (%)</span>
             <input

@@ -37,7 +37,7 @@ export default async function LayoutPainel({
         aria-label="Painel"
         className="flex flex-[1_1_200px] flex-col gap-1 border-r border-borda px-4 py-8 text-sm font-semibold"
       >
-        <span className="titulo px-3 pb-4 text-xl">Painel</span>
+        <span className="titulo px-3 pb-4 text-2xl">Painel</span>
         {MENU.map((m) => (
           <Link
             key={m.href}

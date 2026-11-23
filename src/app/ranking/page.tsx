@@ -78,7 +78,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
           <span className="text-sm font-semibold uppercase tracking-widest text-brasa">
             Temporada {temporada}
           </span>
-          <h1 className="titulo text-5xl sm:text-5xl">Ranking</h1>
+          <h1 className="titulo text-6xl sm:text-7xl">Ranking</h1>
           <p className="max-w-2xl text-texto2">
             Cada etapa vale pontos. Os campeões e vices de cada Final do
             Trimestre garantem vaga no Player of the Year.{" "}
@@ -150,7 +150,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
                     className={`flex items-center gap-3 rounded-md p-4 ring-1 ${i === 0 ? "bg-vermelho/15 ring-vermelho" : "bg-grafite ring-borda"}`}
                   >
                     <span
-                      className={`titulo w-8 text-3xl ${i === 0 ? "text-brasa" : "text-cinza"}`}
+                      className={`titulo w-8 text-4xl ${i === 0 ? "text-brasa" : "text-cinza"}`}
                     >
                       {l.posicao}º
                     </span>
@@ -247,7 +247,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
             <span className="text-xs font-bold uppercase tracking-wider text-brasa">
               Rumo ao Player of the Year
             </span>
-            <h2 className="titulo text-2xl">Top 8 de {temporada}</h2>
+            <h2 className="titulo text-3xl">Top 8 de {temporada}</h2>
             <ol className="flex flex-col divide-y divide-borda">
               {poty.vagas.map((v, i) => (
                 <li key={v.chave} className="flex items-center gap-3 py-2.5">
@@ -281,7 +281,7 @@ export default async function PaginaRanking({ searchParams }: Props) {
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="titulo text-xl">Finais do Trimestre</h2>
+            <h2 className="titulo text-2xl">Finais do Trimestre</h2>
             <ul className="flex flex-col gap-2">
               {poty.finais.map((f) => (
                 <li

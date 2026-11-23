@@ -100,7 +100,7 @@ export default async function DeckPublico({ params }: Props) {
           <BannerPatrocinado posicao="deck" pagina={pagina} />
           {top.length > 1 && (
             <section className="flex flex-col gap-4 border-t border-borda pt-8">
-              <h2 className="titulo text-2xl">Top 8 de {evento.titulo}</h2>
+              <h2 className="titulo text-3xl">Top 8 de {evento.titulo}</h2>
               <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {top.map((d) => (
                   <li key={d.posicao}>
@@ -113,7 +113,7 @@ export default async function DeckPublico({ params }: Props) {
                           : "bg-grafite ring-borda"
                       }`}
                     >
-                      <span className="titulo w-8 text-xl text-cinza">
+                      <span className="titulo w-8 text-2xl text-cinza">
                         {d.posicao}º
                       </span>
                       <span className="flex min-w-0 flex-col">

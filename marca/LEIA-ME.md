@@ -2,6 +2,8 @@
 
 Ícone: carta em movimento com relâmpago (opção 5). Fonte: Unbounded (Google Fonts, gratuita), peso 800 no nome e 600 em "LIGA COMPETITIVA" com espaçamento largo. Nos SVGs o texto já está convertido em curvas, então não precisa ter a fonte instalada.
 
+Fontes do portal e das peças: **Barlow Condensed** 800 em caixa alta nos títulos e chamadas, **Inter** nos textos. A Unbounded fica só no logo.
+
 ## Cores (provisórias, paleta Boros)
 - Vermelho: #D8392A
 - Marfim: #F4EFE6

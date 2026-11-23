@@ -66,7 +66,7 @@ export default async function Emails({
   return (
     <div className="flex max-w-5xl flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="titulo text-4xl">E-mails</h1>
+        <h1 className="titulo text-5xl">E-mails</h1>
         <p className="text-sm text-texto2">
           Tudo que o portal enviou (ou tentou enviar), mais recente primeiro.
         </p>

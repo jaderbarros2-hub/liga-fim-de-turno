@@ -36,7 +36,7 @@ export default async function Autores({
       <Link href="/painel/blog" className="text-sm">
         ← Blog
       </Link>
-      <h1 className="titulo text-4xl">Autores</h1>
+      <h1 className="titulo text-5xl">Autores</h1>
       <ul className="flex flex-col border-t border-borda">
         {autores.map((a) => (
           <li
@@ -76,7 +76,7 @@ export default async function Autores({
         action={salvarAutor}
         className="grid scroll-mt-20 gap-4 rounded-xl border border-borda p-6"
       >
-        <h2 className="titulo text-2xl">
+        <h2 className="titulo text-3xl">
           {atual ? `Editar ${atual.nome}` : "Novo autor"}
         </h2>
         {atual && <input type="hidden" name="id" value={atual.id} />}

@@ -19,7 +19,7 @@ export function Rodadas({ partidas }: { partidas: PartidaPublica[] }) {
   const grupos = porRodada(partidas);
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="titulo text-2xl">Rodadas</h2>
+      <h2 className="titulo text-3xl">Rodadas</h2>
       <div className="grid gap-4 md:grid-cols-2">
         {grupos.map((g) => (
           <div
